@@ -1,0 +1,172 @@
+<resources>
+    <string name="facebook_app_id">1355845931585779</string>
+    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="facebook_client_token">101b3a1dbe9af15e2e0db7fb5a127391</string>
+    <string name="app_name">Ride Share</string>
+    <string name="server_client_id">719991187082-m0m8b82ivq5vfjmq1j75oanbes0bo5a6.apps.googleusercontent.com</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="login">Login</string>
+    <string name="create_account">CREATE ACCOUNT</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="rider">Rider</string>
+    <string name="driver">Driver</string>
+    <string name="wrongPassword">Wrong Password</string>
+    <string name="rider_not_found">Rider not found</string>
+    <string name="driver_not_found">Driver not found</string>
+    <string name="continue_as_driver">Continue as Driver</string>
+    <string name="continue_as_rider">Continue as Rider</string>
+    <string name="register">Register</string>
+    <string name="password_match_error">Password are not matched</string>
+    <string name="password_format_error_digit"> * Your password must contains at least one digit</string>
+    <string name="password_format_error_length"> * Your password length must be greater than 6</string>
+    <string name="password_error_message_title">Your Password must contain:</string>
+    <string name="ilias">Ilias</string>
+    <string name="first_name">First Name</string>
+    <string name="password_verify">Password Verify</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="null_error_editText">You must complete this field</string>
+    <string name="title_activity_driver">DriverActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="webClientIdGoogleSignIn">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</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="available_cars">Car</string>
+    <string name="personal_data">Personal Data</string>
+    <string name="your_routes">Your routes</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="passengers">Passengers</string>
+    <string name="active_passengers">Active Passengers:</string>
+    <string name="next_step">Next Step</string>
+    <string name="set_your_starting_point">Set Your Starting Point</string>
+    <string name="set_your_finish_point">Set Your Finish Point</string>
+    <string name="next_step_title">Continue to the next Step</string>
+    <string name="description">Description</string>
+    <string name="m">M</string>
+    <string name="t">T</string>
+    <string name="w">W</string>
+    <string name="f">F</string>
+    <string name="s">S</string>
+    <string name="choose_date_and_time">Choose Date and Time</string>
+    <string name="declare_additional_information">Declare Additional Information</string>
+    <string name="end_date">End Date</string>
+    <string name="set_your_first_route_date">Set the date of your first route</string>
+    <string name="start_date">Start Date</string>
+    <string name="choose_the_days">Choose the Days</string>
+    <string name="save">Save</string>
+    <string name="starting_route">Starting Route</string>
+    <string name="finish_route">Finish Route</string>
+    <string name="cost_per_passenger">Cost per Passenger</string>
+    <string name="starts_at">Starts at </string>
+    <string name="route_saved_success">The route saved Successfully</string>
+    <string name="every">"Every "</string>
+    <string name="delete_route">Delete Route</string>
+    <string name="are_you_sure_delete_route">Are you sure you want to delete?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="per_customer">per Customer</string>
+    <string name="until">until</string>
+    <string name="one_time_trip_at">One Time Trip at:</string>
+    <string name="log_out">Log Out</string>
+    <string name="time">Time</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="or">or</string>
+    <string name="log_in_with_google">Log in with Google</string>
+    <string name="log_in_with_facebook">Log in with Facebook</string>
+    <string name="save_money_make_friends">\"Save money, make friends\"</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="where_to">Where to?</string>
+    <string name="ride_history">Ride History</string>
+    <string name="destination">Destination</string>
+    <string name="we_found">We found</string>
+    <string name="routes">routes</string>
+    <string name="route">route</string>
+    <string name="android_api_key">AIzaSyCO-ylUowiKV6IECv1L6eVw9Bl8CBzhaFk</string>
+    <string name="became_a_driver">Became a Driver</string>
+    <string name="last_name">Last Name</string>
+    <string name="birthday">BirthDay</string>
+    <string name="change_password">Change Password</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="apply">Apply</string>
+    <string name="clear">Clear</string>
+    <string name="name">Name</string>
+    <string name="route_date">Route Date</string>
+    <string name="set_your_date">Set your Date</string>
+    <string name="set_your_time">Set your Time</string>
+    <string name="price">Price</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+
+    <string name="no_repeat">No repeat</string>
+    <string name="daily">Daily</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Monthly</string>
+    <string name="yearly">Yearly</string>
+    <string name="custom">Custom</string>
+
+    <string name="sunday">Sunday</string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="Wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="repeatability">Repeatability</string>
+    <string name="same_start_finish_point_error">You can not have the same start and finish point</string>
+    <string name="route_search_from">From?</string>
+    <string name="at">at?</string>
+    <string name="drivers">Drivers</string>
+    <string name="filters">Filters</string>
+    <string name="distance">Distance</string>
+    <string name="rating">Rating</string>
+    <string name="hour">hour</string>
+    <string name="away">away</string>
+    <string name="hours">hours</string>
+    <string name="after">after</string>
+    <string name="same_time">Same time</string>
+    <string name="later">later</string>
+    <string name="sooner">sooner</string>
+    <string name="home">Home</string>
+    <string name="repeats">Repeats</string>
+    <string name="see_dates_here">See dates here</string>
+    <string name="contact_driver">Contact Driver</string>
+    <string name="send_request">Send request</string>
+    <string name="cancel_request">Cancel request</string>
+    <string name="ratings">Ratings</string>
+    <string name="car_manufacturer">Car manufacturer</string>
+    <string name="car_model">Car Model</string>
+    <string name="car_year">Car Year</string>
+    <string name="car_plate">Car Plate</string>
+    <string name="route_request_success">Your Request was sent successfully</string>
+    <string name="you_are_about_to_send_a_ride_request_to_the_driver_are_you_sure">You are about to send a ride request to the driver are you sure?</string>
+    <string-array name="repeat_options">
+        <item>@string/no_repeat</item>
+        <item>@string/daily</item>
+        <item>@string/weekly</item>
+        <item>@string/monthly</item>
+        <item>@string/yearly</item>
+        <item>@string/custom</item>
+    </string-array>
+    <string-array name="days">
+        <item>@string/sunday</item>
+        <item>@string/monday</item>
+        <item>@string/tuesday</item>
+        <item>@string/Wednesday</item>
+        <item>@string/thursday</item>
+        <item>@string/friday</item>
+        <item>@string/saturday</item>
+    </string-array>
+</resources>

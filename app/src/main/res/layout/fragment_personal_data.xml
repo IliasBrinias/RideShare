@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PersonalDataFragment">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+            <ImageView
+                android:id="@+id/imageViewPersonalDataBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/default_profile_background"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/ic_circle"
+                app:layout_constraintBottom_toBottomOf="@+id/circleImageViewPersonalDateUserImage"
+                app:layout_constraintEnd_toEndOf="@+id/circleImageViewPersonalDateUserImage"
+                app:layout_constraintStart_toStartOf="@+id/circleImageViewPersonalDateUserImage"
+                app:layout_constraintTop_toTopOf="@+id/circleImageViewPersonalDateUserImage" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/circleImageViewPersonalDateUserImage"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_default_profile"
+                app:layout_constraintBottom_toBottomOf="@+id/imageViewPersonalDataBackground"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.88" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputPersonalDataFirstNameLayout"
+            style="@style/TextInputEditTextLoginStyle"
+            android:hint="@string/name"
+            app:hintAnimationEnabled="true"
+            app:layout_constraintBottom_toTopOf="@+id/textInputPersonalDataLastNameLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputPasswordAgainLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputPersonalDataFirstName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="TouchTargetSizeCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputPersonalDataEmailLayout"
+            style="@style/TextInputEditTextLoginStyle"
+            android:gravity="center"
+            android:hint="@string/email"
+            app:hintAnimationEnabled="true"
+            app:layout_constraintBottom_toTopOf="@+id/buttonRegister"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputOriginLocationLayout"
+            app:layout_constraintVertical_bias="0.9">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputPersonalDataEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="TouchTargetSizeCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputPersonalDataBirthDayLayout"
+            style="@style/TextInputEditTextLoginStyle"
+            android:gravity="center"
+            android:hint="@string/birthday"
+            app:hintAnimationEnabled="true"
+            app:layout_constraintBottom_toTopOf="@+id/buttonRegister"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputOriginLocationLayout"
+            app:layout_constraintVertical_bias="0.9">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputPersonalDataBirthDay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="TouchTargetSizeCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <Button
+            android:id="@+id/changePassword"
+            style="@style/SubmitButtons"
+            android:layout_width="200dp"
+            android:layout_height="48dp"
+            android:fontFamily="@font/trebuc"
+            android:onClick="login"
+            android:text="@string/change_password" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+
+        <Button
+            android:id="@+id/becameDriver"
+            style="@style/SubmitButtons"
+            android:layout_width="200dp"
+            android:layout_height="48dp"
+            android:text="@string/became_a_driver" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/ratingFragment"
+            style="@style/SubmitButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/became_a_driver"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="80dp"/>
+    </LinearLayout>
+</ScrollView>

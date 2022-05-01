@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".rider.RiderRouteActivity">
+
+    <TableRow
+        android:id="@+id/tableRow8"
+        android:layout_width="0dp"
+        android:layout_height="175dp"
+        android:background="?colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageView8"
+                android:layout_width="19dp"
+                android:layout_height="125dp"
+                android:layout_marginBottom="7dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textInputDateLayout"
+                app:layout_constraintEnd_toStartOf="@+id/textInputDestinationLocationLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textInputOriginLocationLayout"
+                app:layout_constraintVertical_bias="0.64"
+                app:srcCompat="@drawable/ic_route_search_result_stages" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputOriginLocationLayout"
+                style="@style/TextInputEditTextLoginStyle"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:fontFamily="@font/trebuc"
+                android:inputType="text"
+                app:boxStrokeWidth="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/textInputDestinationLocationLayout"
+                app:layout_constraintEnd_toEndOf="@+id/textInputDestinationLocationLayout"
+                app:layout_constraintStart_toStartOf="@+id/textInputDestinationLocationLayout"
+                app:layout_constraintTop_toTopOf="parent"
+                app:placeholderText="@string/route_search_from"
+                app:startIconDrawable="@drawable/ic_location_point">
+
+                <AutoCompleteTextView
+                    android:id="@+id/autoCompleteOriginPoint"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/search_shape_background"
+                    android:focusable="true"
+                    android:fontFamily="@font/trebuc"
+                    android:inputType="textNoSuggestions"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputDestinationLocationLayout"
+                style="@style/TextInputEditTextLoginStyle"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:fontFamily="@font/trebuc"
+                android:inputType="text"
+                app:boxStrokeWidth="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.8"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:placeholderText="@string/route_search_from"
+                app:startIconDrawable="@drawable/ic_finish_route"
+                app:startIconTint="@null">
+
+                <AutoCompleteTextView
+                    android:id="@+id/autoCompleteDestinationPoint"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/search_shape_background"
+                    android:focusable="true"
+                    android:fontFamily="@font/trebuc"
+                    android:inputType="textNoSuggestions"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputDateLayout"
+                style="@style/TextInputEditTextLoginStyle"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:fontFamily="@font/trebuc"
+                android:inputType="text"
+                app:boxStrokeWidth="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/textInputDestinationLocationLayout"
+                app:layout_constraintStart_toStartOf="@+id/textInputDestinationLocationLayout"
+                app:layout_constraintTop_toBottomOf="@+id/textInputDestinationLocationLayout"
+                app:placeholderText="@string/route_search_from"
+                app:startIconDrawable="@drawable/ic_calendar"
+                app:startIconTint="@null">
+
+                <AutoCompleteTextView
+                    android:id="@+id/autoCompleteDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/search_shape_background"
+                    android:focusable="false"
+                    android:fontFamily="@font/trebuc"
+                    android:inputType="textNoSuggestions"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </TableRow>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:indeterminateTint="?colorPrimary"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/tableRowReturnData"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableRow8" />
+
+    <TableRow
+        android:id="@+id/tableRowReturnData"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableRow8">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewCountRoutes" />
+
+            <TextView
+                android:id="@+id/textViewCountRoutesTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/trebuc"
+                android:paddingTop="8dp"
+                android:text="@string/drivers"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.05"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/textViewCountRoutes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/trebuc"
+                android:paddingBottom="8dp"
+                android:text="We Found 0 Route"
+                android:textColor="@color/shadow"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/textViewCountRoutesTitle"
+                app:layout_constraintTop_toBottomOf="@+id/textViewCountRoutesTitle" />
+
+            <TableRow
+                android:id="@+id/tableRowFilter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shadow"
+                android:elevation="10dp"
+                android:onClick="openFilter"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:rotationX="3"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/recyclerView"
+                app:layout_constraintStart_toStartOf="@+id/recyclerView"
+                app:layout_constraintTop_toTopOf="@+id/recyclerView"
+                app:layout_constraintVertical_bias="0.92">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <FrameLayout
+                        android:id="@+id/buttonFilterLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="5dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.135"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageButton
+                            android:id="@+id/buttonFilter"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/ic_circle"
+                            android:backgroundTint="?colorPrimary"
+                            android:src="@drawable/ic_filter"
+                            android:stateListAnimator="@null"
+                            android:visibility="visible"
+                            app:tint="?colorOnPrimary" />
+
+                        <TextView
+                            android:id="@+id/textViewFilter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_circle"
+                            android:backgroundTint="?colorPrimary"
+                            android:fontFamily="@font/tcm"
+                            android:gravity="center"
+                            android:stateListAnimator="@null"
+                            android:text="5"
+                            android:textColor="?colorOnPrimary"
+                            android:textSize="20sp"
+                            android:visibility="gone" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/textView13"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/trebuc"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="15dp"
+                        android:text="@string/filters"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/buttonFilterLayout"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/buttonFilterLayout"
+                        app:layout_constraintTop_toTopOf="@+id/buttonFilterLayout" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </TableRow>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRowLocationSearch"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableRow8">
+
+        <ListView
+            android:id="@+id/listViewLocationSearch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </TableRow>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

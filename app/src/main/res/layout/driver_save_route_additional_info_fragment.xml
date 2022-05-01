@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".driver.fragments.Route.DriverSaveRouteAdditionalInfoFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputPassengersLayout"
+            style="@style/TextInputEditTextLoginStyle"
+            android:layout_height="65dp"
+            android:hint="@string/passengers"
+            app:layout_constraintBottom_toTopOf="@+id/textInputDescriptionLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDescriptionTitle"
+            app:layout_constraintVertical_bias="0.13"
+            app:placeholderText="4"
+            app:startIconDrawable="@drawable/ic_team">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputPassengers"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:ignore="TouchTargetSizeCheck"
+                android:inputType="numberSigned"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputPassengersCostLayout"
+            style="@style/TextInputEditTextLoginStyle"
+            android:layout_height="65dp"
+            android:hint="@string/cost_per_passenger"
+            app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputPassengersLayout"
+            app:placeholderText="15.50"
+            app:startIconDrawable="@drawable/ic_car_price">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputPassengersCost"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="numberDecimal"
+                tools:ignore="TouchTargetSizeCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
+            style="@style/TextInputEditTextDropdownStyle"
+            android:layout_height="65dp"
+            android:hint="@string/available_cars"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/textInputDescriptionLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputPassengersLayout"
+            app:layout_constraintVertical_bias="0.78"
+            app:startIconDrawable="@drawable/ic_car_keys">
+
+            <AutoCompleteTextView
+                android:id="@+id/availableCars"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="none"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.491"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputOriginLocationLayout"
+                app:layout_constraintVertical_bias="0.087" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputDescriptionLayout"
+            style="@style/TextInputEditTextLoginStyle"
+            android:hint="@string/description"
+            android:maxLines="4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.508"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDescriptionTitle"
+            app:layout_constraintVertical_bias="0.723"
+            app:startIconDrawable="@drawable/ic_description">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputDescription"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                tools:ignore="TouchTargetSizeCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/textViewDescriptionTitle"
+            style="@style/TitleTextViewSaveRouteSteps"
+            android:layout_width="match_parent"
+            android:text="@string/declare_additional_information"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/buttonNextStepDateTime"
+            style="@style/SubmitButtons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="2dp"
+            android:stateListAnimator="@null"
+            android:text="@string/save"
+            android:translationZ="2dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputDescriptionLayout" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

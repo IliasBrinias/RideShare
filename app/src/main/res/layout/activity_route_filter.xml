@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".RouteFilterActivity">
+
+    <TableRow
+        android:id="@+id/tableRow5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="?colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageViewClose"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:onClick="closeFilter"
+                android:src="@drawable/ic_cancel"
+                app:tint="?colorOnPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.043"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.518" />
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/trebuc"
+                android:text="@string/filters"
+                android:textColor="?colorOnPrimary"
+                android:textSize="25sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imageViewClose"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.05"
+                app:layout_constraintStart_toEndOf="@+id/imageViewClose"
+                app:layout_constraintTop_toTopOf="@+id/imageViewClose"
+                app:layout_constraintVertical_bias="0.5" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </TableRow>
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/tableRow4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableRow5">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="800dp"
+            android:orientation="vertical">
+
+
+
+            <TableRow
+                android:id="@+id/tableRowRepeatabilityTitle"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:onClick="openTableRowItems">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imageViewRepeatability"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_dropdown"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.955"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView10"
+                        style="@style/titleRouteFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/repeatability"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRowRepeatability"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <RadioGroup
+                        android:id="@+id/radioGroupRepeatability"
+                        android:layout_width="366dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        >
+
+                        <RadioButton
+                            android:id="@+id/radio0"
+                            style="@style/radioButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/no_repeat" />
+
+                        <RadioButton
+                            android:id="@+id/radio1"
+                            style="@style/radioButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/daily" />
+
+                        <RadioButton
+                            android:id="@+id/radio2"
+                            style="@style/radioButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/weekly" />
+
+                        <RadioButton
+                            android:id="@+id/radio3"
+                            style="@style/radioButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/monthly" />
+
+                        <RadioButton
+                            android:id="@+id/radio4"
+                            style="@style/radioButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/yearly" />
+                    </RadioGroup>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </TableRow>
+
+            <View
+                android:id="@+id/view4"
+                android:layout_width="360dp"
+                android:layout_gravity="center"
+                android:layout_height="2dp"
+                android:background="@color/shadow" />
+
+            <TableRow
+                android:id="@+id/tableRowPriceTitle"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:onClick="openTableRowItems">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imageViewPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_dropdown"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.955"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView20"
+                        style="@style/titleRouteFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/price"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRowPrice"
+                android:layout_width="match_parent"
+                android:layout_height="174dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/autoCompleteFromPrice"
+                        style="@style/fieldFilterRoute"
+                        android:layout_width="174dp"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:text="5.0$"
+                        app:layout_constraintBottom_toTopOf="@+id/sliderPrice"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/sliderPrice"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.25" />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/autoCompleteToPrice"
+                        style="@style/fieldFilterRoute"
+                        android:layout_width="174dp"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:fontFamily="@font/tcm"
+                        android:text="100.0$"
+                        app:layout_constraintBottom_toTopOf="@+id/sliderPrice"
+                        app:layout_constraintEnd_toEndOf="@+id/sliderPrice"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="@+id/sliderPrice"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.25"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+
+                    <com.google.android.material.slider.RangeSlider
+                        android:id="@+id/sliderPrice"
+                        android:layout_width="373dp"
+                        android:layout_height="wrap_content"
+                        android:valueFrom="0"
+                        android:valueTo="100"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.523"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.803" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </TableRow>
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="360dp"
+                android:layout_gravity="center"
+                android:layout_height="2dp"
+                android:background="@color/shadow" />
+
+            <TableRow
+                android:id="@+id/tableRowTimeTitle"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:onClick="openTableRowItems">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imageViewTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_dropdown"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.955"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView14"
+                        style="@style/titleRouteFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/time"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </TableRow>
+            <TableRow
+                android:id="@+id/tableRowTime"
+                android:layout_width="match_parent"
+                android:layout_height="174dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/autoCompleteFromTime"
+                        style="@style/fieldFilterRoute"
+                        android:layout_width="174dp"
+                        android:layout_height="wrap_content"
+                        android:text="5 hours earlier"
+                        android:focusable="false"
+                        app:layout_constraintBottom_toTopOf="@+id/sliderTime"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/sliderTime"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.25"/>
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/autoCompleteToTime"
+                        style="@style/fieldFilterRoute"
+                        android:layout_width="174dp"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:fontFamily="@font/tcm"
+                        android:text="2 hours after"
+                        app:layout_constraintBottom_toTopOf="@+id/sliderTime"
+                        app:layout_constraintEnd_toEndOf="@+id/sliderTime"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="@+id/sliderTime"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.25"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+
+                    <com.google.android.material.slider.RangeSlider
+                        android:id="@+id/sliderTime"
+                        android:layout_width="373dp"
+                        android:layout_height="wrap_content"
+                        android:valueFrom="-12"
+                        android:valueTo="12"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.523"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.803" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </TableRow>
+            <View
+                android:id="@+id/view5"
+                android:layout_width="360dp"
+                android:layout_gravity="center"
+                android:layout_height="2dp"
+                android:background="@color/shadow" />
+
+            <TableRow
+                android:id="@+id/tableRowRatingTitle"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:onClick="openTableRowItems">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imageViewRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_dropdown"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.955"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView16"
+                        style="@style/titleRouteFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/rating"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </TableRow>
+            <TableRow
+                android:id="@+id/tableRowRating"
+                android:layout_width="match_parent"
+                android:layout_height="174dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/autoCompleteFromRating"
+                        style="@style/fieldFilterRoute"
+                        android:layout_width="174dp"
+                        android:layout_height="wrap_content"
+                        android:text="2"
+                        android:drawablePadding="10dp"
+                        android:drawableStart="@drawable/ic_star_full"
+                        android:focusable="false"
+                        app:layout_constraintBottom_toTopOf="@+id/sliderRating"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/sliderRating"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.25"/>
+
+
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/autoCompleteToRating"
+                        style="@style/fieldFilterRoute"
+                        android:layout_width="174dp"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:fontFamily="@font/tcm"
+                        android:text="4.7"
+
+                        android:drawablePadding="10dp"
+                        android:drawableStart="@drawable/ic_star_full"
+                        app:layout_constraintBottom_toTopOf="@+id/sliderRating"
+                        app:layout_constraintEnd_toEndOf="@+id/sliderRating"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="@+id/sliderRating"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.25"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+
+                    <com.google.android.material.slider.RangeSlider
+                        android:id="@+id/sliderRating"
+                        android:layout_width="373dp"
+                        android:layout_height="wrap_content"
+                        android:valueFrom="0"
+                        android:valueTo="5"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.523"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.803" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </TableRow>
+            <View
+                android:id="@+id/view6"
+                android:layout_width="360dp"
+                android:layout_gravity="center"
+                android:layout_height="2dp"
+                android:background="@color/shadow" />
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <TableRow
+        android:id="@+id/tableRow4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/trebuc"
+                android:onClick="applyFilters"
+                android:text="@string/apply"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.947"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/trebuc"
+                android:onClick="clearFilter"
+                android:text="@string/clear"
+                android:textColor="?colorPrimary"
+
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.069"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.513" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </TableRow>
+</androidx.constraintlayout.widget.ConstraintLayout>

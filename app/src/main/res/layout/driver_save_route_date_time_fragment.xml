@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".driver.fragments.Route.DriverSaveRouteDateTimeFragment">
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView2"
+            style="@style/TitleTextViewSaveRouteSteps"
+            android:layout_width="match_parent"
+            android:text="@string/choose_date_and_time"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TableRow
+            android:id="@+id/tableRowStartDateRoute"
+            android:layout_width="match_parent"
+            android:layout_height="215dp"
+            android:visibility="visible">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ConstraintLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputStartDateLayout"
+                    style="@style/TextInputEditTextLoginStyle"
+                    android:layout_width="175dp"
+                    android:hint="@string/start_date"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:focusable="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.08"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tableRow"
+                    app:layout_constraintVertical_bias="0.19"
+                    app:startIconDrawable="@drawable/ic_calendar">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/textInputStartDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusableInTouchMode="false" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputStartTimeLayout"
+                    style="@style/TextInputEditTextLoginStyle"
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+
+                    android:hint="@string/time"
+                    app:layout_constraintBottom_toBottomOf="@+id/textInputStartDateLayout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.92"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textInputStartDateLayout"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:startIconDrawable="@drawable/ic_clock_time">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/textInputStartTime"
+                        style="te"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusableInTouchMode="false"
+                        tools:ignore="TouchTargetSizeCheck" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TableRow
+                    android:id="@+id/tableRow"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="?colorPrimary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/ConstraintLayout2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/textViewSetYourFirstRouteDate"
+                            style="@style/TitleTextView"
+                            android:layout_width="wrap_content"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:text="@string/set_your_first_route_date"
+                            android:textColor="?colorOnPrimary"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.09"
+                            app:layout_constraintStart_toEndOf="@+id/imageViewFirstStep2"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/imageViewFirstStep2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/white"
+                            android:src="@drawable/ic_circle"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.03"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/textViewFirstStep2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="3"
+                            android:textColor="?colorPrimary"
+                            app:layout_constraintBottom_toBottomOf="@+id/imageViewFirstStep2"
+                            app:layout_constraintEnd_toEndOf="@+id/imageViewFirstStep2"
+                            app:layout_constraintStart_toStartOf="@+id/imageViewFirstStep2"
+                            app:layout_constraintTop_toTopOf="@+id/imageViewFirstStep2" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tableRowRepeat"
+                    android:layout_width="298dp"
+                    android:layout_height="37dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/textInputStartDateLayout"
+                    app:layout_constraintTop_toBottomOf="@+id/textInputStartDateLayout">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="3dp"
+                        android:layout_weight=".28">
+
+                        <ImageButton
+                            android:id="@+id/imageButtonRepeat"
+                            style="@style/SubmitButtons"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_repeat"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="?colorPrimary" />
+
+                        <androidx.appcompat.widget.AppCompatSpinner
+                            android:id="@+id/spinnerRepeat"
+                            style="@style/Widget.AppCompat.Spinner.Underlined"
+                            android:layout_width="196dp"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:divider="@android:color/transparent"
+                            android:dropDownWidth="wrap_content"
+                            android:entries="@array/repeat_options"
+                            android:textSize="14sp"
+                            android:theme="@style/Spinner"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toEndOf="@+id/imageButtonRepeat"
+                            app:layout_constraintTop_toTopOf="parent" />
+                        <!--                        <Spinner-->
+                        <!--                            android:id="@+id/spinnerRepeat"-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:layout_centerVertical="true"-->
+                        <!--                            android:textAlignment="textStart"-->
+                        <!--                            android:layout_marginEnd="16dp"-->
+                        <!--                            android:dropDownWidth="wrap_content"-->
+                        <!--                            android:dropDownHeight="wrap_content"-->
+                        <!--                            android:paddingStart="10dp"-->
+                        <!--                            android:paddingEnd="10dp"-->
+                        <!--                            android:spinnerMode="dropdown"-->
+                        <!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+                        <!--                            app:layout_constraintEnd_toEndOf="parent"-->
+                        <!--                            app:layout_constraintHorizontal_bias="1.0"-->
+                        <!--                            app:layout_constraintStart_toEndOf="@+id/imageButtonRepeat"-->
+                        <!--                            app:layout_constraintTop_toTopOf="parent" />-->
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </TableRow>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRowChooseDay"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:visibility="visible">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ToggleButton
+                    android:id="@+id/toggleButtonM"
+                    style="@style/toggleButton"
+                    android:checked="false"
+                    android:textOff="@string/m"
+                    android:textOn="@string/m"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/toggleButtonW"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/toggleButtonW"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ToggleButton
+                    android:id="@+id/toggleButtonT"
+                    style="@style/toggleButton"
+                    android:checked="false"
+                    android:textOff="@string/t"
+                    android:textOn="@string/t"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/toggleButtonW"
+                    app:layout_constraintStart_toEndOf="@+id/toggleButtonM"
+                    app:layout_constraintTop_toTopOf="@+id/toggleButtonW"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ToggleButton
+                    android:id="@+id/toggleButtonW"
+                    style="@style/toggleButton"
+                    android:checked="false"
+                    android:textOff="@string/w"
+                    android:textOn="@string/w"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tableRow2" />
+
+                <ToggleButton
+                    android:id="@+id/toggleButtonTH"
+                    style="@style/toggleButton"
+                    android:checked="false"
+                    android:textOff="@string/t"
+                    android:textOn="@string/t"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/toggleButtonF"
+                    app:layout_constraintStart_toEndOf="@+id/toggleButtonW"
+                    app:layout_constraintTop_toTopOf="@+id/toggleButtonW"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ToggleButton
+                    android:id="@+id/toggleButtonF"
+                    style="@style/toggleButton"
+                    android:checked="false"
+                    android:textOff="@string/f"
+                    android:textOn="@string/f"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/toggleButtonW"
+                    app:layout_constraintTop_toTopOf="@+id/toggleButtonW"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ToggleButton
+                    android:id="@+id/toggleButtonST"
+                    style="@style/toggleButton"
+                    android:checked="false"
+                    android:textOff="@string/s"
+                    android:textOn="@string/s"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/toggleButtonF"
+                    app:layout_constraintTop_toTopOf="@+id/toggleButtonF"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ToggleButton
+                    android:id="@+id/toggleButtonSN"
+                    style="@style/toggleButton"
+                    android:checked="false"
+                    android:textOff="@string/s"
+                    android:textOn="@string/s"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/toggleButtonM"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/toggleButtonW"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TableRow
+                    android:id="@+id/tableRow2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?colorPrimary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.100000024">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/ConstraintLayout3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/textViewDayTitle"
+                            style="@style/TitleTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:text="@string/choose_the_days"
+                            android:textColor="?colorOnPrimary"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </TableRow>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRowEndDate"
+            android:layout_width="match_parent"
+            android:layout_height="91dp"
+            android:visibility="visible">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ConstraintLayout4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputEndDateLayout"
+                    style="@style/TextInputEditTextLoginStyle"
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/end_date"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:startIconDrawable="@drawable/ic_calendar">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/textInputEndDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        app:errorTextAppearance="@color/red" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRowNextStepDateTime"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ConstraintLayout7"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/buttonNextStepDateTime"
+                    style="@style/SubmitButtons"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:elevation="2dp"
+                    android:stateListAnimator="@null"
+                    android:text="@string/next_step"
+                    android:translationZ="2dp"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.728" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </TableRow>
+    </LinearLayout>
+</FrameLayout>
