@@ -24,6 +24,12 @@ public class Rider extends User{
     }
 
     public void routeSearch(Context c, RouteFilter routeFilter, OnRouteSearchResponse onRouteSearchResponse){
+//        TODO: return max min of all route (price) and then enable the filters
+//        FirebaseDatabase.getInstance().getReference()
+//                .child(Route.class.getSimpleName())
+//                .orderByChild("costPerRider")
+//                .limitToFirst(1)
+//                .addListenerForSingleValueEvent(null);
         FirebaseDatabase.getInstance().getReference()
                 .child(Route.class.getSimpleName())
                 .addListenerForSingleValueEvent(new ValueEventListener() {

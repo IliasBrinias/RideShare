@@ -152,6 +152,11 @@
     <string name="car_plate">Car Plate</string>
     <string name="route_request_success">Your Request was sent successfully</string>
     <string name="you_are_about_to_send_a_ride_request_to_the_driver_are_you_sure">You are about to send a ride request to the driver are you sure?</string>
+    <string name="error_format_car_plate">Not acceptable Car Plate</string>
+    <string name="e_x">e.x.</string>
+    <string name="become_a_driver">Become a Driver</string>
+    <string name="car_type">Car Type</string>
+    <string name="save_car">Save Car</string>
     <string-array name="repeat_options">
         <item>@string/no_repeat</item>
         <item>@string/daily</item>

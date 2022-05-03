@@ -6,16 +6,24 @@ public class Car implements Serializable {
     private String year;
     private String make;
     private String model;
-    private String type;
+    private String carPlates;
 
     public Car() {
     }
 
-    public Car(String year, String make, String model, String type) {
+    public Car(String model,String make,  String year, String carPlates) {
         this.year = year;
         this.make = make;
         this.model = model;
-        this.type = type;
+        this.carPlates = carPlates;
+    }
+
+    public String getCarPlates() {
+        return carPlates;
+    }
+
+    public void setCarPlates(String carPlates) {
+        this.carPlates = carPlates;
     }
 
     public String getYear() {
@@ -42,11 +50,4 @@ public class Car implements Serializable {
         this.model = model;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }

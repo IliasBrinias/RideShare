@@ -23,7 +23,7 @@
             android:checked="true"
             android:title="@string/your_routes"/>
         <item
-            android:id="@+id/driver"
+            android:id="@+id/becameDriver"
             android:fontFamily="@font/trebuc"
             android:icon="@drawable/ic_driver"
             android:checked="true"

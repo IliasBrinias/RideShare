@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 public class User {
+    public static final String REQ_IS_DRIVER_TAG="isDriver";
+
     private String userId;
     private String email;
     private String fullName;
@@ -166,7 +168,7 @@ public class User {
         databaseReference.child(u.userId).setValue(u).addOnCompleteListener(onCompleteUserSave::onComplete);
     }
     public static User loadUserInstance(SharedPreferences preferences){
-        String isDriver = preferences.getString("isDriver",null);
+        String isDriver = preferences.getString(REQ_IS_DRIVER_TAG,null);
         if (isDriver == null) return null;
         Gson gson = new Gson();
         String json = preferences.getString(User.class.getSimpleName(), null);

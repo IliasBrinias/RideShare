@@ -130,7 +130,7 @@ public class LoginFragment extends Fragment {
                                 return;
                             }
                             PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-                                    .putString("isDriver",u.getIsDriver().toString()).apply();
+                                    .putString(User.REQ_IS_DRIVER_TAG,u.getIsDriver().toString()).apply();
                             Gson gson = new Gson();
                             String json = gson.toJson(u);
                             PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()

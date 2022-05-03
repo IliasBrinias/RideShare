@@ -29,7 +29,7 @@ import java.util.Map;
 public class ApiCalls {
     private static String PLACES_API_KEY = "AIzaSyCO-ylUowiKV6IECv1L6eVw9Bl8CBzhaFk";
 
-    public static void getCar(Context c, int limit, int page, Car searchedCar, CarApiResponse carApiResponse){
+    public static void getCar(Context c, Car searchedCar, CarApiResponse carApiResponse){
         RequestQueue queue = Volley.newRequestQueue(c);
         String url = "https://car-data.p.rapidapi.com/cars";
         String CAR_API_KEY = "d8455cfac5mshb2e12524fc60827p13bf2fjsna477236d177e";
@@ -41,10 +41,11 @@ public class ApiCalls {
                             List<Car> suggestedCars = new ArrayList<>();
                             for (int i =0; i<response.length(); i++){
                                 JSONObject carResponse = response.getJSONObject(i);
-                                Car c = new Car(carResponse.getString("year"),
-                                                carResponse.getString("make"),
-                                                carResponse.getString("model"),
-                                                carResponse.getString("type"));
+                                Car c = new Car(
+                                        carResponse.getString("model"),
+                                        carResponse.getString("make"),
+                                        carResponse.getString("year"),
+                                        null);
                                 suggestedCars.add(c);
                             }
                             carApiResponse.returnRoutes(suggestedCars);
@@ -64,12 +65,9 @@ public class ApiCalls {
             @Override
             protected Map<String, String> getParams(){
                 Map<String,String> params = new HashMap<>();
-                params.put("limit",String.valueOf(limit));
-                params.put("page",String.valueOf(page));
                 params.put("year",searchedCar.getYear());
                 params.put("make",searchedCar.getMake());
                 params.put("model",searchedCar.getModel());
-                params.put("type",searchedCar.getType());
                 return params;
             }
             @Override

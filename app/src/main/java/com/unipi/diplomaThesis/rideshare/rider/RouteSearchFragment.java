@@ -92,6 +92,14 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
 //        GONE some tableRows
         tableRowFinishPoint.setVisibility(View.GONE);
         tableRowDate.setVisibility(View.GONE);
+        autoCompleteStartPoint.setText("");
+        autoCompleteFinishPoint.setText("");
+        autoCompleteDate.setText("");
+        startLocation = null;
+        finishLocation = null;
+        routeDateUnix = 0;
+        listViewSearchedLocation.setVisibility(View.GONE);
+        listViewLastLocations.setVisibility(View.VISIBLE);
 //        Prepare rest Elements
         autoCompleteDate.setOnClickListener(this::setDateTime);
         autoCompleteStartPoint.requestFocus();
@@ -182,9 +190,7 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
                 listViewSearchedLocation.setVisibility(View.GONE);
                 return;
             }
-        }catch (Exception ignored){
-            ignored.printStackTrace();
-        }
+        }catch (Exception ignored){}
         ApiCalls.getLocationPlaces(getActivity(), editable.toString(), new OnPlacesApiResponse() {
             @Override
             public void results(JSONArray locations) {
@@ -271,5 +277,20 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
         dialogView.findViewById(R.id.date_time_cancel).setOnClickListener(view1 -> alertDialog.dismiss());
         alertDialog.setCancelable(true);
         alertDialog.show();
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        autoCompleteStartPoint.setText("");
+        autoCompleteFinishPoint.setText("");
+        autoCompleteDate.setText("");
+        startLocation = null;
+        finishLocation = null;
+        routeDateUnix = 0;
+        listViewSearchedLocation.setVisibility(View.GONE);
+        listViewLastLocations.setVisibility(View.VISIBLE);
+        tableRowFinishPoint.setVisibility(View.GONE);
+        tableRowDate.setVisibility(View.GONE);
+        autoCompleteStartPoint.requestFocus();
     }
 }

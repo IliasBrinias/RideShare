@@ -44,9 +44,21 @@
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/drawable/background.xml" value="0.4085" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/drawable/background_route_list_item.xml" value="0.4085" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/drawable/background_single_line.xml" value="0.4085" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/drawable/ic_image_upload.xml" value="0.2555" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/drawable/ic_route_search_result_stages.xml" value="0.289" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/drawable/ic_smily_blue.xml" value="0.1675" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/activity_car.xml" value="0.40217391304347827" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/activity_rider_route.xml" value="0.29393115942028986" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/activity_route.xml" value="0.2898550724637681" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/activity_route_filter.xml" value="0.409375" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/fragment_car.xml" value="0.3227561196736174" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/fragment_register.xml" value="0.1" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/fragment_route_search.xml" value="0.29393115942028986" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/request_route_alert_dialog.xml" value="0.264" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/route_bottom_sheet.xml" value="0.409375" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/user_activity.xml" value="0.2898550724637681" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/menu/navigation_menu.xml" value="0.409375" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/menu/toolbar_menu.xml" value="0.409375" />
         <entry key="..\:/Users/brinias/Desktop/RideShare/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2235" />
         <entry key="..\:/Users/brinias/Desktop/RideShare/app/src/main/res/drawable/background.xml" value="0.264" />
         <entry key="..\:/Users/brinias/Desktop/RideShare/app/src/main/res/drawable/background_route_list_item.xml" value="0.4085" />

@@ -72,10 +72,6 @@ public class DriverActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
-                    case R.id.requests:
-                        Toast.makeText(DriverActivity.this, "Requests", Toast.LENGTH_SHORT).show();
-//                        TODO: make requests dropDown
-                        break;
                     case R.id.messages:
                         Toast.makeText(DriverActivity.this, "Messages", Toast.LENGTH_SHORT).show();
 //                        TODO: open Apps Messenger

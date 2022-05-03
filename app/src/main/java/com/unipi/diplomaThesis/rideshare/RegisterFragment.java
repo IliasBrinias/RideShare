@@ -36,7 +36,7 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  * create an instance of this fragment.
  */
-public class RegisterFragment extends Fragment {
+public class RegisterFragment extends Fragment implements TextWatcher {
     EditText email, password, passwordVerify, name;
     TextInputLayout passwordLayout, passwordVerifyLayout;
     TextView title;
@@ -73,44 +73,9 @@ public class RegisterFragment extends Fragment {
         name = v.findViewById(R.id.textInputPersonalDataFirstName);
         register = v.findViewById(R.id.buttonRegister);
         register.setOnClickListener(this::register);
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                //based on hashed editTexts texts i can specify which editText was called
-                if (charSequence.hashCode() == password.getText().hashCode()){
-                    password.setError(checkPasswordFormat(charSequence.toString()));
-                    if (password.getError() == null && password.getText() != null){
-                        passwordLayout.setEndIconVisible(true);
-                        passwordLayout.setBoxStrokeColor(Color.GREEN);
-                        passwordLayout.setHintTextColor(ColorStateList.valueOf(Color.GREEN));
-                        passwordLayout.setEndIconTintList(ColorStateList.valueOf(Color.GREEN));
-                        passwordLayout.setStartIconTintList(ColorStateList.valueOf(Color.GREEN));
-                    }else{
-                        passwordLayout.setEndIconVisible(false);
-                        passwordLayout.setBoxStrokeColor(Color.RED);
-                        passwordLayout.setHintTextColor(ColorStateList.valueOf(Color.RED));
-                        passwordLayout.setStartIconTintList(ColorStateList.valueOf(Color.RED));
-                    }
-                }else if (charSequence.hashCode() == passwordVerify.getText().hashCode()){
-                    if (passwordVerify.getText() == null) return;
-                    if (!charSequence.toString().equals(password.getText().toString())){
-                        passwordVerify.setError(getString(R.string.password_match_error));
-                    }else {
-                        passwordVerify.setError(null);
-                    }
-                    passwordVerifyLayout.setEndIconVisible(passwordVerify.getError() == null && passwordVerify.getText() != null);
-                }
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        };
         mAuth = FirebaseAuth.getInstance();
-        password.addTextChangedListener(textWatcher);
-        passwordVerify.addTextChangedListener(textWatcher);
+        password.addTextChangedListener(this);
+        passwordVerify.addTextChangedListener(this);
         return v;
     }
     private String checkPasswordFormat(String password){
@@ -172,4 +137,36 @@ public class RegisterFragment extends Fragment {
                 });
     }
 
-}
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    }
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        //based on hashed editTexts texts i can specify which editText was called
+        if (charSequence.hashCode() == password.getText().hashCode()){
+            password.setError(checkPasswordFormat(charSequence.toString()));
+            if (password.getError() == null && password.getText() != null){
+                passwordLayout.setEndIconVisible(true);
+                passwordLayout.setBoxStrokeColor(Color.GREEN);
+                passwordLayout.setHintTextColor(ColorStateList.valueOf(Color.GREEN));
+                passwordLayout.setEndIconTintList(ColorStateList.valueOf(Color.GREEN));
+                passwordLayout.setStartIconTintList(ColorStateList.valueOf(Color.GREEN));
+            }else{
+                passwordLayout.setEndIconVisible(false);
+                passwordLayout.setBoxStrokeColor(Color.RED);
+                passwordLayout.setHintTextColor(ColorStateList.valueOf(Color.RED));
+                passwordLayout.setStartIconTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }else if (charSequence.hashCode() == passwordVerify.getText().hashCode()){
+            if (passwordVerify.getText() == null) return;
+            if (!charSequence.toString().equals(password.getText().toString())){
+                passwordVerify.setError(getString(R.string.password_match_error));
+            }else {
+                passwordVerify.setError(null);
+            }
+            passwordVerifyLayout.setEndIconVisible(passwordVerify.getError() == null && passwordVerify.getText() != null);
+        }
+    }
+    @Override
+    public void afterTextChanged(Editable editable) {
+    }}

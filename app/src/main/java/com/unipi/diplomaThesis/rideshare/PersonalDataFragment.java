@@ -1,6 +1,7 @@
 package com.unipi.diplomaThesis.rideshare;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -48,7 +49,12 @@ public class PersonalDataFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        r = (Rider) User.loadUserInstance(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        try {
+            r = (Rider) User.loadUserInstance(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        }catch (ClassCastException classCastException){
+            classCastException.fillInStackTrace();
+            getActivity().finish();
+        }
     }
 
     @Override
@@ -92,12 +98,23 @@ public class PersonalDataFragment extends Fragment {
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void loadImageFromPhone(int id){
+        int currentReq = 0;
+        switch (id){
+            case R.id.imageViewPersonalDataBackground:
+                currentReq = LOAD_BACKGROUND_IMAGE_CODE;
+                break;
+            case R.id.circleImageViewPersonalDateUserImage:
+                currentReq = LOAD_IMAGE_CODE;
+                break;
+        }
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                ActivityCompat.checkSelfPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICK_FROM_GALLERY);
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},currentReq);
         }else {
             Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             i.setType("image/*");
@@ -108,21 +125,26 @@ public class PersonalDataFragment extends Fragment {
                 case R.id.circleImageViewPersonalDateUserImage:
                     startActivityForResult(i, LOAD_IMAGE_CODE);
                     break;
-
-
             }
         }
-
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PICK_FROM_GALLERY) {
+        if (requestCode == LOAD_IMAGE_CODE || requestCode == LOAD_BACKGROUND_IMAGE_CODE) {
             // If request is cancelled, the result arrays are empty.
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length==0) return;
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 i.setType("image/*");
-                startActivityForResult(i, LOAD_IMAGE_CODE);
+                switch (requestCode){
+                    case LOAD_BACKGROUND_IMAGE_CODE:
+                        startActivityForResult(i, LOAD_BACKGROUND_IMAGE_CODE);
+                        break;
+                    case LOAD_IMAGE_CODE:
+                        startActivityForResult(i, LOAD_IMAGE_CODE);
+                        break;
+                }
             }
         }
     }
@@ -130,6 +152,7 @@ public class PersonalDataFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) return;
         if (requestCode == LOAD_IMAGE_CODE || requestCode == LOAD_BACKGROUND_IMAGE_CODE) {
             if (data.getData() != null && resultCode == Activity.RESULT_OK) {
                 //Get image

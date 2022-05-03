@@ -31,6 +31,7 @@ public class UserActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private DriverRouteFragment driverRouteFragment;
     private DriverSaveRouteFragment driverSaveRouteFragment;
+    private CarFragment carFragment;
     private RouteSearchFragment routeSearchFragment;
     private PersonalDataFragment personalDataFragment;
     private User u;
@@ -62,10 +63,6 @@ public class UserActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
-                    case R.id.requests:
-                        Toast.makeText(UserActivity.this, "Requests", Toast.LENGTH_SHORT).show();
-//                        TODO: make requests dropDown
-                        break;
                     case R.id.messages:
                         Toast.makeText(UserActivity.this, "Messages", Toast.LENGTH_SHORT).show();
 //                        TODO: open Apps Messenger
@@ -92,6 +89,10 @@ public class UserActivity extends AppCompatActivity {
                     case R.id.yourRoutes:
 //                        getSupportFragmentManager().beginTransaction().replace(R.id.driverFragment,driverRouteFragment).commit();
                         break;
+                    case R.id.becameDriver:
+                        carFragment = new CarFragment();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,carFragment).commit();
+                        break;
                     case R.id.logOut:
                         UserActivity.this.u.logOut(UserActivity.this);
                         Intent i = new Intent();
@@ -116,5 +117,4 @@ public class UserActivity extends AppCompatActivity {
             }
         });
     }
-
 }

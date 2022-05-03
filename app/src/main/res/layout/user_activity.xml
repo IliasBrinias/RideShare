@@ -49,7 +49,6 @@
         app:itemTextColor="?colorPrimaryVariant"
         app:itemIconSize = "25dp"
         app:itemIconPadding="20dp"
-        app:drawerLayoutCornerSize="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
