@@ -25,7 +25,7 @@
                 <TableRow
                     android:id="@+id/tableRow12"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
+                    android:layout_height="200dp"
                     android:background="?colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -52,7 +52,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintVertical_bias="0.100000024" />
+                            app:layout_constraintVertical_bias="0.13999999" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </TableRow>
@@ -74,11 +74,11 @@
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:src="@drawable/skoda_octavia"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@+id/view8"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/tableRow12"
-                    app:layout_constraintVertical_bias="0.110000014" />
+                    app:layout_constraintVertical_bias="1.0" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputCarManufacturerLayout"
@@ -112,7 +112,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tableRow3"
-                    app:layout_constraintVertical_bias="0.13999999">
+                    app:layout_constraintVertical_bias="0.07999998">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextCarModel"
@@ -133,7 +133,7 @@
 
                     android:focusableInTouchMode="true"
                     android:hint="@string/car_year"
-                    app:layout_constraintBottom_toTopOf="@+id/buttonSaveCar"
+                    app:layout_constraintBottom_toTopOf="@+id/view10"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textInputCarModelLayout">
@@ -156,7 +156,7 @@
                     android:hint="@string/car_plate"
                     app:endIconDrawable="@drawable/ic_checked"
                     app:endIconMode="custom"
-                    app:layout_constraintBottom_toTopOf="@+id/buttonSaveCar"
+                    app:layout_constraintBottom_toTopOf="@+id/view10"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textInputCarYearLayout">
@@ -184,7 +184,28 @@
                     app:layout_constraintHorizontal_bias="0.449"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tableRow3"
-                    app:layout_constraintVertical_bias="0.897" />
+                    app:layout_constraintVertical_bias="0.97" />
+
+                <View
+                    android:id="@+id/view8"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tableRow3"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <View
+                    android:id="@+id/view10"
+                    android:layout_width="match_parent"
+                    android:layout_height="15dp"
+                    app:layout_constraintBottom_toTopOf="@+id/buttonSaveCar"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/circleImageViewCar"
+                    app:layout_constraintVertical_bias="0.65" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </TableRow>
