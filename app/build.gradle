@@ -31,8 +31,7 @@ android {
     }
 }
 dependencies {
-    implementation 'com.squareup:android-times-square:1.6.5@aar'
-    implementation 'com.github.prolificinteractive:material-calendarview:1.6.0'
+    implementation "com.github.prolificinteractive:material-calendarview:2.0.1"
     implementation 'com.facebook.android:facebook-login:latest.release'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'

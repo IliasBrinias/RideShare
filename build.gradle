@@ -8,6 +8,8 @@ buildscript {
     }
     dependencies {
         // Add this line
+        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
         classpath 'com.google.gms:google-services:4.3.10'
     }
 }

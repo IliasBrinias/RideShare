@@ -11,12 +11,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:headerBackground="@drawable/date_time_header_background"
         android:datePickerMode="calendar"/>
-
     <TimePicker
         android:id="@+id/time_picker"
         android:layout_gravity="center"
-
+        android:visibility="gone"
+        android:headerBackground="@drawable/date_time_header_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -31,16 +32,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Cancel" />
+            android:text="@string/cancel" />
         <Button
             android:id="@+id/date_time_set"
             style="@style/AlertDialogButtonStyle"
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Set"
+            android:text="@string/set"
             />
-
     </LinearLayout>
 
 </LinearLayout>

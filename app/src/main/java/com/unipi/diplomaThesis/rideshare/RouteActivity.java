@@ -3,7 +3,6 @@ package com.unipi.diplomaThesis.rideshare;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,18 +11,14 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -50,6 +45,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.Request;
@@ -63,7 +60,10 @@ import org.gavaghan.geodesy.GlobalCoordinates;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -294,8 +294,10 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         ratingAverage = v.findViewById(R.id.textViewRatingAverage);
         ratingCount = v.findViewById(R.id.textViewRatingsCount);
         ratingBar = v.findViewById(R.id.ratingBarDriver);
+        tableRowShowRepeat.setOnClickListener(this::showRepeat);
         contactDriver = v.findViewById(R.id.buttonContactDriver);
         contactDriver.setOnClickListener(this::routeRequest);
+        loadDriverData();
     }
     private void loadDriverData(){
         User.loadUser(driverId, new OnUserLoadComplete() {
@@ -360,5 +362,134 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             return calendar.getTimeInMillis();
         }
         return calendar.getTimeInMillis();
+    }
+    private void showRepeat(View view) {
+        //load the custom date Picker to the alertDialog
+        final View dialogView = View.inflate(this, R.layout.calendar_for_marked_days, null);
+        AlertDialog alertDialog = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog).setView(dialogView).create();
+        alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+        alertDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.alert_dialog_background));
+        alertDialog.setCancelable(true);
+        MaterialCalendarView materialCalendarView = dialogView.findViewById(R.id.calendarView);
+        materialCalendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_MULTIPLE);
+
+        Date date = new Date();
+        date.setTime(r.getRouteDateTime().getStartDateUnix());
+        Calendar c = new GregorianCalendar();
+        c.setTime(date);
+        switch (r.getRouteDateTime().getRepeatness()) {
+            case 0: //one time
+                materialCalendarView.setDateSelected(
+                        CalendarDay.from(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)), true);
+                break;
+            case 1: // daily
+                dailyRepeat(materialCalendarView, c);
+            case 2: //weekly
+                weeklyRepeat(materialCalendarView, c);
+            case 3: // monthly
+                monthlyRepeat(materialCalendarView, c);
+                int dayOfMonth;
+            case 4: //yearly
+                yearlyRepeat(materialCalendarView, c);
+            case 5: //custom
+                customRepeat(materialCalendarView, c);
+        }
+        alertDialog.show();
+        alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+    }
+
+    private void customRepeat(MaterialCalendarView materialCalendarView, Calendar c) {
+//      create a single calendar for each selected day
+        List<Calendar> calendars = new ArrayList<>();
+        List<String> selectedDays = new ArrayList<>(r.getRouteDateTime().getSelectedDays().values());
+        Collections.sort(selectedDays);
+        for (String days: selectedDays){
+            Calendar currentCalendar = new GregorianCalendar();
+            currentCalendar.setTimeInMillis(c.getTimeInMillis());
+            currentCalendar.set(Calendar.DAY_OF_WEEK, Integer.valueOf(days));
+            calendars.add(currentCalendar);
+        }
+        while (r.getRouteDateTime().getEndDateUnix() > calendars.get(0).getTimeInMillis()) {
+            for (Calendar currentCalendar:calendars) {
+                weeklyRepeat(materialCalendarView,currentCalendar);
+            }
+        }
+    }
+
+    private void yearlyRepeat(MaterialCalendarView materialCalendarView, Calendar c) {
+        int dayOfMonth;
+//      TODO: remove Yearly
+        dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+        while (r.getRouteDateTime().getEndDateUnix() > c.getTimeInMillis()) {
+            materialCalendarView.setDateSelected(
+                    CalendarDay.from(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)), true);
+            c.add(Calendar.YEAR,1);
+            if (YearMonth.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1).lengthOfMonth() <= c.get(Calendar.DAY_OF_MONTH)){
+                c.set(Calendar.DAY_OF_MONTH,YearMonth.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1).lengthOfMonth());
+            }else {
+                c.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+            }
+        }
+    }
+
+    private void monthlyRepeat(MaterialCalendarView materialCalendarView, Calendar c) {
+        int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+        while (r.getRouteDateTime().getEndDateUnix() > c.getTimeInMillis()) {
+            materialCalendarView.setDateSelected(
+                    CalendarDay.from(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)), true);
+
+//                    change year if the month is december
+            if (c.get(Calendar.MONTH) == Calendar.DECEMBER) {
+                c.add(Calendar.YEAR, 1);
+                c.set(Calendar.MONTH, Calendar.JANUARY);
+            } else {
+                c.add(Calendar.MONTH,1);
+//                  check if the selected day_of_month is bigger than the last day of month
+                if (YearMonth.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1).lengthOfMonth() <= c.get(Calendar.DAY_OF_MONTH)) {
+//                  check the last day of the month
+                    c.set(Calendar.DAY_OF_MONTH, YearMonth.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1).lengthOfMonth());
+                }else {
+                    c.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                }
+            }
+        }
+    }
+
+    private void weeklyRepeat(MaterialCalendarView materialCalendarView, Calendar c) {
+        while (r.getRouteDateTime().getEndDateUnix() > c.getTimeInMillis()) {
+            materialCalendarView.setDateSelected(
+                    CalendarDay.from(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)), true);
+            if (YearMonth.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1).lengthOfMonth() <= (c.get(Calendar.DAY_OF_MONTH) - 1) + 7) {
+                c.set(Calendar.DAY_OF_MONTH, c.get(Calendar.DAY_OF_MONTH)+7 - YearMonth.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1).lengthOfMonth());
+                if (c.get(Calendar.MONTH) == Calendar.DECEMBER) {
+                    c.add(Calendar.YEAR, 1);
+                    c.set(Calendar.MONTH, Calendar.JANUARY);
+                } else {
+                    c.add(Calendar.MONTH, 1);
+                }
+            } else {
+                c.add(Calendar.DAY_OF_MONTH, 7);
+            }
+        }
+    }
+
+    private void dailyRepeat(MaterialCalendarView materialCalendarView, Calendar c) {
+        while (r.getRouteDateTime().getEndDateUnix() > c.getTimeInMillis()) {
+            materialCalendarView.setDateSelected(
+                    CalendarDay.from(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)), true);
+            if (YearMonth.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1).lengthOfMonth() == c.get(Calendar.DAY_OF_MONTH) - 1) {
+
+                if (c.get(Calendar.MONTH) == Calendar.DECEMBER) {
+                    c.add(Calendar.YEAR, 1);
+                    c.set(Calendar.MONTH, Calendar.JANUARY);
+
+                } else {
+                    c.add(Calendar.MONTH, 1);
+                }
+                c.set(Calendar.DAY_OF_MONTH, 1);
+            } else {
+                c.add(Calendar.DAY_OF_MONTH, 1);
+            }
+        }
     }
 }

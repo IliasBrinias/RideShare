@@ -19,6 +19,7 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+
 //        check if the user is already sign in
         if (FirebaseAuth.getInstance().getCurrentUser()!=null){
             if (User.loadUserInstance(PreferenceManager.getDefaultSharedPreferences(this))!=null){
@@ -58,5 +59,4 @@ public class StartActivity extends AppCompatActivity {
                 .replace(R.id.fragmentLoginRegister,loginFragment)
                 .commit();
     }
-
 }

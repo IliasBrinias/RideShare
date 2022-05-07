@@ -227,7 +227,7 @@
                         android:layout_width="174dp"
                         android:layout_height="wrap_content"
                         android:focusable="false"
-                        android:text="5.0$"
+                        android:text="0.0$"
                         app:layout_constraintBottom_toTopOf="@+id/sliderPrice"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -316,19 +316,20 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/autoCompleteFromTime"
                         style="@style/fieldFilterRoute"
                         android:layout_width="174dp"
                         android:layout_height="wrap_content"
-                        android:text="5 hours earlier"
                         android:focusable="false"
+                        android:text="12.0 hours earlier"
                         app:layout_constraintBottom_toTopOf="@+id/sliderTime"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="@+id/sliderTime"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.25"/>
+                        app:layout_constraintVertical_bias="0.25" />
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/autoCompleteToTime"
@@ -337,7 +338,7 @@
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:fontFamily="@font/tcm"
-                        android:text="2 hours after"
+                        android:text="12.0 hours after"
                         app:layout_constraintBottom_toTopOf="@+id/sliderTime"
                         app:layout_constraintEnd_toEndOf="@+id/sliderTime"
                         app:layout_constraintHorizontal_bias="1.0"
@@ -411,22 +412,22 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/autoCompleteFromRating"
                         style="@style/fieldFilterRoute"
                         android:layout_width="174dp"
                         android:layout_height="wrap_content"
-                        android:text="2"
-                        android:drawablePadding="10dp"
                         android:drawableStart="@drawable/ic_star_full"
+                        android:drawablePadding="10dp"
                         android:focusable="false"
+                        android:text="0.0"
                         app:layout_constraintBottom_toTopOf="@+id/sliderRating"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="@+id/sliderRating"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.25"/>
-
+                        app:layout_constraintVertical_bias="0.25" />
 
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -434,12 +435,12 @@
                         style="@style/fieldFilterRoute"
                         android:layout_width="174dp"
                         android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:fontFamily="@font/tcm"
-                        android:text="4.7"
-
-                        android:drawablePadding="10dp"
                         android:drawableStart="@drawable/ic_star_full"
+                        android:drawablePadding="10dp"
+                        android:focusable="false"
+
+                        android:fontFamily="@font/tcm"
+                        android:text="5.0"
                         app:layout_constraintBottom_toTopOf="@+id/sliderRating"
                         app:layout_constraintEnd_toEndOf="@+id/sliderRating"
                         app:layout_constraintHorizontal_bias="1.0"
@@ -465,12 +466,6 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </TableRow>
-            <View
-                android:id="@+id/view6"
-                android:layout_width="360dp"
-                android:layout_gravity="center"
-                android:layout_height="2dp"
-                android:background="@color/shadow" />
 
 
         </LinearLayout>

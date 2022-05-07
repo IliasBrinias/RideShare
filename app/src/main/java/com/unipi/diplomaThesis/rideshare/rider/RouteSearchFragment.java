@@ -10,6 +10,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -251,7 +252,9 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
     public void setDateTime(View view){
         //load the custom date Picker to the alertDialog
         final View dialogView = View.inflate(getActivity(), R.layout.date_time_picker, null);
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(dialogView).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity(),android.R.style.Theme_Material_Dialog).setView(dialogView).create();
+        alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+        alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.alert_dialog_background));
         TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.time_picker);
         DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
         timePicker.setVisibility(View.GONE);

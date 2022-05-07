@@ -157,6 +157,7 @@
     <string name="become_a_driver">Become a Driver</string>
     <string name="car_type">Car Type</string>
     <string name="save_car">Save Car</string>
+    <string name="set">Set</string>
     <string-array name="repeat_options">
         <item>@string/no_repeat</item>
         <item>@string/daily</item>
