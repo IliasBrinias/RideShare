@@ -5,13 +5,14 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.unipi.diplomaThesis.rideshare.Interface.OnDataReturn;
 import com.unipi.diplomaThesis.rideshare.Interface.OnRouteSearchResponse;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Rider extends User{
@@ -22,14 +23,49 @@ public class Rider extends User{
     public Rider(String userId, String email, String name, String description, Map<String,String> lastRoutes) {
         super(userId, email, name, description, lastRoutes);
     }
+    public void findMinMaxPrice(OnDataReturn onDataReturn){
+        FirebaseDatabase.getInstance().getReference()
+                .child(Route.class.getSimpleName())
+                .orderByChild("costPerRider")
+                .limitToLast(1)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Map<String,Object> returnData = new HashMap<>();
+                        for (DataSnapshot route:snapshot.getChildren()) {
+                            Route r = route.getValue(Route.class);
+                            returnData.put("max",Float.parseFloat(r.getCostPerRider()));
+                        }
+                        onDataReturn.returnData(returnData);
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+        FirebaseDatabase.getInstance().getReference()
+                .child(Route.class.getSimpleName())
+                .orderByChild("costPerRider")
+                .limitToFirst(1)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Map<String,Object> returnData = new HashMap<>();
+                        for (DataSnapshot route:snapshot.getChildren()) {
+                            Route r = route.getValue(Route.class);
+                            returnData.put("min",Float.parseFloat(r.getCostPerRider()));
+                        }
+                        onDataReturn.returnData(returnData);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
     public void routeSearch(Context c, RouteFilter routeFilter, OnRouteSearchResponse onRouteSearchResponse){
-//        TODO: return max min of all route (price) and then enable the filters
-//        FirebaseDatabase.getInstance().getReference()
-//                .child(Route.class.getSimpleName())
-//                .orderByChild("costPerRider")
-//                .limitToFirst(1)
-//                .addListenerForSingleValueEvent(null);
         FirebaseDatabase.getInstance().getReference()
                 .child(Route.class.getSimpleName())
                 .addListenerForSingleValueEvent(new ValueEventListener() {

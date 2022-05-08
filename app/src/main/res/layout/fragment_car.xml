@@ -79,98 +79,94 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/tableRow12"
                     app:layout_constraintVertical_bias="1.0" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputCarManufacturerLayout"
-                    style="@style/TextInputEditTextLoginStyle"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:hint="@string/car_manufacturer"
-
-                    app:layout_constraintBottom_toTopOf="@+id/textInputCarYearLayout"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:gravity="center|top"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toTopOf="@+id/buttonSaveCar"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textInputCarModelLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextCarManufacturer"
+                    app:layout_constraintTop_toBottomOf="@+id/circleImageViewCar"
+                    app:layout_constraintVertical_bias="0.060000002">
+                    <View
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="30dp"/>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputCarManufacturerLayout"
+                        style="@style/TextInputEditTextLoginStyle"
+                        android:focusable="true"
                         android:focusableInTouchMode="true"
-                        android:fontFamily="@font/trebuc"
-                        android:maxLines="1"
-                        android:nextFocusDown="@id/editTextCarYear"
-                        android:singleLine="true"
-                        tools:ignore="TouchTargetSizeCheck" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:hint="@string/car_manufacturer">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputCarModelLayout"
-                    style="@style/TextInputEditTextLoginStyle"
-                    android:hint="@string/car_model"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tableRow3"
-                    app:layout_constraintVertical_bias="0.07999998">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextCarManufacturer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:focusableInTouchMode="true"
+                            android:fontFamily="@font/trebuc"
+                            android:maxLines="1"
+                            android:nextFocusDown="@id/editTextCarYear"
+                            android:singleLine="true"
+                            tools:ignore="TouchTargetSizeCheck" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextCarModel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputCarModelLayout"
+                        style="@style/TextInputEditTextLoginStyle"
+                        android:hint="@string/car_model">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextCarModel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:focusableInTouchMode="true"
+                            android:fontFamily="@font/trebuc"
+                            android:maxLines="1"
+                            android:nextFocusDown="@id/editTextCarManufacturer"
+                            android:singleLine="true"
+                            tools:ignore="TouchTargetSizeCheck" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputCarYearLayout"
+                        style="@style/TextInputEditTextLoginStyle"
+                        android:focusable="true"
+
                         android:focusableInTouchMode="true"
-                        android:fontFamily="@font/trebuc"
-                        android:maxLines="1"
-                        android:nextFocusDown="@id/editTextCarManufacturer"
-                        android:singleLine="true"
-                        tools:ignore="TouchTargetSizeCheck" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:hint="@string/car_year">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputCarYearLayout"
-                    style="@style/TextInputEditTextLoginStyle"
-                    android:focusable="true"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextCarYear"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:focusableInTouchMode="true"
+                            android:fontFamily="@font/trebuc"
+                            android:maxLines="1"
+                            android:nextFocusDown="@id/editTextCarPlate"
+                            android:singleLine="true"
+                            tools:ignore="TouchTargetSizeCheck" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    android:focusableInTouchMode="true"
-                    android:hint="@string/car_year"
-                    app:layout_constraintBottom_toTopOf="@+id/view10"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textInputCarModelLayout">
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputCarPlateLayout"
+                        style="@style/TextInputEditTextLoginStyle"
+                        android:hint="@string/car_plate"
+                        app:endIconDrawable="@drawable/ic_checked"
+                        app:endIconMode="custom">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextCarYear"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusableInTouchMode="true"
-                        android:fontFamily="@font/trebuc"
-                        android:maxLines="1"
-                        android:nextFocusDown="@id/editTextCarPlate"
-                        android:singleLine="true"
-                        tools:ignore="TouchTargetSizeCheck" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextCarPlate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:focusableInTouchMode="true"
+                            android:fontFamily="@font/trebuc"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            tools:ignore="TouchTargetSizeCheck" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputCarPlateLayout"
-                    style="@style/TextInputEditTextLoginStyle"
-                    android:hint="@string/car_plate"
-                    app:endIconDrawable="@drawable/ic_checked"
-                    app:endIconMode="custom"
-                    app:layout_constraintBottom_toTopOf="@+id/view10"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textInputCarYearLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextCarPlate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusableInTouchMode="true"
-                        android:fontFamily="@font/trebuc"
-                        android:maxLines="1"
-                        android:singleLine="true"
-                        tools:ignore="TouchTargetSizeCheck" />
-                </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
 
                 <Button
                     android:id="@+id/buttonSaveCar"
@@ -197,15 +193,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/tableRow3"
                     app:layout_constraintVertical_bias="0.0" />
 
-                <View
-                    android:id="@+id/view10"
-                    android:layout_width="match_parent"
-                    android:layout_height="15dp"
-                    app:layout_constraintBottom_toTopOf="@+id/buttonSaveCar"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/circleImageViewCar"
-                    app:layout_constraintVertical_bias="0.65" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </TableRow>

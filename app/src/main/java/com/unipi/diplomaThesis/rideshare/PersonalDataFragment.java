@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputLayout;
-import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 
 import java.text.SimpleDateFormat;
@@ -34,7 +32,6 @@ import java.util.Locale;
 public class PersonalDataFragment extends Fragment {
     private final int LOAD_IMAGE_CODE = 13;
     private final int LOAD_BACKGROUND_IMAGE_CODE = 76;
-    private static final int PICK_FROM_GALLERY = 43;
 
     ImageView profile, background;
     EditText name, birthDate, email;
@@ -45,12 +42,12 @@ public class PersonalDataFragment extends Fragment {
     public PersonalDataFragment() {
         // Required empty public constructor
     }
-    Rider r;
+    User u;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            r = (Rider) User.loadUserInstance(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+            u = User.loadUserInstance(getActivity());
         }catch (ClassCastException classCastException){
             classCastException.fillInStackTrace();
             getActivity().finish();
@@ -74,8 +71,8 @@ public class PersonalDataFragment extends Fragment {
         birthDate = v.findViewById(R.id.textInputPersonalDataBirthDay);
         email = v.findViewById(R.id.textInputPersonalDataEmail);
 //        initialize the listeners
-        r.loadUserImage(image -> bitmapToImageView(profile,image));
-        r.loadUserImageBackGround(image -> bitmapToImageView(background,image));
+        u.loadUserImage(image -> bitmapToImageView(profile,image));
+        u.loadUserImageBackGround(image -> bitmapToImageView(background,image));
         profile.setOnClickListener(view -> loadImageFromPhone(view.getId()));
         background.setOnClickListener(view -> loadImageFromPhone(view.getId()));
 //        load UsersData
@@ -173,10 +170,10 @@ public class PersonalDataFragment extends Fragment {
     }
 //    TODO: make the edit form
     private void loadUserData(){
-        name.setText(r.getFullName());
-        email.setText(r.getEmail());
-        if (r.getBirthDay()!=0){
-            birthDate.setText(dateFormat.format(r.getBirthDay()));
+        name.setText(u.getFullName());
+        email.setText(u.getEmail());
+        if (u.getBirthDay()!=0){
+            birthDate.setText(dateFormat.format(u.getBirthDay()));
         }
     }
 }

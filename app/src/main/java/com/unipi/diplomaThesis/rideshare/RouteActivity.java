@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -101,7 +100,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route);
         try {
-            rider = (Rider) User.loadUserInstance(PreferenceManager.getDefaultSharedPreferences(this));
+            rider = (Rider) User.loadUserInstance(this);
         }catch (ClassCastException c){
             finish();
         }
@@ -377,22 +376,26 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         date.setTime(r.getRouteDateTime().getStartDateUnix());
         Calendar c = new GregorianCalendar();
         c.setTime(date);
-        switch (r.getRouteDateTime().getRepeatness()) {
+        switch (r.getRouteDateTime().getTimetable()) {
             case 0: //one time
                 materialCalendarView.setDateSelected(
                         CalendarDay.from(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)), true);
                 break;
             case 1: // daily
                 dailyRepeat(materialCalendarView, c);
+                break;
             case 2: //weekly
                 weeklyRepeat(materialCalendarView, c);
+                break;
             case 3: // monthly
                 monthlyRepeat(materialCalendarView, c);
-                int dayOfMonth;
+                break;
             case 4: //yearly
                 yearlyRepeat(materialCalendarView, c);
+                break;
             case 5: //custom
                 customRepeat(materialCalendarView, c);
+                break;
         }
         alertDialog.show();
         alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);

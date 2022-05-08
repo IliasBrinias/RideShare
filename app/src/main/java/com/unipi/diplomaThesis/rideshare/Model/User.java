@@ -2,9 +2,11 @@ package com.unipi.diplomaThesis.rideshare.Model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
@@ -19,12 +21,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.unipi.diplomaThesis.rideshare.Interface.OnCompleteUserSave;
 import com.unipi.diplomaThesis.rideshare.Interface.OnImageLoad;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -32,13 +36,13 @@ import java.util.List;
 import java.util.Map;
 
 public class User {
-    public static final String REQ_IS_DRIVER_TAG="isDriver";
+    public static final String REQ_TYPE_TAG ="type";
 
     private String userId;
     private String email;
     private String fullName;
     private String description;
-    private Boolean isDriver = false;
+    private String type = Rider.class.getSimpleName();
     private long birthDay = 0;
     private Map<String,UserRating> userRating;
     private Map<String,String> lastRoutes = new HashMap<>();
@@ -70,12 +74,12 @@ public class User {
         this.userRating = userRating;
     }
 
-    public Boolean getIsDriver() {
-        return isDriver;
+    public String getType() {
+        return type;
     }
 
-    public void setIsDriver(Boolean driver) {
-        isDriver = driver;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getUsersImagePath(){
@@ -147,7 +151,7 @@ public class User {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.child("isDriver").getValue(Boolean.class)){
+                        if (snapshot.child("type").getValue(String.class).equals(Driver.class.getSimpleName())){
                             onUserLoadComplete.returnedUser(snapshot.getValue(Driver.class));
                         }else {
                             onUserLoadComplete.returnedUser(snapshot.getValue(Rider.class));
@@ -167,12 +171,13 @@ public class User {
         if (u.userId == null) u.userId = FirebaseAuth.getInstance().getUid();
         databaseReference.child(u.userId).setValue(u).addOnCompleteListener(onCompleteUserSave::onComplete);
     }
-    public static User loadUserInstance(SharedPreferences preferences){
-        String isDriver = preferences.getString(REQ_IS_DRIVER_TAG,null);
-        if (isDriver == null) return null;
+    public static User loadUserInstance(Context c){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(c);
+        String type = preferences.getString(REQ_TYPE_TAG,null);
+        if (type == null) return null;
         Gson gson = new Gson();
         String json = preferences.getString(User.class.getSimpleName(), null);
-        if (Boolean.parseBoolean(isDriver)){
+        if (type.equals(Driver.class.getSimpleName())){
             return gson.fromJson(json, Driver.class);
         }else {
             return gson.fromJson(json, Rider.class);
@@ -233,8 +238,11 @@ public class User {
             e.printStackTrace();
         }
     }
-    public void saveUserImage(){
-
+    public void saveUserImage(byte[] userImage, OnCompleteListener<UploadTask.TaskSnapshot> onCompleteListener){
+        FirebaseStorage.getInstance().getReference()
+                .child(User.class.getSimpleName())
+                .child(this.userId)
+        .putBytes(userImage).addOnCompleteListener(onCompleteListener);
     }
     public void logOut(Context c){
 //        log Out from FirebaseAuth
@@ -260,5 +268,15 @@ public class User {
 
                     }
                 });
+    }
+    public static byte[] getByteArray(ImageView imageView){
+        // Get the data from an ImageView as bytes
+        imageView.setDrawingCacheEnabled(true);
+        imageView.buildDrawingCache();
+        Bitmap bitmap = imageView.getDrawingCache();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+        return data;
     }
 }

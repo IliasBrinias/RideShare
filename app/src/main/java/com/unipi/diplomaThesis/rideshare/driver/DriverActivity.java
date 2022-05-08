@@ -1,48 +1,54 @@
 package com.unipi.diplomaThesis.rideshare.driver;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.navigation.NavigationView;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.User;
+import com.unipi.diplomaThesis.rideshare.PersonalDataFragment;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverRouteFragment;
 import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteFragment;
-import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.navigation.NavigationView;
+import com.unipi.diplomaThesis.rideshare.rider.RouteSearchFragment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DriverActivity extends AppCompatActivity {
-
     private MaterialToolbar topAppBar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private DriverRouteFragment driverRouteFragment;
     private DriverSaveRouteFragment driverSaveRouteFragment;
-    private Driver driver;
+    private RouteSearchFragment routeSearchFragment;
+    private PersonalDataFragment personalDataFragment;
+    private Driver userDriver;
     private TextView userNameNavigationHeader,emailNavigationHeader;
     private CircleImageView imageNavigationHeader;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_activity);
-        driver = (Driver) User.loadUserInstance(PreferenceManager.getDefaultSharedPreferences(this));
-        if (driver == null) {
+        try {
+            userDriver = (Driver) User.loadUserInstance(this);
+            if (userDriver == null) {
+                finish();
+            }
+        }catch (ClassCastException classCastException){
+            classCastException.printStackTrace();
             finish();
         }
-        driverSaveRouteFragment = new DriverSaveRouteFragment();
+
         topAppBar = findViewById(R.id.topAppBar);
         drawerLayout = findViewById(R.id.drawerLayout);
         navigationView = findViewById(R.id.NavigationViewUser);
@@ -50,66 +56,61 @@ public class DriverActivity extends AppCompatActivity {
         userNameNavigationHeader = headerView.findViewById(R.id.textViewNavigationUserName);
         emailNavigationHeader = headerView.findViewById(R.id.textViewNavigationUserEmail);
         imageNavigationHeader = headerView.findViewById(R.id.CircleImageDriverImage);
+//        set Menu
+        navigationView.getMenu().clear();
+        navigationView.inflateMenu(R.menu.navigation_menu_driver);
+        topAppBar.getMenu().clear();
+        topAppBar.inflateMenu(R.menu.toolbar_menu_driver);
+
+//        load User data
         loadUserData();
-//        handle back key with fragment
-        View fragment = findViewById(R.id.riderFragment);
-        fragment.setFocusableInTouchMode(true);
-        fragment.requestFocus();
-        fragment.setOnKeyListener((v, keyCode, event) -> {
-            if(keyCode == KeyEvent.KEYCODE_BACK)
-            {
-                onBackPressed();
-                return true;
+        driverSaveRouteFragment = new DriverSaveRouteFragment();
+        driverRouteFragment = new DriverRouteFragment();
+        topAppBar.setNavigationOnClickListener(view -> drawerLayout.open());
+//        ToolBar Items
+        topAppBar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()){
+                case R.id.requests:
+                    Toast.makeText(DriverActivity.this, "Requests", Toast.LENGTH_SHORT).show();
+                    break;
+//                        TODO: open Apps Requests
+                case R.id.messages:
+                    Toast.makeText(DriverActivity.this, "Messages", Toast.LENGTH_SHORT).show();
+//                        TODO: open Apps Messenger
+                    break;
             }
             return false;
         });
-//        load User data
-        driverRouteFragment = new DriverRouteFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,driverRouteFragment).commit();
-        topAppBar.setNavigationOnClickListener(view -> drawerLayout.open());
-//        ToolBar Items
-        topAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.messages:
-                        Toast.makeText(DriverActivity.this, "Messages", Toast.LENGTH_SHORT).show();
-//                        TODO: open Apps Messenger
-                        break;
-
-                }
-                return false;
-            }
-        });
 //        Navigation Items
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.personalData:
-//                        TODO: edit Personal Data
-                        break;
-                    case R.id.availableCars:
-//                        TODO: Edit Available Cars
-                        break;
-                    case R.id.yourRoutes:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,driverRouteFragment).commit();
-                        break;
-                    case R.id.logOut:
-                        driver.logOut(DriverActivity.this);
-                        finish();
-                        break;
-                }
-                topAppBar.setTitle(item.getTitle());
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
+        navigationView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()){
+                case R.id.home:
+                    routeSearchFragment = new RouteSearchFragment();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,routeSearchFragment).commit();
+                    break;
+                case R.id.personalData:
+                    personalDataFragment = new PersonalDataFragment();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,personalDataFragment).commit();
+                    break;
+                case R.id.yourRoutes:
+//                        getSupportFragmentManager().beginTransaction().replace(R.id.driverFragment,driverRouteFragment).commit();
+                    break;
+                case R.id.logOut:
+                    DriverActivity.this.userDriver.logOut(DriverActivity.this);
+                    Intent i = new Intent();
+                    i.putExtra("LogOut","true");
+                    setResult(Activity.RESULT_OK, i);
+                    finish();
+                    break;
             }
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
         });
     }
     private void loadUserData(){
-        userNameNavigationHeader.setText(driver.getFullName());
-        emailNavigationHeader.setText(driver.getEmail());
-        driver.loadUserImage(image -> {
+        userNameNavigationHeader.setText(userDriver.getFullName());
+        emailNavigationHeader.setText(userDriver.getEmail());
+        userDriver.loadUserImage(image -> {
             if (image!=null){
                 imageNavigationHeader.setImageBitmap(image);
             }else{
@@ -121,5 +122,6 @@ public class DriverActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        finishAffinity();
     }
 }

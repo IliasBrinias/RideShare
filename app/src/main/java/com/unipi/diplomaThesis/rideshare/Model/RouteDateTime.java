@@ -7,27 +7,27 @@ public class RouteDateTime implements Serializable {
     private String routeDateId;
     private long startDateUnix;
     private long startTimeUnix;
-    private int repeatness;
+    private int timetable;
     Map<String,String> selectedDays;
     private long endDateUnix;
 
     public RouteDateTime() {
     }
 
-    public RouteDateTime(String routeDateId, long startDateUnix, long startTimeUnix, int repeatness, Map<String, String> selectedDays, long endDateUnix) {
+    public RouteDateTime(String routeDateId, long startDateUnix, long startTimeUnix, int timetable, Map<String, String> selectedDays, long endDateUnix) {
         this.routeDateId = routeDateId;
         this.startDateUnix = startDateUnix;
         this.startTimeUnix = startTimeUnix;
-        this.repeatness = repeatness;
+        this.timetable = timetable;
         this.selectedDays = selectedDays;
         this.endDateUnix = endDateUnix;
     }
 
-    public RouteDateTime(String routeDateId, long startDateUnix, long startTimeUnix, int repeatness, long endDateUnix) {
+    public RouteDateTime(String routeDateId, long startDateUnix, long startTimeUnix, int timetable, long endDateUnix) {
         this.routeDateId = routeDateId;
         this.startDateUnix = startDateUnix;
         this.startTimeUnix = startTimeUnix;
-        this.repeatness = repeatness;
+        this.timetable = timetable;
         this.endDateUnix = endDateUnix;
     }
 
@@ -55,12 +55,12 @@ public class RouteDateTime implements Serializable {
         this.startTimeUnix = startTimeUnix;
     }
 
-    public int getRepeatness() {
-        return repeatness;
+    public int getTimetable() {
+        return timetable;
     }
 
-    public void setRepeatness(int repeatness) {
-        this.repeatness = repeatness;
+    public void setTimetable(int timetable) {
+        this.timetable = timetable;
     }
 
     public Map<String, String> getSelectedDays() {

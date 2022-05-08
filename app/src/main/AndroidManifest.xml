@@ -15,15 +15,23 @@
         android:theme="@style/Theme.RideShare">
         <activity
             android:name=".RouteActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".RouteFilterActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".rider.RiderRouteActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
-            android:name=".UserActivity"
+            android:name=".rider.RiderActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".driver.DriverActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan" />
@@ -32,11 +40,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCO-ylUowiKV6IECv1L6eVw9Bl8CBzhaFk" />
 
-        <activity
-            android:name=".driver.DriverActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".StartActivity"
             android:exported="true"

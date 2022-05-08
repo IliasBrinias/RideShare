@@ -43,6 +43,8 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.User;
+import com.unipi.diplomaThesis.rideshare.driver.DriverActivity;
+import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,12 +132,16 @@ public class LoginFragment extends Fragment {
                                 return;
                             }
                             PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-                                    .putString(User.REQ_IS_DRIVER_TAG,u.getIsDriver().toString()).apply();
+                                    .putString(User.REQ_TYPE_TAG,u.getType()).apply();
                             Gson gson = new Gson();
                             String json = gson.toJson(u);
                             PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
                                     .putString(User.class.getSimpleName(),json).apply();
-                            startActivityForResult(new Intent(getActivity(), UserActivity.class),REQ_USER_ACTIVITY);
+                            if (u.getType().equals(Driver.class.getSimpleName())){
+                                getActivity().startActivityForResult(new Intent(getActivity(), DriverActivity.class),StartActivity.REQ_DRIVER_ACTIVITY);
+                            }else {
+                                getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class),StartActivity.REQ_RIDER_ACTIVITY);
+                            }
                         }
                     });
                 }else{
@@ -197,7 +203,7 @@ public class LoginFragment extends Fragment {
                                                 User.saveUser(r, task1 -> saveUserAndOpenActivity(r));
                                             }else {
                                                 User u;
-                                                if (snapshot.child(mAuth.getUid()).child("isDriver").getValue(Boolean.class)){
+                                                if (snapshot.child(mAuth.getUid()).child("type").getValue(String.class).equals(Driver.class.getSimpleName())){
                                                     u = (Driver) snapshot.child(mAuth.getUid()).getValue(Driver.class);
                                                 }else{
                                                     u = (Rider) snapshot.child(mAuth.getUid()).getValue(Rider.class);
@@ -218,12 +224,16 @@ public class LoginFragment extends Fragment {
 
     private void saveUserAndOpenActivity(User u){
         PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-                .putString("isDriver",u.getIsDriver().toString()).apply();
+                .putString("type",u.getType()).apply();
         Gson gson = new Gson();
         String json = gson.toJson(u);
         PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
                 .putString(User.class.getSimpleName(),json).apply();
-        startActivityForResult(new Intent(getActivity(), UserActivity.class),REQ_USER_ACTIVITY);
+        if (u.getType().equals(Driver.class.getSimpleName())){
+            getActivity().startActivityForResult(new Intent(getActivity(), DriverActivity.class),StartActivity.REQ_DRIVER_ACTIVITY);
+        }else {
+            getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class),StartActivity.REQ_RIDER_ACTIVITY);
+        }
     }
     public void register(View view){
         ((StartActivity) getActivity()).register(view);

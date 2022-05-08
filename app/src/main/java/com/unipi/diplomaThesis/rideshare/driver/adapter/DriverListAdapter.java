@@ -92,10 +92,10 @@ public class DriverListAdapter extends RecyclerView.Adapter<DriverListAdapter.Vi
         String[] days = c.getResources().getStringArray(R.array.days);
         StringBuilder stringBuilder = new StringBuilder();
 //        if the route has a not a one time trim
-        if (currentRoute.getRouteDateTime().getRepeatness() != 0) {
+        if (currentRoute.getRouteDateTime().getTimetable() != 0) {
             stringBuilder.append(c.getResources().getString(R.string.every));
 //            if is custom fill the string Builder with the days
-            if (currentRoute.getRouteDateTime().getRepeatness() == 5) {
+            if (currentRoute.getRouteDateTime().getTimetable() == 5) {
                 List<String> days_idx = new ArrayList<>(currentRoute.getRouteDateTime().getSelectedDays().values());
                 for (int i = 0; i < days_idx.size(); i++) {
                     stringBuilder.append(days[Integer.parseInt(days_idx.get(i))]);
@@ -108,7 +108,7 @@ public class DriverListAdapter extends RecyclerView.Adapter<DriverListAdapter.Vi
                 stringBuilder.append(c.getResources().getString(R.string.starts_at)+" ");
                 stringBuilder.append(dateFormat.format(currentRoute.getRouteDateTime().getStartDateUnix())+"\n");
             } else {
-                stringBuilder.append(days[currentRoute.getRouteDateTime().getRepeatness()] + "\n");
+                stringBuilder.append(days[currentRoute.getRouteDateTime().getTimetable()] + "\n");
             }
             stringBuilder.append(c.getResources().getString(R.string.until)+" " + dateFormat.format(currentRoute.getRouteDateTime().getEndDateUnix()));
         }else {

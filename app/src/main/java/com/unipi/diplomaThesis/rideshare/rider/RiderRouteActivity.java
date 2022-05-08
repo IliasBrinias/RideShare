@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -84,6 +83,14 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         tableRowLocationSearch = findViewById(R.id.tableRowLocationSearch);
         tableRowReturnedData = findViewById(R.id.tableRowReturnData);
         listViewLocationSearch = findViewById(R.id.listViewLocationSearch);
+
+        tableRowLocationSearch.setVisibility(View.GONE);
+        tableRowFilter.setVisibility(View.GONE);
+        tableRowReturnedData.setVisibility(View.VISIBLE);
+        autoCompleteDate.setOnClickListener(this::setDateTime);
+        autoCompleteOriginPoint.addTextChangedListener(this);
+        autoCompleteDestinationPoint.addTextChangedListener(this);
+
 //        reset the routeList and RouteDrivers
         routeList.clear();
         routeDrivers.clear();
@@ -93,7 +100,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
             finish();
         }
         try {
-            r = (Rider) User.loadUserInstance(PreferenceManager.getDefaultSharedPreferences(this));
+            r = (Rider) User.loadUserInstance(this);
 //            getIntent Data
             originLocation = new JSONObject(getIntent().getStringExtra("originLocation"));
             destinationLocation = new JSONObject(getIntent().getStringExtra("destinationLocation"));
@@ -128,6 +135,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
             }
         });
         recyclerView.setAdapter(riderRouteAdapter);
+
         @SuppressLint("NotifyDataSetChanged") AdapterView.OnItemClickListener clickedLocationListener =
                 (adapterView, view, position, l) -> {
             try {
@@ -160,13 +168,20 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
             }
         };
         listViewLocationSearch.setOnItemClickListener(clickedLocationListener);
-        autoCompleteOriginPoint.addTextChangedListener(this);
-        autoCompleteDestinationPoint.addTextChangedListener(this);
-        tableRowLocationSearch.setVisibility(View.GONE);
-        tableRowReturnedData.setVisibility(View.VISIBLE);
-        autoCompleteDate.setOnClickListener(this::setDateTime);
-//        TODO: get the destination from the previous activity
-//              return the Routes and the drivers
+        r.findMinMaxPrice(returnData -> {
+//            find Price min max
+            if (returnData.get("min")!=null){
+                routeFilter.setDefaultMinPrice((Float) returnData.get("min"));
+            }else if (returnData.get("max")!=null){
+                routeFilter.setDefaultMaxPrice((Float) returnData.get("max"));
+            }
+            if (routeFilter.getMinPricePerPassenger()!=routeFilter.getDefaultMinPrice()
+                    && routeFilter.getMaxPricePerPassenger()!=routeFilter.getDefaultMaxPrice()){
+                tableRowFilter.setVisibility(View.VISIBLE);
+            }else {
+                tableRowFilter.setVisibility(View.GONE);
+            }
+        });
     }
     @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
     private void refreshData(Route r, User driver){

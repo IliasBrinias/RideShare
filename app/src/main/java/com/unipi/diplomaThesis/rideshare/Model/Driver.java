@@ -4,16 +4,18 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.Task;
-import com.unipi.diplomaThesis.rideshare.CarFragment;
-import com.unipi.diplomaThesis.rideshare.Interface.OnCompleteRoutesLoad;
-import com.unipi.diplomaThesis.rideshare.Interface.OnRouteResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.UploadTask;
+import com.unipi.diplomaThesis.rideshare.Interface.OnCompleteRoutesLoad;
+import com.unipi.diplomaThesis.rideshare.Interface.OnRouteResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Driver extends User{
+    public static final int REQ_CREATE_DRIVER_ACCOUNT=234;
+    public static final int REQ_DISABLE_DRIVER_ACCOUNT=457;
     private Car ownedCar = new Car();
     public Driver() {
     }
@@ -39,7 +43,7 @@ public class Driver extends User{
     public static void createDriver(String driverId, OnUserLoadComplete onUserLoadComplete){
 //        update User mode {Rider or Driver with a boolean Variable}
         Map<String,Object> updateUserMode = new HashMap<>();
-        updateUserMode.put(User.REQ_IS_DRIVER_TAG,true);
+        updateUserMode.put(User.REQ_TYPE_TAG,true);
         FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName())
                 .child(driverId)
@@ -60,7 +64,7 @@ public class Driver extends User{
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         try{
-                            if (snapshot.child(User.REQ_IS_DRIVER_TAG).getValue(Boolean.class) == true) {
+                            if (snapshot.child(User.REQ_TYPE_TAG).getValue(Boolean.class) == true) {
                                 onUserLoadComplete.returnedUser(snapshot.getValue(Driver.class));
                             } else {
                                 onUserLoadComplete.returnedUser(null);
@@ -135,11 +139,28 @@ public class Driver extends User{
         this.getLastRoutes().remove(deletedRoute.getRouteId());
         this.updateUserInstance(c);
     }
-    public void saveCar(Car c, OnCompleteListener<Void> onCompleteListener){
-        FirebaseDatabase.getInstance().getReference()
-                .child(User.class.getSimpleName())
+    public void saveCar(Car c, byte[] carImage, OnCompleteListener<Void> onCompleteListener, OnFailureListener onFailureListener){
+        saveCarImage(carImage, new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                if (task.isSuccessful()){
+                    FirebaseDatabase.getInstance().getReference()
+                            .child(User.class.getSimpleName())
+                            .child(Driver.this.getUserId())
+                            .child("ownedCar")
+                            .setValue(c).addOnCompleteListener(onCompleteListener);
+                }else {
+                    onFailureListener.onFailure(task.getException());
+                }
+            }
+        });
+
+    }
+    public void saveCarImage(byte[] carImage, OnCompleteListener<UploadTask.TaskSnapshot> onCompleteListener){
+        FirebaseStorage.getInstance().getReference()
+                .child(Car.class.getSimpleName())
                 .child(this.getUserId())
-                .child("ownedCar")
-                .setValue(c).addOnCompleteListener(onCompleteListener);
+                .putBytes(carImage)
+                .addOnCompleteListener(onCompleteListener);
     }
 }

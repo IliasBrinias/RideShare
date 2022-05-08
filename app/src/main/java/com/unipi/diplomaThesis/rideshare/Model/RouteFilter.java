@@ -12,16 +12,83 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class RouteFilter implements Serializable {
-    private double maximumDistance = 0.3;
+    private double maximumDistance = 0.1;
     private String originRiderPlaceId = "";
     private String destinationRiderPlaceId = "";
-    private int repeatability = -1;
+    private int defaultTimetable = -1;
+    private int timetable;
     private long timeUnix = -1;
-    private float minPricePerPassenger = -1.f, maxPricePerPassenger = -1.f;
-    private float minTime = -12, maxTime = 12;
-    private float minRating = 0.f, maxRating = 5.f;
+    private float defaultMinPrice = 0.f, defaultMaxPrice = 100.f;
+    private float minPricePerPassenger, maxPricePerPassenger;
+    private float defaultMinTime = -12, defaultMaxTime = 12;
+    private float minTime, maxTime;
+    private float defaultMinRating = 0.f, defaultMaxRating = 5.f;
+    private float minRating, maxRating;
 
     public RouteFilter() {
+        minPricePerPassenger = defaultMinPrice;
+        maxPricePerPassenger = defaultMaxPrice;
+        minTime = defaultMinTime;
+        maxTime = defaultMaxTime;
+        minRating = defaultMinRating;
+        maxRating = defaultMaxRating;
+        timetable = defaultTimetable;
+    }
+
+    public void setDefaultMinPrice(float defaultMinPrice) {
+        this.defaultMinPrice = defaultMinPrice;
+    }
+
+    public void setDefaultMaxPrice(float defaultMaxPrice) {
+        this.defaultMaxPrice = defaultMaxPrice;
+    }
+
+    public int getDefaultTimetable() {
+        return defaultTimetable;
+    }
+
+    public void setDefaultTimetable(int defaultTimetable) {
+        this.defaultTimetable = defaultTimetable;
+    }
+
+    public float getDefaultMinTime() {
+        return defaultMinTime;
+    }
+
+    public void setDefaultMinTime(float defaultMinTime) {
+        this.defaultMinTime = defaultMinTime;
+    }
+
+    public float getDefaultMaxTime() {
+        return defaultMaxTime;
+    }
+
+    public void setDefaultMaxTime(float defaultMaxTime) {
+        this.defaultMaxTime = defaultMaxTime;
+    }
+
+    public float getDefaultMinRating() {
+        return defaultMinRating;
+    }
+
+    public void setDefaultMinRating(float defaultMinRating) {
+        this.defaultMinRating = defaultMinRating;
+    }
+
+    public float getDefaultMaxRating() {
+        return defaultMaxRating;
+    }
+
+    public void setDefaultMaxRating(float defaultMaxRating) {
+        this.defaultMaxRating = defaultMaxRating;
+    }
+
+    public float getDefaultMinPrice() {
+        return defaultMinPrice;
+    }
+
+    public float getDefaultMaxPrice() {
+        return defaultMaxPrice;
     }
 
     public long getTimeUnix() {
@@ -34,16 +101,16 @@ public class RouteFilter implements Serializable {
 
     public int getFilterCount() {
         int countFilters = 0;
-        if (repeatability != -1){
+        if (timetable != -1){
             countFilters++;
         }
-        if (minPricePerPassenger != -1.f || maxPricePerPassenger != -1.f){
+        if (minPricePerPassenger != defaultMinPrice || maxPricePerPassenger != defaultMaxPrice){
             countFilters++;
         }
-        if (minTime != -12.f || maxTime != 12.f){
+        if (minTime != defaultMinTime || maxTime != defaultMaxTime){
             countFilters++;
         }
-        if (minRating != 0.f || maxRating != 5.f){
+        if (minRating != defaultMinRating || maxRating != defaultMaxRating){
             countFilters++;
         }
         return countFilters;
@@ -130,12 +197,12 @@ public class RouteFilter implements Serializable {
         this.maxPricePerPassenger = maxPricePerPassenger;
     }
 
-    public int getRepeatability() {
-        return repeatability;
+    public int getTimetable() {
+        return timetable;
     }
 
-    public void setRepeatability(int repeatability) {
-        this.repeatability = repeatability;
+    public void setTimetable(int timetable) {
+        this.timetable = timetable;
     }
 
     public void filterCheck(Context c, Route r, OnFilterResult onFilterResult){
@@ -148,12 +215,12 @@ public class RouteFilter implements Serializable {
                     public void returnedData(JSONObject response, Double distance) {
                         if (RouteFilter.this.maximumDistance<=0||RouteFilter.this.maximumDistance>=1) RouteFilter.this.maximumDistance = 0.2;
 //                         if the route with the rider is maximum 20% bigger than before is acceptable
-                        if (distance - r.getRouteLatLng().getDistance()>RouteFilter.this.maximumDistance*r.getRouteLatLng().getDistance()) {
+                        if (distance - r.getRouteLatLng().getDistance()>=RouteFilter.this.maximumDistance*r.getRouteLatLng().getDistance()) {
                             onFilterResult.result(false);
                             return;
                         }
 //                         cost Check
-                        if (RouteFilter.this.minPricePerPassenger != -1.f && RouteFilter.this.maxPricePerPassenger != -1.f){
+                        if (RouteFilter.this.minPricePerPassenger != defaultMinPrice || RouteFilter.this.maxPricePerPassenger != defaultMaxPrice){
                             try {
                                 float costPerRider = Float.parseFloat(r.getCostPerRider());
                                 if (RouteFilter.this.minPricePerPassenger > costPerRider || RouteFilter.this.maxPricePerPassenger < costPerRider) {
@@ -166,8 +233,8 @@ public class RouteFilter implements Serializable {
                                 return;
                             }
                         }
-//                         repeatability check
-                        if (RouteFilter.this.repeatability != r.getRouteDateTime().getRepeatness() && RouteFilter.this.repeatability!=-1){
+//                         timetable check
+                        if (RouteFilter.this.timetable != r.getRouteDateTime().getTimetable() && RouteFilter.this.timetable !=-1){
                             onFilterResult.result(false);
                             return;
                         }
@@ -175,7 +242,7 @@ public class RouteFilter implements Serializable {
                         float hourDifference = getCombineDate(r.getRouteDateTime().getStartDateUnix(),
                                 r.getRouteDateTime().getStartTimeUnix())
                                 - RouteFilter.this.timeUnix/(60.f*60.f);
-                        if (RouteFilter.this.minTime != -12f || RouteFilter.this.maxTime != 12f){
+                        if (minTime != defaultMinTime || maxTime != defaultMaxTime){
                             if (RouteFilter.this.minTime > hourDifference || RouteFilter.this.maxTime < hourDifference) {
                                 onFilterResult.result(false);
                                 return;

@@ -58,7 +58,6 @@
                     android:singleLine="true"
                     android:focusable="true"
                     android:padding="10dp"
-                    android:text="adasdasdasdasdasdasdasdasdasdasd"
                     android:fontFamily="@font/trebuc"
                     android:inputType="textNoSuggestions"
                     tools:ignore="TouchTargetSizeCheck" />

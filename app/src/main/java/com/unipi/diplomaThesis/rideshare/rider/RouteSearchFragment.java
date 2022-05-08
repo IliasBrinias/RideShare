@@ -70,7 +70,7 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_route_search, container, false);
         welcomeTitle = v.findViewById(R.id.textViewWelcomeTitle);
-        User u = User.loadUserInstance(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        User u = User.loadUserInstance(getActivity());
         if (u==null) getActivity().finish();
         String[] name =u.getFullName().split(" ");
         if (name.length!=2){

@@ -1,10 +1,9 @@
-package com.unipi.diplomaThesis.rideshare;
+package com.unipi.diplomaThesis.rideshare.rider;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -18,14 +17,16 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
+import com.unipi.diplomaThesis.rideshare.CarFragment;
 import com.unipi.diplomaThesis.rideshare.Model.User;
+import com.unipi.diplomaThesis.rideshare.PersonalDataFragment;
+import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverRouteFragment;
 import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteFragment;
-import com.unipi.diplomaThesis.rideshare.rider.RouteSearchFragment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class UserActivity extends AppCompatActivity {
+public class RiderActivity extends AppCompatActivity {
     private MaterialToolbar topAppBar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -42,7 +43,7 @@ public class UserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_activity);
-        u = User.loadUserInstance(PreferenceManager.getDefaultSharedPreferences(this));
+        u = User.loadUserInstance(this);
         if (u == null) {
             finish();
         }
@@ -64,7 +65,7 @@ public class UserActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.messages:
-                        Toast.makeText(UserActivity.this, "Messages", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RiderActivity.this, "Messages", Toast.LENGTH_SHORT).show();
 //                        TODO: open Apps Messenger
                         break;
 
@@ -94,7 +95,7 @@ public class UserActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,carFragment).commit();
                         break;
                     case R.id.logOut:
-                        UserActivity.this.u.logOut(UserActivity.this);
+                        RiderActivity.this.u.logOut(RiderActivity.this);
                         Intent i = new Intent();
                         i.putExtra("LogOut","true");
                         setResult(Activity.RESULT_OK, i);

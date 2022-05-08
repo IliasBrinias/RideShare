@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TableRow;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +21,6 @@ import com.google.android.material.slider.RangeSlider;
 import com.unipi.diplomaThesis.rideshare.Model.RouteFilter;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.Locale;
 
 public class RouteFilterActivity extends AppCompatActivity implements RangeSlider.OnChangeListener {
@@ -35,25 +35,33 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
     TableRow tableRowPriceTitle, tableRowPrice,
             tableRowRepeatabilityTitle, tableRowRepeatability,
             tableRowTimeTitle, tableRowTime,
-            tableRowRatingTitle, tableRowRating;
+            tableRowRatingTitle, tableRowRating,
+            tableRowClassificationTitle, tableRowClassification;
     ImageView imagePrice,
             imageRepeatability,
             imageTime,
+            imageClassification,
             imageRating;
+    TextView clear;
     RouteFilter routeFilter = new RouteFilter();
     private static final int ROTATE_DURATION = 250;
-    DecimalFormat df = new DecimalFormat("#.#");
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_filter);
+        routeFilter = (RouteFilter) getIntent().getSerializableExtra(RouteFilter.class.getSimpleName());
+        if (routeFilter == null) finish();
+
 //        table rows
         tableRowPriceTitle = findViewById(R.id.tableRowPriceTitle);
         tableRowPrice = findViewById(R.id.tableRowPrice);
         tableRowRepeatabilityTitle = findViewById(R.id.tableRowRepeatabilityTitle);
         tableRowRepeatability = findViewById(R.id.tableRowRepeatability);
         tableRowTimeTitle = findViewById(R.id.tableRowTimeTitle);
+        tableRowClassificationTitle = findViewById(R.id.tableRowClassificationTitle);
+        tableRowClassification = findViewById(R.id.tableRowClassification);
+
         tableRowTime = findViewById(R.id.tableRowTime);
         tableRowRatingTitle = findViewById(R.id.tableRowRatingTitle);
         tableRowRating = findViewById(R.id.tableRowRating);
@@ -68,18 +76,15 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
         rangeSliderPrice = findViewById(R.id.sliderPrice);
         rangeSliderTime = findViewById(R.id.sliderTime);
         rangeSliderRating = findViewById(R.id.sliderRating);
+        clear = findViewById(R.id.textViewClear);
 //        images
         imagePrice = findViewById(R.id.imageViewPrice);
         imageRepeatability = findViewById(R.id.imageViewRepeatability);
         imageTime = findViewById(R.id.imageViewTime);
         imageRating = findViewById(R.id.imageViewRating);
-//        setValues to sliders
-        rangeSliderPrice.setValues(0.0f,100.0f);
-        rangeSliderTime.setValues(-12.0f,12.0f);
-        rangeSliderRating.setValues(0.0f,5.0f);
-        minPrice.setText(0.0f +"$");
-        maxPrice.setText(100.0f +"$");
+        imageClassification = findViewById(R.id.imageViewClassification);
 //        setListeners
+        clear.setOnClickListener(this::clearFilter);
         rangeSliderPrice.addOnChangeListener(this);
         rangeSliderTime.addOnChangeListener(this);
         rangeSliderRating.addOnChangeListener(this);
@@ -87,12 +92,18 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
         tableRowPrice.setVisibility(View.GONE);
         tableRowTime.setVisibility(View.GONE);
         tableRowRating.setVisibility(View.GONE);
+        tableRowClassification.setVisibility(View.GONE);
+
         tableRowClicked(tableRowRepeatability,imageRepeatability);
         tableRowClicked(tableRowPrice,imagePrice);
         tableRowClicked(tableRowTime,imageTime);
         tableRowClicked(tableRowRating,imageRating);
-        routeFilter = (RouteFilter) getIntent().getSerializableExtra(RouteFilter.class.getSimpleName());
-        loadRouteFilter(routeFilter);
+        tableRowClicked(tableRowClassification,imageClassification);
+        if (routeFilter.getFilterCount()==0){
+            clear.performClick();
+        }else {
+            loadRouteFilter(routeFilter);
+        }
     }
     public void openTableRowItems(View view){
         if (view.getId() == tableRowPriceTitle.getId()){
@@ -103,6 +114,8 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
             tableRowClicked(tableRowTime,imageTime);
         }else if (view.getId() == tableRowRatingTitle.getId()){
             tableRowClicked(tableRowRating,imageRating);
+        }else if (view.getId()==tableRowClassificationTitle.getId()){
+            tableRowClicked(tableRowClassification,imageClassification);
         }
     }
     public void closeFilter(View view){
@@ -112,18 +125,27 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
     public void clearFilter(View view){
 //        repeatability
         radioGroupRepeatability.check(1);
-//        price
-        minPrice.setText(0.00+"$");
-        maxPrice.setText(100.00+"$");
-        rangeSliderPrice.setValues(0.0f,100.0f);
-//        Time
-        minTime.setText(12 +" "+getString(R.string.hours)+" "+ getString(R.string.away));
-        maxTime.setText(12 +" "+getString(R.string.hours)+" "+ getString(R.string.after));
-        rangeSliderTime.setValues(-12.0f,12.0f);
-//        Rating
-        minRating.setText(0+"");
-        maxRating.setText(5+"");
-        rangeSliderRating.setValues(0.0f,5.0f);
+//        setValues to sliders
+        rangeSliderPrice.setValues(routeFilter.getDefaultMinPrice(),routeFilter.getDefaultMaxPrice());
+        minPrice.setText(routeFilter.getDefaultMinPrice() +"$");
+        maxPrice.setText(routeFilter.getDefaultMaxPrice() +"$");
+
+        rangeSliderTime.setValues(routeFilter.getDefaultMinTime(),routeFilter.getDefaultMaxTime());
+        minTime.setText(String.valueOf(routeFilter.getDefaultMinTime()));
+        maxTime.setText(String.valueOf(routeFilter.getDefaultMaxTime()));
+
+        rangeSliderRating.setValues(routeFilter.getDefaultMinRating(),routeFilter.getDefaultMaxRating());
+        minRating.setText(String.valueOf(routeFilter.getDefaultMinRating()));
+        maxRating.setText(String.valueOf(routeFilter.getDefaultMaxRating()));
+//        set variables to default
+        routeFilter.setMinPricePerPassenger(routeFilter.getDefaultMinPrice());
+        routeFilter.setMaxPricePerPassenger(routeFilter.getDefaultMaxPrice());
+        routeFilter.setMinTime(routeFilter.getDefaultMinTime());
+        minTime.setText(-routeFilter.getDefaultMinTime() + " " + getString(R.string.hours) + " " + getString(R.string.sooner));
+        routeFilter.setMaxTime(routeFilter.getDefaultMaxTime());
+        maxTime.setText(routeFilter.getDefaultMaxTime() + " " + getString(R.string.hours) + " " + getString(R.string.later));
+        routeFilter.setMinRating(routeFilter.getDefaultMinRating());
+        routeFilter.setMaxRating(routeFilter.getDefaultMaxRating());
 
     }
     private void tableRowClicked(TableRow row, ImageView image){
@@ -153,12 +175,12 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
         View radioButton = radioGroupRepeatability.findViewById(radioButtonID);
         int idxRepeatability = radioGroupRepeatability.indexOfChild(radioButton);
 //        repeatability
-        routeFilter.setRepeatability(idxRepeatability);
+        routeFilter.setTimetable(idxRepeatability);
 //        price
         if (rangeSliderPrice.getValues().get(0) == rangeSliderPrice.getValueFrom() &&
                 rangeSliderPrice.getValues().get(1) == rangeSliderPrice.getValueTo()){
-            routeFilter.setMinPricePerPassenger(-1.f);
-            routeFilter.setMaxPricePerPassenger(-1.f);
+            routeFilter.setMinPricePerPassenger(routeFilter.getDefaultMinPrice());
+            routeFilter.setMaxPricePerPassenger(routeFilter.getDefaultMaxPrice());
         }else {
             routeFilter.setMinPricePerPassenger(rangeSliderPrice.getValues().get(0));
             routeFilter.setMaxPricePerPassenger(rangeSliderPrice.getValues().get(1));
@@ -184,6 +206,11 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
         if (id == rangeSliderPrice.getId()) {
             minPrice.setText(String.format(Locale.getDefault(), "%.2f", slider.getValues().get(0)) + "$");
             maxPrice.setText(String.format(Locale.getDefault(), "%.2f", slider.getValues().get(1)) + "$");
+            if (slider.getValues().get(0)< routeFilter.getDefaultMinPrice()){
+                slider.setValues(routeFilter.getDefaultMinPrice(),slider.getValues().get(1));
+            }else if (slider.getValues().get(1)> routeFilter.getDefaultMaxPrice()) {
+                slider.setValues(slider.getValues().get(0), routeFilter.getDefaultMaxPrice());
+            }
         }
 //        Time
         else if (id == rangeSliderTime.getId()) {
@@ -198,14 +225,14 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
                     .setScale(1,BigDecimal.ROUND_HALF_DOWN)
                     .floatValue();
             if (minValue == -1) {
-                minTime.setText(1 + " " + getString(R.string.hour) + " " + getString(R.string.away));
+                minTime.setText(1 + " " + getString(R.string.hour) + " " + getString(R.string.sooner));
             } else {
-                minTime.setText(-minValue + " " + getString(R.string.hours) + " " + getString(R.string.away));
+                minTime.setText(-minValue + " " + getString(R.string.hours) + " " + getString(R.string.sooner));
             }
             if (maxValue == 1) {
-                maxTime.setText(1 + " " + getString(R.string.hour) + " " + getString(R.string.after));
+                maxTime.setText(1 + " " + getString(R.string.hour) + " " + getString(R.string.later));
             } else {
-                maxTime.setText(maxValue + " " + getString(R.string.hours) + " " + getString(R.string.after));
+                maxTime.setText(maxValue + " " + getString(R.string.hours) + " " + getString(R.string.later));
             }
         }
 //        Rating
@@ -216,8 +243,8 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
     }
     private void loadRouteFilter(RouteFilter routeFilter){
 //        Repeatability
-        if (routeFilter.getRepeatability()!=-1) {
-            radioGroupRepeatability.check(radioGroupRepeatability.getChildAt(routeFilter.getRepeatability()).getId());
+        if (routeFilter.getTimetable()!=-1) {
+            radioGroupRepeatability.check(radioGroupRepeatability.getChildAt(routeFilter.getTimetable()).getId());
         }
 //        Price
         if (routeFilter.getMinPricePerPassenger() != -1.f || routeFilter.getMaxPricePerPassenger() != -1.f) {

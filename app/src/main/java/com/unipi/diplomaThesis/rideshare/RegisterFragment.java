@@ -26,8 +26,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.unipi.diplomaThesis.rideshare.Interface.OnCompleteUserSave;
+import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.User;
+import com.unipi.diplomaThesis.rideshare.driver.DriverActivity;
+import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,12 +126,16 @@ public class RegisterFragment extends Fragment implements TextWatcher {
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()){
                                     PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-                                            .putString("isAdmin",u.getIsDriver().toString()).apply();
+                                            .putString(User.REQ_TYPE_TAG,u.getType().toString()).apply();
                                     Gson gson = new Gson();
                                     String json = gson.toJson(u);
                                     PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
                                             .putString(User.class.getSimpleName(),json).apply();
-                                    startActivity(new Intent(getActivity(), UserActivity.class));
+                                    if (u.getType().equals(Driver.class.getSimpleName())){
+                                        getActivity().startActivityForResult(new Intent(getActivity(), DriverActivity.class), StartActivity.REQ_DRIVER_ACTIVITY);
+                                    }else {
+                                        getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class),StartActivity.REQ_RIDER_ACTIVITY);
+                                    }
                                 }
                             }
                         });

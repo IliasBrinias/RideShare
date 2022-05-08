@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,15 +17,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.Route;
 import com.unipi.diplomaThesis.rideshare.Model.RouteDateTime;
 import com.unipi.diplomaThesis.rideshare.Model.RouteLatLng;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Map;
 
@@ -132,7 +131,7 @@ public class DriverSaveRouteFragment extends Fragment {
     public void saveRoute(){
         Driver driver = null;
         try {
-            driver = (Driver) User.loadUserInstance(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+            driver = (Driver) User.loadUserInstance(getActivity());
         }catch (ClassCastException e){
             FirebaseAuth.getInstance().signOut();
             getActivity().finish();

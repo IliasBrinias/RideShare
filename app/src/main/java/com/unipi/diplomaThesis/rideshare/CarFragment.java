@@ -9,33 +9,28 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
-import com.unipi.diplomaThesis.rideshare.Interface.CarApiResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
-import com.unipi.diplomaThesis.rideshare.Model.ApiCalls;
 import com.unipi.diplomaThesis.rideshare.Model.Car;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.User;
@@ -101,19 +96,31 @@ public class CarFragment extends Fragment implements TextWatcher {
                     if (u == null) return;
                     Driver driver = (Driver) u;
 //                    save the Drivers car
-                    driver.saveCar(new Car(
-                            carModel.getText().toString(),
-                            carManufacturer.getText().toString(),
-                            carYear.getText().toString(),
-                            carPlate.getText().toString()), new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()){
-//                                        TODO: Think what is better after this step
-                                Toast.makeText(getActivity(),"You are a Driver",Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+                    driver.saveCar(
+                            new Car(
+                                    carModel.getText().toString(),
+                                    carManufacturer.getText().toString(),
+                                    carYear.getText().toString(),
+                                    carPlate.getText().toString()
+                            ),
+                            User.getByteArray(carImage),
+                            new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(getActivity(), "You are a Driver", Toast.LENGTH_SHORT).show();
+                                        Intent i = new Intent();
+                                        getActivity().setResult(Driver.REQ_CREATE_DRIVER_ACCOUNT, i);
+                                        getActivity().finish();
+                                    }
+                                }
+                            }, new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(getActivity(), getString(R.string.error_message),Toast.LENGTH_SHORT).show();
+                                    e.printStackTrace();
+                                }
+                            });
                 }
             });
         }
