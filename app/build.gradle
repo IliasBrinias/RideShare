@@ -29,6 +29,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.unipi.diplomaThesis.rideshare'
 }
 dependencies {
     implementation "com.github.prolificinteractive:material-calendarview:2.0.1"

@@ -115,7 +115,6 @@ public class ApiCalls {
                 "&destination=place_id:"+destinationPlaceId+
                 "&waypoints=via:place_id:"+startWaypointPlaceId+"|place_id:"+destinationWaypointPlaceId;
         RequestQueue queue = Volley.newRequestQueue(c);
-        System.out.println(url);
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest
                 (Request.Method.GET,
                         url,
@@ -123,7 +122,7 @@ public class ApiCalls {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            Integer distance = 0;
+                            int distance = 0;
                             for (int i=0; i<response.getJSONArray("routes").length();i++){
                                 distance += response.getJSONArray("routes")
                                         .getJSONObject(i)

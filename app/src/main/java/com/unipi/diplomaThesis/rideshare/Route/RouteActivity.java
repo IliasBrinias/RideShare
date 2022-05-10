@@ -1,4 +1,4 @@
-package com.unipi.diplomaThesis.rideshare;
+package com.unipi.diplomaThesis.rideshare.Route;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -52,6 +52,7 @@ import com.unipi.diplomaThesis.rideshare.Model.Request;
 import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.Route;
 import com.unipi.diplomaThesis.rideshare.Model.User;
+import com.unipi.diplomaThesis.rideshare.R;
 
 import org.gavaghan.geodesy.Ellipsoid;
 import org.gavaghan.geodesy.GeodeticCalculator;
@@ -311,7 +312,6 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                     }
                 });
                 driverName.setText(driverUser.getFullName());
-//                TODO:Ratings, Car
             }
         });
     }
@@ -370,8 +370,8 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         alertDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.alert_dialog_background));
         alertDialog.setCancelable(true);
         MaterialCalendarView materialCalendarView = dialogView.findViewById(R.id.calendarView);
-        materialCalendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_MULTIPLE);
-
+        materialCalendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_NONE);
+        materialCalendarView.setClickable(false);
         Date date = new Date();
         date.setTime(r.getRouteDateTime().getStartDateUnix());
         Calendar c = new GregorianCalendar();

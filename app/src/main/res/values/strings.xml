@@ -177,4 +177,8 @@
         <item>@string/friday</item>
         <item>@string/saturday</item>
     </string-array>
+    <string-array name="rangeValues">
+        <item>10</item>
+        <item>90</item>
+    </string-array>
 </resources>

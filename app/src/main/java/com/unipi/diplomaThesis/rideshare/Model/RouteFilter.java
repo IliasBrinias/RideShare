@@ -8,21 +8,26 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnFilterResult;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 public class RouteFilter implements Serializable {
     private double maximumDistance = 0.1;
     private String originRiderPlaceId = "";
     private String destinationRiderPlaceId = "";
     private int defaultTimetable = -1;
-    private int timetable;
-    private long timeUnix = -1;
+    private int defaultClassification = -1;
     private float defaultMinPrice = 0.f, defaultMaxPrice = 100.f;
-    private float minPricePerPassenger, maxPricePerPassenger;
     private float defaultMinTime = -12, defaultMaxTime = 12;
-    private float minTime, maxTime;
     private float defaultMinRating = 0.f, defaultMaxRating = 5.f;
+    private int timetable,classification;
+    private long timeUnix = -1;
+    private float minPricePerPassenger, maxPricePerPassenger;
+    private float minTime, maxTime;
     private float minRating, maxRating;
 
     public RouteFilter() {
@@ -33,6 +38,23 @@ public class RouteFilter implements Serializable {
         minRating = defaultMinRating;
         maxRating = defaultMaxRating;
         timetable = defaultTimetable;
+        classification = defaultClassification;
+    }
+
+    public int getDefaultClassification() {
+        return defaultClassification;
+    }
+
+    public void setDefaultClassification(int defaultClassification) {
+        this.defaultClassification = defaultClassification;
+    }
+
+    public int getClassification() {
+        return classification;
+    }
+
+    public void setClassification(int classification) {
+        this.classification = classification;
     }
 
     public void setDefaultMinPrice(float defaultMinPrice) {
@@ -101,7 +123,10 @@ public class RouteFilter implements Serializable {
 
     public int getFilterCount() {
         int countFilters = 0;
-        if (timetable != -1){
+        if (timetable != defaultTimetable){
+            countFilters++;
+        }
+        if (classification != defaultClassification){
             countFilters++;
         }
         if (minPricePerPassenger != defaultMinPrice || maxPricePerPassenger != defaultMaxPrice){
@@ -213,42 +238,37 @@ public class RouteFilter implements Serializable {
                 destinationRiderPlaceId, new OnDistanceResponse() {
                     @Override
                     public void returnedData(JSONObject response, Double distance) {
-                        if (RouteFilter.this.maximumDistance<=0||RouteFilter.this.maximumDistance>=1) RouteFilter.this.maximumDistance = 0.2;
+//                          TODO:  Test Mode
+                            if (RouteFilter.this.maximumDistance <= 0 || RouteFilter.this.maximumDistance >= 1)
+                                RouteFilter.this.maximumDistance = 0.2;
 //                         if the route with the rider is maximum 20% bigger than before is acceptable
-                        if (distance - r.getRouteLatLng().getDistance()>=RouteFilter.this.maximumDistance*r.getRouteLatLng().getDistance()) {
-                            onFilterResult.result(false);
-                            return;
-                        }
-//                         cost Check
-                        if (RouteFilter.this.minPricePerPassenger != defaultMinPrice || RouteFilter.this.maxPricePerPassenger != defaultMaxPrice){
-                            try {
-                                float costPerRider = Float.parseFloat(r.getCostPerRider());
-                                if (RouteFilter.this.minPricePerPassenger > costPerRider || RouteFilter.this.maxPricePerPassenger < costPerRider) {
-                                    onFilterResult.result(false);
-                                    return;
-                                }
-                            }catch (Exception e){
-                                e.printStackTrace();
+                            if (distance - r.getRouteLatLng().getDistance() >= RouteFilter.this.maximumDistance * r.getRouteLatLng().getDistance()) {
                                 onFilterResult.result(false);
                                 return;
                             }
-                        }
+
+//                        Cost Check
+                            if (!checkCost(r)) {
+                                onFilterResult.result(false);
+                                return;
+                            }
 //                         timetable check
-                        if (RouteFilter.this.timetable != r.getRouteDateTime().getTimetable() && RouteFilter.this.timetable !=-1){
-                            onFilterResult.result(false);
-                            return;
-                        }
-//                         time
-                        float hourDifference = getCombineDate(r.getRouteDateTime().getStartDateUnix(),
-                                r.getRouteDateTime().getStartTimeUnix())
-                                - RouteFilter.this.timeUnix/(60.f*60.f);
-                        if (minTime != defaultMinTime || maxTime != defaultMaxTime){
-                            if (RouteFilter.this.minTime > hourDifference || RouteFilter.this.maxTime < hourDifference) {
+                            if (RouteFilter.this.timetable != r.getRouteDateTime().getTimetable() && RouteFilter.this.timetable != RouteFilter.this.defaultTimetable) {
                                 onFilterResult.result(false);
                                 return;
                             }
-                        }
-//                        Rating
+//                        date check
+                            if (!checkDate(r)) {
+                                onFilterResult.result(false);
+                                return;
+                            }
+//                        time check
+                            if (!checkTime(r)) {
+                                onFilterResult.result(false);
+                                return;
+                            }
+
+//                      TODO:  Rating Check
                         onFilterResult.result(true);
                     }
                 });
@@ -271,5 +291,119 @@ public class RouteFilter implements Serializable {
         Calendar c = new GregorianCalendar();
         c.set(year,month,day,hour,minute,second);
         return c.getTimeInMillis();
+    }
+    private boolean checkDate(Route r){
+//      Date
+//      start
+        Calendar routeCalendarStart = new GregorianCalendar();
+        routeCalendarStart.setTimeInMillis(r.getRouteDateTime().getStartDateUnix());
+        routeCalendarStart.set(Calendar.HOUR,0);
+        routeCalendarStart.set(Calendar.MINUTE,0);
+        routeCalendarStart.set(Calendar.SECOND,0);
+//      end
+        Calendar routeCalendarEnd = new GregorianCalendar();
+        routeCalendarEnd.set(Calendar.HOUR,24);
+        routeCalendarEnd.set(Calendar.MINUTE,60);
+        routeCalendarEnd.set(Calendar.SECOND,60);
+        routeCalendarEnd.setTimeInMillis(r.getRouteDateTime().getEndDateUnix());
+//      userDate
+        Calendar userInput = new GregorianCalendar();
+        userInput.setTimeInMillis(RouteFilter.this.timeUnix);
+
+        if (routeCalendarStart.getTimeInMillis() > userInput.getTimeInMillis() || userInput.getTimeInMillis() > routeCalendarEnd.getTimeInMillis()){
+            return false;
+        }
+        switch (r.getRouteDateTime().getTimetable()){
+            case 0://one time
+                if (routeCalendarStart.get(Calendar.YEAR) != userInput.get(Calendar.YEAR) ||
+                        routeCalendarStart.get(Calendar.MONTH) != userInput.get(Calendar.MONTH) ||
+                        routeCalendarStart.get(Calendar.DAY_OF_MONTH) != userInput.get(Calendar.DAY_OF_MONTH)) {
+                    return false;
+                }
+                break;
+            case 1: // daily
+                if (routeCalendarStart.getTimeInMillis() > RouteFilter.this.timeUnix ||
+                        RouteFilter.this.timeUnix > routeCalendarEnd.getTimeInMillis()){
+                    return false;
+                }
+                break;
+            case 2://weekly
+//              check if the day of week is the same and if the user date is between start and end route date
+                if (routeCalendarStart.get(Calendar.DAY_OF_WEEK) != userInput.get(Calendar.DAY_OF_WEEK)){
+                    return false;
+                }
+                break;
+            case 3://monthly
+//              find the last day Month of user Input
+                int lastDayMonth = YearMonth.of(userInput.get(Calendar.YEAR),userInput.get(Calendar.MONTH)+1).lengthOfMonth();
+//              if is it smaller check for the day of the month
+                if (lastDayMonth > routeCalendarStart.get(Calendar.DAY_OF_MONTH)){
+                    if (routeCalendarStart.get(Calendar.DAY_OF_MONTH) != userInput.get(Calendar.DAY_OF_MONTH)){
+                        return false;
+                    }else {
+                        break;
+                    }
+                }else {
+//                  else check if is it the last day
+                    if (lastDayMonth != userInput.get(Calendar.DAY_OF_MONTH)){
+                        return false;
+                    }
+                }
+                break;
+            case 4://yearly
+
+                break;
+            case 5:
+
+                //create a list of the selected Days
+                List<String> selectedDays = new ArrayList<>(r.getRouteDateTime().getSelectedDays().values());
+                Collections.sort(selectedDays);
+                boolean isSameDayOfTheWeek = false;
+                for (String days: selectedDays){
+                    Calendar currentCalendar = new GregorianCalendar();
+                    currentCalendar.setTimeInMillis(r.getRouteDateTime().getStartDateUnix());
+//                  for every day create a Calendar with the startRouteDateTime as Unix time
+//                   and check if the Day of Week is the same with the users
+                    currentCalendar.set(Calendar.DAY_OF_WEEK, Integer.valueOf(days));
+                    if (currentCalendar.get(Calendar.DAY_OF_WEEK) == userInput.get(Calendar.DAY_OF_WEEK)) {
+                        isSameDayOfTheWeek = true;
+                        break;
+                    }
+                }
+                if (!isSameDayOfTheWeek) {
+                    return false;
+                }
+        }
+        return true;
+    }
+
+    private boolean checkCost(Route r){
+//      cost Check
+        if (RouteFilter.this.minPricePerPassenger != defaultMinPrice || RouteFilter.this.maxPricePerPassenger != defaultMaxPrice){
+            try {
+                float costPerRider = Float.parseFloat(r.getCostPerRider());
+                if (RouteFilter.this.minPricePerPassenger > costPerRider || RouteFilter.this.maxPricePerPassenger < costPerRider) {
+                    return false;
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkTime(Route r){
+//      time check
+        if (minTime != defaultMinTime || maxTime != defaultMaxTime){
+
+            float hourDifference = (
+                    getCombineDate(r.getRouteDateTime().getStartDateUnix(),
+                            r.getRouteDateTime().getStartTimeUnix()) - RouteFilter.this.timeUnix) /(60.f*60.f*1000);
+            if (RouteFilter.this.minTime > hourDifference || RouteFilter.this.maxTime < hourDifference) {
+                return false;
+            }
+        }
+        return true;
     }
 }

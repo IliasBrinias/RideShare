@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/radioTimetable4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".RouteFilterActivity">
+    tools:context=".Route.RouteFilterActivity">
 
     <TableRow
         android:id="@+id/tableRow5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:background="?colorPrimary"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,13 +30,13 @@
                 android:layout_height="23dp"
                 android:onClick="closeFilter"
                 android:src="@drawable/ic_cancel"
-                app:tint="?colorOnPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.043"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.518" />
+                app:layout_constraintVertical_bias="0.518"
+                app:tint="?colorOnPrimary" />
 
             <TextView
                 android:id="@+id/textView12"
@@ -71,6 +71,99 @@
             android:layout_height="800dp"
             android:orientation="vertical">
 
+            <TableRow
+                android:id="@+id/tableRowClassificationTitle"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:onClick="openTableRowItems">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imageViewClassification"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_dropdown"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.955"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        style="@style/titleRouteFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/classification"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRowClassification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <RadioGroup
+                        android:id="@+id/radioGroupClassification"
+                        android:layout_width="366dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <RadioButton
+                            android:id="@+id/radioClassification0"
+                            style="@style/radioButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Ascending Price" />
+
+                        <RadioButton
+                            android:id="@+id/radioClassification1"
+                            style="@style/radioButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Declining Price" />
+
+                        <RadioButton
+                            android:id="@+id/radioClassification2"
+                            style="@style/radioButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Based on Time" />
+
+                        <RadioButton
+                            android:id="@+id/radioClassification3"
+                            style="@style/radioButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Based on Driver Reviews" />
+
+                    </RadioGroup>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </TableRow>
+
+            <View
+                android:layout_width="360dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center"
+                android:background="@color/shadow" />
 
 
             <TableRow
@@ -126,18 +219,17 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        >
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <RadioButton
-                            android:id="@+id/radio0"
+                            android:id="@+id/radioTimetable0"
                             style="@style/radioButtonStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/no_repeat" />
 
                         <RadioButton
-                            android:id="@+id/radio1"
+                            android:id="@+id/radioTimetable1"
                             style="@style/radioButtonStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -151,7 +243,7 @@
                             android:text="@string/weekly" />
 
                         <RadioButton
-                            android:id="@+id/radio3"
+                            android:id="@+id/radioTimetable3"
                             style="@style/radioButtonStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -172,97 +264,8 @@
             <View
                 android:id="@+id/view4"
                 android:layout_width="360dp"
-                android:layout_gravity="center"
                 android:layout_height="2dp"
-                android:background="@color/shadow" />
-            <TableRow
-                android:id="@+id/tableRowClassificationTitle"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:onClick="openTableRowItems">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/imageViewClassification"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_dropdown"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.955"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        style="@style/titleRouteFilter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/classification"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.05"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </TableRow>
-
-            <TableRow
-                android:id="@+id/tableRowClassification"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-
-                    <RadioGroup
-                        android:id="@+id/radioGroupClassification"
-                        android:layout_width="366dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        >
-
-                        <RadioButton
-                            style="@style/radioButtonStyle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Ascending Price" />
-
-                        <RadioButton
-                            style="@style/radioButtonStyle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Declining Price" />
-
-                        <RadioButton
-                            style="@style/radioButtonStyle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Based on Time" />
-                        <RadioButton
-                            style="@style/radioButtonStyle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Based on Time" />
-
-                    </RadioGroup>
-
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </TableRow>
-
-            <View
-                android:layout_width="360dp"
                 android:layout_gravity="center"
-                android:layout_height="2dp"
                 android:background="@color/shadow" />
 
             <TableRow
@@ -345,9 +348,10 @@
                         android:id="@+id/sliderPrice"
                         android:layout_width="373dp"
                         android:layout_height="wrap_content"
-                        app:labelBehavior="gone"
                         android:valueFrom="0"
+                        app:values="@array/rangeValues"
                         android:valueTo="100"
+                        app:labelBehavior="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.523"
@@ -361,8 +365,8 @@
             <View
                 android:id="@+id/view2"
                 android:layout_width="360dp"
-                android:layout_gravity="center"
                 android:layout_height="2dp"
+                android:layout_gravity="center"
                 android:background="@color/shadow" />
 
             <TableRow
@@ -399,10 +403,12 @@
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </TableRow>
+
             <TableRow
                 android:id="@+id/tableRowTime"
                 android:layout_width="match_parent"
                 android:layout_height="174dp">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -442,9 +448,9 @@
                         android:id="@+id/sliderTime"
                         android:layout_width="373dp"
                         android:layout_height="wrap_content"
-                        app:labelBehavior="gone"
                         android:valueFrom="-12"
                         android:valueTo="12"
+                        app:labelBehavior="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.523"
@@ -455,11 +461,12 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </TableRow>
+
             <View
                 android:id="@+id/view5"
                 android:layout_width="360dp"
-                android:layout_gravity="center"
                 android:layout_height="2dp"
+                android:layout_gravity="center"
                 android:background="@color/shadow" />
 
             <TableRow
@@ -496,10 +503,12 @@
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </TableRow>
+
             <TableRow
                 android:id="@+id/tableRowRating"
                 android:layout_width="match_parent"
                 android:layout_height="174dp">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -545,10 +554,10 @@
                         android:id="@+id/sliderRating"
                         android:layout_width="373dp"
                         android:layout_height="wrap_content"
-                        app:labelBehavior="gone"
-
                         android:valueFrom="0"
+
                         android:valueTo="5"
+                        app:labelBehavior="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.523"

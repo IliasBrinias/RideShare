@@ -1,4 +1,4 @@
-package com.unipi.diplomaThesis.rideshare;
+package com.unipi.diplomaThesis.rideshare.Route;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -19,13 +19,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.slider.RangeSlider;
 import com.unipi.diplomaThesis.rideshare.Model.RouteFilter;
+import com.unipi.diplomaThesis.rideshare.R;
 
 import java.math.BigDecimal;
 import java.util.Locale;
 
 public class RouteFilterActivity extends AppCompatActivity implements RangeSlider.OnChangeListener {
 //    float minPrice
-    RadioGroup radioGroupRepeatability;
+    RadioGroup radioGroupRepeatability,
+               radioGroupClassification;
     EditText minPrice, maxPrice,
             minTime, maxTime,
             minRating,maxRating;
@@ -43,7 +45,7 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
             imageClassification,
             imageRating;
     TextView clear;
-    RouteFilter routeFilter = new RouteFilter();
+    static RouteFilter routeFilter = new RouteFilter();
     private static final int ROTATE_DURATION = 250;
     @SuppressLint("SetTextI18n")
     @Override
@@ -61,12 +63,13 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
         tableRowTimeTitle = findViewById(R.id.tableRowTimeTitle);
         tableRowClassificationTitle = findViewById(R.id.tableRowClassificationTitle);
         tableRowClassification = findViewById(R.id.tableRowClassification);
-
         tableRowTime = findViewById(R.id.tableRowTime);
         tableRowRatingTitle = findViewById(R.id.tableRowRatingTitle);
         tableRowRating = findViewById(R.id.tableRowRating);
+
 //        elements in table rows
         radioGroupRepeatability = findViewById(R.id.radioGroupRepeatability);
+        radioGroupClassification = findViewById(R.id.radioGroupClassification);
         minPrice = findViewById(R.id.autoCompleteFromPrice);
         maxPrice = findViewById(R.id.autoCompleteToPrice);
         minTime = findViewById(R.id.autoCompleteFromTime);
@@ -93,17 +96,13 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
         tableRowTime.setVisibility(View.GONE);
         tableRowRating.setVisibility(View.GONE);
         tableRowClassification.setVisibility(View.GONE);
-
         tableRowClicked(tableRowRepeatability,imageRepeatability);
         tableRowClicked(tableRowPrice,imagePrice);
         tableRowClicked(tableRowTime,imageTime);
         tableRowClicked(tableRowRating,imageRating);
         tableRowClicked(tableRowClassification,imageClassification);
-        if (routeFilter.getFilterCount()==0){
-            clear.performClick();
-        }else {
-            loadRouteFilter(routeFilter);
-        }
+        loadRouteFilter(routeFilter);
+
     }
     public void openTableRowItems(View view){
         if (view.getId() == tableRowPriceTitle.getId()){
@@ -125,6 +124,7 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
     public void clearFilter(View view){
 //        repeatability
         radioGroupRepeatability.check(1);
+        radioGroupClassification.check(1);
 //        setValues to sliders
         rangeSliderPrice.setValues(routeFilter.getDefaultMinPrice(),routeFilter.getDefaultMaxPrice());
         minPrice.setText(routeFilter.getDefaultMinPrice() +"$");
@@ -171,20 +171,13 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
     }
     @SuppressLint("ResourceType")
     public void applyFilters(View view){
-        int radioButtonID = radioGroupRepeatability.getCheckedRadioButtonId();
-        View radioButton = radioGroupRepeatability.findViewById(radioButtonID);
-        int idxRepeatability = radioGroupRepeatability.indexOfChild(radioButton);
 //        repeatability
-        routeFilter.setTimetable(idxRepeatability);
+        routeFilter.setTimetable(getRadioButtonIdx(radioGroupRepeatability));
+//        Classification
+        routeFilter.setClassification(getRadioButtonIdx(radioGroupClassification));
 //        price
-        if (rangeSliderPrice.getValues().get(0) == rangeSliderPrice.getValueFrom() &&
-                rangeSliderPrice.getValues().get(1) == rangeSliderPrice.getValueTo()){
-            routeFilter.setMinPricePerPassenger(routeFilter.getDefaultMinPrice());
-            routeFilter.setMaxPricePerPassenger(routeFilter.getDefaultMaxPrice());
-        }else {
-            routeFilter.setMinPricePerPassenger(rangeSliderPrice.getValues().get(0));
-            routeFilter.setMaxPricePerPassenger(rangeSliderPrice.getValues().get(1));
-        }
+        routeFilter.setMinPricePerPassenger(rangeSliderPrice.getValues().get(0));
+        routeFilter.setMaxPricePerPassenger(rangeSliderPrice.getValues().get(1));
 //        time
         routeFilter.setMinTime(rangeSliderTime.getValues().get(0));
         routeFilter.setMaxTime(rangeSliderTime.getValues().get(1));
@@ -197,7 +190,11 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
         setResult(Activity.RESULT_OK, i);
         this.finish();
     }
-
+    private int getRadioButtonIdx(RadioGroup radioGroup){
+        int radioButtonID = radioGroup.getCheckedRadioButtonId();
+        View radioButton = radioGroup.findViewById(radioButtonID);
+        return radioGroup.indexOfChild(radioButton);
+    }
     @SuppressLint({"RestrictedApi", "SetTextI18n"})
     @Override
     public void onValueChange(@NonNull RangeSlider slider, float value, boolean fromUser) {
@@ -243,13 +240,15 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
     }
     private void loadRouteFilter(RouteFilter routeFilter){
 //        Repeatability
-        if (routeFilter.getTimetable()!=-1) {
+        if (routeFilter.getTimetable()!=routeFilter.getDefaultTimetable()) {
             radioGroupRepeatability.check(radioGroupRepeatability.getChildAt(routeFilter.getTimetable()).getId());
         }
-//        Price
-        if (routeFilter.getMinPricePerPassenger() != -1.f || routeFilter.getMaxPricePerPassenger() != -1.f) {
-            rangeSliderPrice.setValues(routeFilter.getMinPricePerPassenger(),routeFilter.getMaxPricePerPassenger());
+//        Classification
+        if (routeFilter.getClassification()!=routeFilter.getDefaultClassification()) {
+            radioGroupClassification.check(radioGroupClassification.getChildAt(routeFilter.getClassification()).getId());
         }
+//        Price
+        rangeSliderPrice.setValues(routeFilter.getDefaultMinPrice(),routeFilter.getDefaultMaxPrice());
 //        Time
         rangeSliderTime.setValues(routeFilter.getMinTime(),routeFilter.getMaxTime());
 //        Rating

@@ -160,6 +160,7 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
         i.putExtra("originLocation", startLocation.toString());
         i.putExtra("destinationLocation", finishLocation.toString());
         i.putExtra("date", routeDateUnix);
+        System.out.println("date on Route SearchFragment:"+routeDateUnix);
         startActivity(i);
     }
     private boolean checkIfLocationExists(JSONArray savedLocations,JSONObject newLocation){
@@ -271,6 +272,7 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
                             timePicker.getHour(),
                             timePicker.getMinute());
                     routeDateUnix = calendar.getTimeInMillis();
+                    System.out.println("date on Route SearchFragment After Calendar:"+routeDateUnix);
                     autoCompleteDate.setText(simpleDateFormat.format(routeDateUnix));
                     openRiderRouteActivity();
                     alertDialog.dismiss();

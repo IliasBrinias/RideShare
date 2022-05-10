@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -33,8 +34,8 @@ import com.unipi.diplomaThesis.rideshare.Model.Route;
 import com.unipi.diplomaThesis.rideshare.Model.RouteFilter;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
-import com.unipi.diplomaThesis.rideshare.RouteActivity;
-import com.unipi.diplomaThesis.rideshare.RouteFilterActivity;
+import com.unipi.diplomaThesis.rideshare.Route.RouteActivity;
+import com.unipi.diplomaThesis.rideshare.Route.RouteFilterActivity;
 import com.unipi.diplomaThesis.rideshare.rider.adapter.RiderRouteAdapter;
 
 import org.json.JSONArray;
@@ -44,10 +45,11 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class RiderRouteActivity extends AppCompatActivity implements TextWatcher {
+public class RiderRouteActivity extends AppCompatActivity implements TextWatcher, AdapterView.OnItemClickListener {
     private RecyclerView recyclerView;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
     private TextView  routeCountTitle;
@@ -65,7 +67,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
     AutoCompleteTextView autoCompleteOriginPoint,autoCompleteDestinationPoint,autoCompleteDate;
     TableRow tableRowFilter, tableRowLocationSearch, tableRowReturnedData;
     ListView listViewLocationSearch;
-    RouteFilter routeFilter = new RouteFilter();
+    private static RouteFilter routeFilter = new RouteFilter();
     Toast t;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +125,6 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         routeFilter.setOriginRiderPlaceId(originPlaceId);
         routeFilter.setDestinationRiderPlaceId(destinationPlaceId);
         routeFilter.setTimeUnix(dateTimeUnix);
-        r.routeSearch(this ,routeFilter, this::refreshData);
         riderRouteAdapter = new RiderRouteAdapter(this,routeList, routeDrivers, dateTimeUnix, new OnRiderRouteClickListener() {
             @Override
             public void onRouteClick(View view, int position) {
@@ -136,56 +137,15 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         });
         recyclerView.setAdapter(riderRouteAdapter);
 
-        @SuppressLint("NotifyDataSetChanged") AdapterView.OnItemClickListener clickedLocationListener =
-                (adapterView, view, position, l) -> {
-            try {
-                if (autoCompleteOriginPoint.isFocused()){
-                    originLocation = locations.getJSONObject(position);
-                    autoCompleteOriginPoint.setText(originLocation.getString("formatted_address"));
-                    routeFilter.setOriginRiderPlaceId(originLocation.getString("place_id"));
-                    autoCompleteOriginPoint.clearFocus();
-                }else if (autoCompleteDestinationPoint.isFocused()){
-                    destinationLocation = locations.getJSONObject(position);
-                    autoCompleteDestinationPoint.setText(destinationLocation.getString("formatted_address"));
-                    if (autoCompleteDestinationPoint.getText().toString().equals(autoCompleteOriginPoint.getText().toString())){
-                        if (t!=null) t.cancel();
-                        t.makeText(this, getResources().getString(R.string.same_start_finish_point_error),Toast.LENGTH_SHORT).show();
-                        autoCompleteDestinationPoint.setText("");
-                        destinationLocation = null;
-                        return;
-                    }
-                    routeFilter.setOriginRiderPlaceId(destinationLocation.getString("place_id"));
-                    autoCompleteDestinationPoint.clearFocus();
-                }
-                tableRowLocationSearch.setVisibility(View.GONE);
-                tableRowReturnedData.setVisibility(View.VISIBLE);
-                routeDrivers.clear();
-                routeList.clear();
-                riderRouteAdapter.notifyDataSetChanged();
-                r.routeSearch(this ,routeFilter, this::refreshData);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        };
-        listViewLocationSearch.setOnItemClickListener(clickedLocationListener);
-        r.findMinMaxPrice(returnData -> {
-//            find Price min max
-            if (returnData.get("min")!=null){
-                routeFilter.setDefaultMinPrice((Float) returnData.get("min"));
-            }else if (returnData.get("max")!=null){
-                routeFilter.setDefaultMaxPrice((Float) returnData.get("max"));
-            }
-            if (routeFilter.getMinPricePerPassenger()!=routeFilter.getDefaultMinPrice()
-                    && routeFilter.getMaxPricePerPassenger()!=routeFilter.getDefaultMaxPrice()){
-                tableRowFilter.setVisibility(View.VISIBLE);
-            }else {
-                tableRowFilter.setVisibility(View.GONE);
-            }
-        });
+        listViewLocationSearch.setOnItemClickListener(this);
+        RouteSearch();
     }
     @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
     private void refreshData(Route r, User driver){
         routeList.add(r);
+        if (routeFilter.getClassification()!=routeFilter.getDefaultClassification()){
+            routeList = classificationBasedRouteFilter(routeList,routeFilter.getClassification());
+        }
 //        check if the driver exists
         boolean exists = false;
         for (User u:routeDrivers) {
@@ -206,13 +166,44 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         }
 
     }
+    private List<Route> classificationBasedRouteFilter(List<Route> routeList, int typeOfClassification){
+        switch (typeOfClassification){
+            case 0: // asc Price
+                routeList.sort(new Comparator<Route>() {
+                    @Override
+                    public int compare(Route r1, Route r2) {
+                        return r1.getCostPerRider().compareTo(r2.getCostPerRider());
+                    }
+                });
+                break;
+            case 1: // Dec Price
+                routeList.sort(new Comparator<Route>() {
+                    @Override
+                    public int compare(Route r1, Route r2) {
+                        return r2.getCostPerRider().compareTo(r1.getCostPerRider());
+                    }
+                });
+                break;
+            case 2: // Based on Time
+                routeList.sort(new Comparator<Route>() {
+                    @Override
+                    public int compare(Route r1, Route r2) {
+                        return Float.compare(r1.getMinDiff(dateTimeUnix),r2.getMinDiff(dateTimeUnix));
+                    }
+                });
+                break;
+            case 3: // Based on Reviews
+                break;
+
+        }
+        return routeList;
+    }
     public void openFilter(View view){
         Intent i = new Intent(new Intent(this, RouteFilterActivity.class));
         i.putExtra(RouteFilter.class.getSimpleName(),routeFilter);
         startActivityForResult(i,REQ_ROUTE_FILTER);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -220,10 +211,6 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
             case REQ_ROUTE_FILTER:
                 if (resultCode == Activity.RESULT_OK && data != null){
                     routeFilter = (RouteFilter) data.getSerializableExtra(RouteFilter.class.getSimpleName());
-                    routeList.clear();
-                    routeDrivers.clear();
-                    r.routeSearch(this, routeFilter, this::refreshData);
-                    riderRouteAdapter.notifyDataSetChanged();
                     int countFilters = routeFilter.getFilterCount();
                     if (countFilters == 0){
                         buttonFilter.setVisibility(View.VISIBLE);
@@ -234,6 +221,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
                         textViewFilterCount.setText(String.valueOf(countFilters));
                     }
                 }
+                RouteSearch();
                 break;
         }
     }
@@ -290,15 +278,17 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
 
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     public void setDateTime(View view){
         //load the custom date Picker to the alertDialog
         final View dialogView = View.inflate(this, R.layout.date_time_picker, null);
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(dialogView).create();
+        alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+        alertDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.alert_dialog_background));
         TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.time_picker);
         DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
         timePicker.setVisibility(View.GONE);
         dialogView.findViewById(R.id.date_time_set).setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(View view) {
                 if (datePicker.getVisibility()==View.VISIBLE){
@@ -313,11 +303,10 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
                     dateTimeUnix = calendar.getTimeInMillis();
                     autoCompleteDate.setText(simpleDateFormat.format(dateTimeUnix));
                     alertDialog.dismiss();
-                    routeDrivers.clear();
-                    routeList.clear();
-                    riderRouteAdapter.notifyDataSetChanged();
                     riderRouteAdapter.setDateTime(dateTimeUnix);
-                    r.routeSearch(RiderRouteActivity.this ,routeFilter, RiderRouteActivity.this::refreshData);
+                    routeFilter.setTimeUnix(dateTimeUnix);
+                    RouteSearch();
+
                 }
             }
         });
@@ -325,5 +314,61 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         alertDialog.setCancelable(true);
         alertDialog.show();
     }
+    Float min;
+    Float max;
 
+    @SuppressLint("NotifyDataSetChanged")
+    private void RouteSearch() {
+        tableRowFilter.setVisibility(View.GONE);
+        riderRouteAdapter.notifyDataSetChanged();
+        routeDrivers.clear();
+        routeList.clear();
+        r.routeSearch(RiderRouteActivity.this ,routeFilter, RiderRouteActivity.this::refreshData);
+        tableRowFilter.setVisibility(View.GONE);
+        min = -1.f;
+        max = -1.f;
+
+        r.findMinMaxPrice(returnData -> {
+//            find Price min max
+            if (returnData.get("min")!=null){
+                min = (Float) returnData.get("min");
+            }else if (returnData.get("max")!=null){
+                max = (Float) returnData.get("max");
+            }
+            if (min==-1f || max == -1f) return;
+            routeFilter.setDefaultMaxPrice(max);
+            routeFilter.setDefaultMinPrice(min);
+            tableRowFilter.setVisibility(View.VISIBLE);
+        });
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        try {
+            if (autoCompleteOriginPoint.isFocused()){
+                originLocation = locations.getJSONObject(position);
+                autoCompleteOriginPoint.setText(originLocation.getString("formatted_address"));
+                routeFilter.setOriginRiderPlaceId(originLocation.getString("place_id"));
+                autoCompleteOriginPoint.clearFocus();
+            }else if (autoCompleteDestinationPoint.isFocused()){
+                destinationLocation = locations.getJSONObject(position);
+                autoCompleteDestinationPoint.setText(destinationLocation.getString("formatted_address"));
+                if (autoCompleteDestinationPoint.getText().toString().equals(autoCompleteOriginPoint.getText().toString())){
+                    if (t!=null) t.cancel();
+                    t.makeText(this, getResources().getString(R.string.same_start_finish_point_error),Toast.LENGTH_SHORT).show();
+                    autoCompleteDestinationPoint.setText("");
+                    destinationLocation = null;
+                    return;
+                }
+                routeFilter.setOriginRiderPlaceId(destinationLocation.getString("place_id"));
+                autoCompleteDestinationPoint.clearFocus();
+            }
+            tableRowLocationSearch.setVisibility(View.GONE);
+            tableRowReturnedData.setVisibility(View.VISIBLE);
+            RouteSearch();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }
