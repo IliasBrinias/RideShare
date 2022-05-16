@@ -15,6 +15,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -68,6 +69,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
     TableRow tableRowFilter, tableRowLocationSearch, tableRowReturnedData;
     ListView listViewLocationSearch;
     private static RouteFilter routeFilter = new RouteFilter();
+    ProgressBar progressBar;
     Toast t;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,14 +87,15 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         tableRowLocationSearch = findViewById(R.id.tableRowLocationSearch);
         tableRowReturnedData = findViewById(R.id.tableRowReturnData);
         listViewLocationSearch = findViewById(R.id.listViewLocationSearch);
-
+        progressBar = findViewById(R.id.progressBar);
         tableRowLocationSearch.setVisibility(View.GONE);
         tableRowFilter.setVisibility(View.GONE);
         tableRowReturnedData.setVisibility(View.VISIBLE);
+
+        startProgressBarAnimation();
         autoCompleteDate.setOnClickListener(this::setDateTime);
         autoCompleteOriginPoint.addTextChangedListener(this);
         autoCompleteDestinationPoint.addTextChangedListener(this);
-
 //        reset the routeList and RouteDrivers
         routeList.clear();
         routeDrivers.clear();
@@ -142,6 +145,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
     }
     @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
     private void refreshData(Route r, User driver){
+        stopProgressBarAnimation();
         routeList.add(r);
         if (routeFilter.getClassification()!=routeFilter.getDefaultClassification()){
             routeList = classificationBasedRouteFilter(routeList,routeFilter.getClassification());
@@ -188,7 +192,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
                 routeList.sort(new Comparator<Route>() {
                     @Override
                     public int compare(Route r1, Route r2) {
-                        return Float.compare(r1.getMinDiff(dateTimeUnix),r2.getMinDiff(dateTimeUnix));
+                        return Float.compare(Math.abs(r1.getMinDiff(dateTimeUnix)),Math.abs(r2.getMinDiff(dateTimeUnix)));
                     }
                 });
                 break;
@@ -319,6 +323,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
 
     @SuppressLint("NotifyDataSetChanged")
     private void RouteSearch() {
+        startProgressBarAnimation();
         tableRowFilter.setVisibility(View.GONE);
         riderRouteAdapter.notifyDataSetChanged();
         routeDrivers.clear();
@@ -371,4 +376,13 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
             e.printStackTrace();
         }
     }
+    private void startProgressBarAnimation(){
+        progressBar.setIndeterminate(true);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+    private void stopProgressBarAnimation(){
+            progressBar.setIndeterminate(false);
+            progressBar.setVisibility(View.GONE);
+    }
+
 }

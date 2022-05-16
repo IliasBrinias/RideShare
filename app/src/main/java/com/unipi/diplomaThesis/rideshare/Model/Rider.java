@@ -72,9 +72,11 @@ public class Rider extends User{
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot route:snapshot.getChildren()) {
-//                            calculate the distance
                             Route r = route.getValue(Route.class);
+//                            check if route exists
                             if (r==null) continue;
+//                            check if the route has at least one seat free
+                            if (r.isFull()) continue;
 //                            check if the route is acceptable
                             routeFilter.filterCheck(c, r, success ->
                             {

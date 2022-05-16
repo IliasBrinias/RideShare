@@ -19,6 +19,10 @@
     <color name="lightBlue">#4F0892D3</color>
     <color name="shadow">#FFD5D5D5</color>
     <color name="navigationBackground">#FFF2F2F2</color>
+    <color name="sliderGreen">#88FF00</color>
+    <color name="sliderYellow">#FFDF00</color>
+    <color name="sliderOrange">#FFAA00</color>
+    <color name="sliderRed">#FF0000</color>
     <color name="backgroundBlue">
         <gradient
             android:startColor = "#FF008ED1"

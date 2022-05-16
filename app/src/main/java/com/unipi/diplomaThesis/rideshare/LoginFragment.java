@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -30,6 +39,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
@@ -48,7 +58,6 @@ import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * A simple {@link Fragment} subclass.
  * create an instance of this fragment.
@@ -62,10 +71,14 @@ public class LoginFragment extends Fragment {
     private String WEB_CLIENT_TOKEN = "719991187082-6o6stl5ugq4u52jkja0vulajud89sjun.apps.googleusercontent.com";
     private int REQ_USER_ACTIVITY = 719;
     private OnUserLoadComplete onUserLoadComplete;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private AccessTokenTracker accessTokenTracker;
     private TextView registerTitle;
     private Button login, register;
     private TableRow tableRowGoogleLogin, tableRowFacebookLogin;
     GoogleSignInClient mGoogleApiClient;
+    private CallbackManager mCallbackManager;
+    private LoginButton facebookLoginButton;
     private ActivityResultLauncher<IntentSenderRequest> loginResultHandler;
     public LoginFragment() {
         // Required empty public constructor
@@ -74,7 +87,7 @@ public class LoginFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -87,9 +100,14 @@ public class LoginFragment extends Fragment {
         password = v.findViewById(R.id.textInputRegisterPassword);
         login = v.findViewById(R.id.buttonLogin);
         tableRowGoogleLogin = v.findViewById(R.id.tableRowGoogleLogin);
+        tableRowFacebookLogin = v.findViewById(R.id.tableRowFacebookLogin);
+        facebookLoginButton = v.findViewById(R.id.facebookLogin);
+        tableRowFacebookLogin.setOnClickListener(view -> facebookLoginButton.performClick());
         tableRowGoogleLogin.setOnClickListener(this::loginWithGoogle);
         login.setOnClickListener(this::login);
         mAuth = FirebaseAuth.getInstance();
+
+        facebookLoginButton.setReadPermissions("email","public_profile");
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         loginResultHandler =
         registerForActivityResult(new ActivityResultContracts
@@ -98,7 +116,59 @@ public class LoginFragment extends Fragment {
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
                     System.out.println(task.getResult().getEmail());
                 });
+
+        mCallbackManager = CallbackManager.Factory.create();
+        facebookLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {handleFacebookToken(loginResult.getAccessToken());}
+            @Override
+            public void onCancel() {}
+            @Override
+            public void onError(@NonNull FacebookException e) {
+                e.printStackTrace();
+            }
+        });
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user == null){
+
+                }
+            }
+        };
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(@Nullable AccessToken accessToken, @Nullable AccessToken currentAccessToken) {
+                if (currentAccessToken==null){
+                    mAuth.signOut();
+                }
+            }
+        };
         return v;
+    }
+
+    private void handleFacebookToken(AccessToken token){
+        Log.d("FACEBOOK_LOGIN", "handleFacebookToken" + token);
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()){
+                    Log.d("FACEBOOK_LOGIN", "sign in with credential: success");
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    updateUiFacebook(user);
+                }else{
+                    task.getException().printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void updateUiFacebook(FirebaseUser user) {
+        if (user!= null){
+            Toast.makeText(getActivity(), user.getDisplayName(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void loginWithGoogle(View view){
@@ -181,6 +251,8 @@ public class LoginFragment extends Fragment {
                 }
             }
         }
+        // Pass the activity result back to the Facebook SDK
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     private void handleSignInResult(GoogleSignInAccount acc) {

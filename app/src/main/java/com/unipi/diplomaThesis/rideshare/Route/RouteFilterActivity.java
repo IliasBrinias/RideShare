@@ -127,8 +127,8 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
         radioGroupClassification.check(1);
 //        setValues to sliders
         rangeSliderPrice.setValues(routeFilter.getDefaultMinPrice(),routeFilter.getDefaultMaxPrice());
-        minPrice.setText(routeFilter.getDefaultMinPrice() +"$");
-        maxPrice.setText(routeFilter.getDefaultMaxPrice() +"$");
+        minPrice.setText(routeFilter.getDefaultMinPrice() +"€");
+        maxPrice.setText(routeFilter.getDefaultMaxPrice() +"€");
 
         rangeSliderTime.setValues(routeFilter.getDefaultMinTime(),routeFilter.getDefaultMaxTime());
         minTime.setText(String.valueOf(routeFilter.getDefaultMinTime()));
@@ -201,8 +201,8 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
         int id = slider.getId();
 //        Price
         if (id == rangeSliderPrice.getId()) {
-            minPrice.setText(String.format(Locale.getDefault(), "%.2f", slider.getValues().get(0)) + "$");
-            maxPrice.setText(String.format(Locale.getDefault(), "%.2f", slider.getValues().get(1)) + "$");
+            minPrice.setText(String.format(Locale.getDefault(), "%.2f", slider.getValues().get(0)) + "€");
+            maxPrice.setText(String.format(Locale.getDefault(), "%.2f", slider.getValues().get(1)) + "€");
             if (slider.getValues().get(0)< routeFilter.getDefaultMinPrice()){
                 slider.setValues(routeFilter.getDefaultMinPrice(),slider.getValues().get(1));
             }else if (slider.getValues().get(1)> routeFilter.getDefaultMaxPrice()) {

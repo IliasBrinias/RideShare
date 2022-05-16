@@ -26,10 +26,10 @@ public class Route implements Serializable {
     private HashMap<String, String> passengersId = new HashMap<>();
     private RouteDateTime routeDateTime;
     private String costPerRider;
-    private String maxRiders;
+    private int maxRiders;
     private String description;
 
-    public Route(String routeId, String driverId, RouteLatLng routeLatLng, HashMap<String, String> passengersId, RouteDateTime routeDateTime, String costPerRider, String maxRiders, String description) {
+    public Route(String routeId, String driverId, RouteLatLng routeLatLng, HashMap<String, String> passengersId, RouteDateTime routeDateTime, String costPerRider, int maxRiders, String description) {
         this.routeId = routeId;
         this.driverId = driverId;
         this.routeLatLng = routeLatLng;
@@ -76,11 +76,11 @@ public class Route implements Serializable {
         this.costPerRider = costPerRider;
     }
 
-    public String getMaxRiders() {
+    public int getMaxRiders() {
         return maxRiders;
     }
 
-    public void setMaxRiders(String maxRiders) {
+    public void setMaxRiders(int maxRiders) {
         this.maxRiders = maxRiders;
     }
 
@@ -146,6 +146,7 @@ public class Route implements Serializable {
         newRider.set(Calendar.MINUTE, riderMinute);
 
         Duration duration = Duration.between(newRoute.toInstant(),newRider.toInstant());
+        System.out.println(duration.toMinutes());
         return duration.toMinutes();
     }
     public CharSequence getTextForTimeDif(Context c, long userDateTime){
@@ -165,5 +166,21 @@ public class Route implements Serializable {
             return (c.getString(R.string.same_time));
         }
         return "";
+    }
+    public int getColorForRideCapacitySlider(){
+        int maxRiders = this.maxRiders;
+        int halfRiders = (int) Math.ceil((double)maxRiders / 2);
+        if (this.passengersId.size() == maxRiders){
+            return R.color.sliderRed;
+        }else if (this.passengersId.size() > halfRiders){
+            return R.color.sliderOrange;
+        }else if (this.passengersId.size() < halfRiders){
+            return R.color.sliderGreen;
+        }else {
+            return R.color.sliderYellow;
+        }
+    }
+    public boolean isFull(){
+        return this.maxRiders == this.passengersId.size();
     }
 }

@@ -3,6 +3,7 @@ package com.unipi.diplomaThesis.rideshare.Route;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -44,6 +46,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.slider.Slider;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
@@ -86,16 +89,20 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             carPlate,
             carYear,
             ratingAverage,
-            ratingCount;
+            ratingCount,
+            sliderRiderCapacityFrom,
+            sliderRiderCapacityTo;
+    Slider sliderRiderCapacity;
     RatingBar ratingBar;
     Button contactDriver;
     MapView mapView;
     Route r;
-    User driverUser;
+    Driver driverUser;
     View boundsOfTheMap, bottomSheet;
     String routeId, driverId;
     long userDateTime=0;
     Rider rider;
+    GoogleMap map;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,29 +112,28 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         }catch (ClassCastException c){
             finish();
         }
+        apiKey = getString(R.string.android_api_key);
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(apiKey);
+        }
         if (!getIntent().hasExtra(Route.class.getSimpleName()) ||
                 !getIntent().hasExtra(Driver.class.getSimpleName()) ||
                 !getIntent().hasExtra("userDateTime")){
             finish();
         }
+
         routeId = getIntent().getStringExtra(Route.class.getSimpleName());
         driverId = getIntent().getStringExtra(Driver.class.getSimpleName());
         userDateTime = getIntent().getLongExtra("userDateTime",0);
-        Bundle mapViewBundle = null;
-        if (savedInstanceState != null) {
-            mapViewBundle = savedInstanceState.getBundle(apiKey);
-        }
-        apiKey = getString(R.string.android_api_key);
 
         mapView = findViewById(R.id.mapView);
         boundsOfTheMap = findViewById(R.id.view7);
         imageViewClose = findViewById(R.id.imageViewClose);
-        mapView.onCreate(mapViewBundle);
         bottomSheet = findViewById(R.id.include_bottom_sheet);
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        mapView.getMapAsync(this);
-        imageViewClose.setOnClickListener(view->finish());
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        imageViewClose.setOnClickListener(view->finish());
         mBottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -140,6 +146,8 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         });
         loadBottomSheetElements(bottomSheet);
+        mapView.getMapAsync(this);
+        mapView.onCreate(mapViewBundle);
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -153,7 +161,6 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
         mapView.onSaveInstanceState(mapViewBundle);
     }
-    GoogleMap map;
     @SuppressLint("SetTextI18n")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
@@ -179,10 +186,10 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                         public void onDirectionFailure(@NonNull Throwable t) {
                         }
                     });
+            initializeSliderRiderCapacity(r);
             try {
                 Geocoder g = new Geocoder(this);
                 Address a = g.getFromLocation(r.getRouteLatLng().getStartLat(), r.getRouteLatLng().getStartLng(), 1).get(0);
-
                 String start = a.getThoroughfare() +" "+a.getFeatureName()+", "+a.getLocality()+", "+a.getCountryName();
                 a = g.getFromLocation(r.getRouteLatLng().getEndLat(),r.getRouteLatLng().getEndLng(),1).get(0);
                 String end = a.getThoroughfare() +" "+a.getFeatureName()+", "+a.getLocality()+", "+a.getCountryName();
@@ -190,11 +197,33 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                 destinationRoute.setText(getString(R.string.to)+" "+end);
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat timeFormat = new SimpleDateFormat("hh.mm aa");
                 timeRoute.setText(timeFormat.format(r.getRouteDateTime().getStartTimeUnix()));
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
             timeDifference.setText(route.getTextForTimeDif(this,userDateTime));
         });
+    }
+    private void initializeSliderRiderCapacity(Route r){
+        sliderRiderCapacity.setValueFrom(0.f);
+        sliderRiderCapacity.setValueTo(r.getMaxRiders());
+        sliderRiderCapacity.setValue(r.getPassengersId().size());
+        sliderRiderCapacityTo.setText(String.valueOf(r.getMaxRiders()) );
+        int selectedColor = r.getColorForRideCapacitySlider();
+        sliderRiderCapacity.setTrackActiveTintList(ColorStateList.valueOf(getColor(selectedColor)));
+        sliderRiderCapacity.setThumbTintList(ColorStateList.valueOf(getColor(selectedColor)));
+        sliderRiderCapacityFrom.setVisibility(View.VISIBLE);
+        sliderRiderCapacityTo.setVisibility(View.VISIBLE);
+        TypedValue typedValue = new TypedValue();
+        this.getTheme().resolveAttribute(com.google.android.material.R.attr.colorSecondaryVariant, typedValue, true);
+        int color = typedValue.data;
+        sliderRiderCapacity.setTickTintList(ColorStateList.valueOf(color));
+        if (r.getPassengersId().size()==r.getMaxRiders()) {
+            contactDriver.setOnClickListener(view -> {
+                Toast.makeText(this, getString(R.string.request_send_full_capacity), Toast.LENGTH_SHORT).show();
+                this.finish();
+            });
+        }
     }
     public void drawDirection(LatLng start, LatLng end,int width,int height,Direction direction){
         if (directions!=null){
@@ -220,7 +249,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             directions.add(path);
         }
         directions.color(Color.BLACK);
-        directions.width(3);
+        directions.width(5);
         map.addPolyline(directions);
 
         int padding = (int) (width * EDGES_OFFSET_FOR_MAP);
@@ -237,7 +266,6 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             public void onCancel() {
 
             }
-
             @Override
             public void onFinish() {
                 CameraPosition cameraPosition = map.getCameraPosition();
@@ -294,16 +322,20 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         ratingAverage = v.findViewById(R.id.textViewRatingAverage);
         ratingCount = v.findViewById(R.id.textViewRatingsCount);
         ratingBar = v.findViewById(R.id.ratingBarDriver);
-        tableRowShowRepeat.setOnClickListener(this::showRepeat);
+        sliderRiderCapacity = v.findViewById(R.id.sliderRideCapacity);
+        sliderRiderCapacityFrom = v.findViewById(R.id.sliderRideCapacityFrom);
+        sliderRiderCapacityTo = v.findViewById(R.id.sliderRideCapacityTo);
         contactDriver = v.findViewById(R.id.buttonContactDriver);
+        sliderRiderCapacity.setOnDragListener(null);
+        tableRowShowRepeat.setOnClickListener(this::showRepeat);
         contactDriver.setOnClickListener(this::routeRequest);
         loadDriverData();
     }
     private void loadDriverData(){
-        User.loadUser(driverId, new OnUserLoadComplete() {
+        Driver.loadDriver(driverId, new OnUserLoadComplete() {
             @Override
             public void returnedUser(User u) {
-                driverUser = u;
+                driverUser = (Driver) u;
                 driverUser.loadUserImage(image -> {
                     if (image!=null){
                         circleImageDriver.setImageBitmap(image);
@@ -401,7 +433,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
     }
 
-    private void customRepeat(MaterialCalendarView materialCalendarView, Calendar c) {
+    private void customRepeat(MaterialCalendarView materialCalendarView, @NonNull Calendar c) {
 //      create a single calendar for each selected day
         List<Calendar> calendars = new ArrayList<>();
         List<String> selectedDays = new ArrayList<>(r.getRouteDateTime().getSelectedDays().values());
@@ -409,7 +441,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         for (String days: selectedDays){
             Calendar currentCalendar = new GregorianCalendar();
             currentCalendar.setTimeInMillis(c.getTimeInMillis());
-            currentCalendar.set(Calendar.DAY_OF_WEEK, Integer.valueOf(days));
+            currentCalendar.set(Calendar.DAY_OF_WEEK, Integer.parseInt(days));
             calendars.add(currentCalendar);
         }
         while (r.getRouteDateTime().getEndDateUnix() > calendars.get(0).getTimeInMillis()) {
@@ -419,7 +451,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private void yearlyRepeat(MaterialCalendarView materialCalendarView, Calendar c) {
+    private void yearlyRepeat(MaterialCalendarView materialCalendarView, @NonNull Calendar c) {
         int dayOfMonth;
 //      TODO: remove Yearly
         dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
@@ -435,7 +467,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private void monthlyRepeat(MaterialCalendarView materialCalendarView, Calendar c) {
+    private void monthlyRepeat(MaterialCalendarView materialCalendarView, @NonNull Calendar c) {
         int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
         while (r.getRouteDateTime().getEndDateUnix() > c.getTimeInMillis()) {
             materialCalendarView.setDateSelected(
@@ -458,7 +490,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private void weeklyRepeat(MaterialCalendarView materialCalendarView, Calendar c) {
+    private void weeklyRepeat(MaterialCalendarView materialCalendarView, @NonNull Calendar c) {
         while (r.getRouteDateTime().getEndDateUnix() > c.getTimeInMillis()) {
             materialCalendarView.setDateSelected(
                     CalendarDay.from(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)), true);
@@ -476,7 +508,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private void dailyRepeat(MaterialCalendarView materialCalendarView, Calendar c) {
+    private void dailyRepeat(MaterialCalendarView materialCalendarView, @NonNull Calendar c) {
         while (r.getRouteDateTime().getEndDateUnix() > c.getTimeInMillis()) {
             materialCalendarView.setDateSelected(
                     CalendarDay.from(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)), true);

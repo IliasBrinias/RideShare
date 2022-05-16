@@ -15,16 +15,12 @@
       },
       "oauth_client": [
         {
-          "client_id": "719991187082-olaa3hepvp7u1fjavref8un1bhfadali.apps.googleusercontent.com",
+          "client_id": "719991187082-sm6t3h3agkjrnov33cptiitke2shq668.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.unipi.diplomaThesis.rideshare",
-            "certificate_hash": "7fa640062c8a2dc33ad5070d928fa2b4cb268d84"
+            "certificate_hash": "fdc07153a6ed65612e6e6008ac970f82b5268a85"
           }
-        },
-        {
-          "client_id": "719991187082-m0m8b82ivq5vfjmq1j75oanbes0bo5a6.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
@@ -36,7 +32,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "719991187082-dvvrr3vt6n0jdb7mi8nueme9n9s8bf82.apps.googleusercontent.com",
+              "client_id": "719991187082-6o6stl5ugq4u52jkja0vulajud89sjun.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -1,4 +1,4 @@
-package com.unipi.diplomaThesis.rideshare;
+package com.unipi.diplomaThesis.rideshare.rider;
 
 import android.Manifest;
 import android.app.Activity;
@@ -34,6 +34,7 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.Model.Car;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.User;
+import com.unipi.diplomaThesis.rideshare.R;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -146,7 +146,7 @@ public class DriverSaveRouteFragment extends Fragment {
                 null,
                 routeDateTime,
                 additionalInfo.get("price"),
-                additionalInfo.get("maxPassengers"),
+                Integer.parseInt(additionalInfo.get("maxPassengers")),
                 additionalInfo.get("description")
         );
         driver.saveRoute(r, getActivity(), new OnCompleteListener<Void>() {

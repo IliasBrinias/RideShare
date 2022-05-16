@@ -132,10 +132,10 @@
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyle"
-        android:indeterminateTint="?colorPrimary"
-        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:indeterminateTint="?colorPrimary"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/tableRowReturnData"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -239,14 +239,14 @@
 
                         <TextView
                             android:id="@+id/textViewFilter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
                             android:background="@drawable/ic_circle"
                             android:backgroundTint="?colorPrimary"
                             android:fontFamily="@font/tcm"
                             android:gravity="center"
                             android:stateListAnimator="@null"
-                            android:text="5"
+                            android:text="1"
                             android:textColor="?colorOnPrimary"
                             android:textSize="20sp"
                             android:visibility="gone" />

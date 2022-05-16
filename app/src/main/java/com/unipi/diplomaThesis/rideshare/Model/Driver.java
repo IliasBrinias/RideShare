@@ -64,7 +64,7 @@ public class Driver extends User{
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         try{
-                            if (snapshot.child(User.REQ_TYPE_TAG).getValue(Boolean.class) == true) {
+                            if (snapshot.child(User.REQ_TYPE_TAG).getValue(String.class).equals(Driver.class.getSimpleName())){
                                 onUserLoadComplete.returnedUser(snapshot.getValue(Driver.class));
                             } else {
                                 onUserLoadComplete.returnedUser(null);

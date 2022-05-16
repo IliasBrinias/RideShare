@@ -1,9 +1,11 @@
 <resources>
-    <string name="facebook_app_id">1355845931585779</string>
-    <string name="fb_login_protocol_scheme">fb1234</string>
-    <string name="facebook_client_token">101b3a1dbe9af15e2e0db7fb5a127391</string>
     <string name="app_name">Ride Share</string>
-    <string name="server_client_id">719991187082-m0m8b82ivq5vfjmq1j75oanbes0bo5a6.apps.googleusercontent.com</string>
+    <string name="server_client_id" translatable="false">719991187082-m0m8b82ivq5vfjmq1j75oanbes0bo5a6.apps.googleusercontent.com</string>
+
+    <string name="facebook_app_id" translatable="false">1057208558484503</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb1057208558484503</string>
+    <string name="facebook_client_token" translatable="false">caed0e2a94bd9a34438a31f5d148ec9f</string>
+
     <string name="password">Password</string>
     <string name="email">Email</string>
     <string name="login">Login</string>
@@ -160,6 +162,8 @@
     <string name="set">Set</string>
     <string name="error_message">Something  happened.. Please try again later</string>
     <string name="classification">Classification</string>
+    <string name="ride_capacity">Ride Capacity</string>
+    <string name="request_send_full_capacity">This route is foul of Riders.\nSearch for new ones</string>
     <string-array name="repeat_options">
         <item>@string/no_repeat</item>
         <item>@string/daily</item>
