@@ -20,8 +20,10 @@ import com.google.android.material.navigation.NavigationView;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.PersonalDataFragment;
 import com.unipi.diplomaThesis.rideshare.R;
+import com.unipi.diplomaThesis.rideshare.RiderLastRoutesFragment;
 import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverRouteFragment;
 import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteFragment;
+import com.unipi.diplomaThesis.rideshare.messenger.MessengerActivity;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -31,6 +33,8 @@ public class RiderActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private DriverRouteFragment driverRouteFragment;
     private DriverSaveRouteFragment driverSaveRouteFragment;
+    RiderLastRoutesFragment riderLastRoutesFragment;
+
     private CarFragment carFragment;
     private RouteSearchFragment routeSearchFragment;
     private PersonalDataFragment personalDataFragment;
@@ -65,6 +69,8 @@ public class RiderActivity extends AppCompatActivity {
                 switch (item.getItemId()){
                     case R.id.messages:
                         Toast.makeText(RiderActivity.this, "Messages", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(RiderActivity.this, MessengerActivity.class));
+
 //                        TODO: open Apps Messenger
                         break;
 
@@ -87,7 +93,8 @@ public class RiderActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,personalDataFragment).commit();
                         break;
                     case R.id.yourRoutes:
-//                        getSupportFragmentManager().beginTransaction().replace(R.id.driverFragment,driverRouteFragment).commit();
+                        riderLastRoutesFragment = new RiderLastRoutesFragment();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,riderLastRoutesFragment).commit();
                         break;
                     case R.id.becameDriver:
                         carFragment = new CarFragment();

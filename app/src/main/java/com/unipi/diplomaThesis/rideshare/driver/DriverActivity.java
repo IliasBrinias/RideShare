@@ -17,10 +17,18 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
+import com.unipi.diplomaThesis.rideshare.Model.Request;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.PersonalDataFragment;
 import com.unipi.diplomaThesis.rideshare.R;
+import com.unipi.diplomaThesis.rideshare.messenger.MessengerActivity;
+import com.unipi.diplomaThesis.rideshare.RiderLastRoutesFragment;
+import com.unipi.diplomaThesis.rideshare.rider.CarFragment;
 import com.unipi.diplomaThesis.rideshare.rider.RouteSearchFragment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -31,6 +39,10 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
     private NavigationView navigationView;
     private RouteSearchFragment routeSearchFragment;
     private PersonalDataFragment personalDataFragment;
+    RiderLastRoutesFragment riderLastRoutesFragment;
+    CarFragment carFragment;
+
+    DriverRouteListFragment driverRouteListFragment;
     private Driver userDriver;
     private TextView userNameNavigationHeader,emailNavigationHeader;
     private CircleImageView imageNavigationHeader;
@@ -44,6 +56,11 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
             if (userDriver == null) {
                 finish();
             }
+//            if (true){
+//                test();
+//                return;
+//            }
+
         }catch (ClassCastException classCastException){
             classCastException.printStackTrace();
             finish();
@@ -59,9 +76,12 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
 //        set Menu
         navigationView.getMenu().clear();
         navigationView.inflateMenu(R.menu.navigation_menu_driver);
+
         topAppBar.getMenu().clear();
         topAppBar.inflateMenu(R.menu.toolbar_menu_driver);
         topAppBar.setNavigationOnClickListener(view -> drawerLayout.open());
+        driverRouteListFragment = new DriverRouteListFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,driverRouteListFragment).commit();
 
 //        load User data
         loadUserData();
@@ -70,6 +90,28 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
 //        Navigation Items
         navigationView.setNavigationItemSelectedListener(this);
     }
+
+    private void test() {
+        FirebaseDatabase.getInstance().getReference()
+                        .child(Request.class.getSimpleName())
+                        .child("-Myws8ZECZ2e45bxAYFm")
+                        .child("nRSzDcNrftUqrIBDRX8YoB5QF7r2")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                Request r = snapshot.getValue(Request.class);
+                                userDriver.acceptRequest(r);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+
+    }
+
     private void loadUserData(){
         userNameNavigationHeader.setText(userDriver.getFullName());
         emailNavigationHeader.setText(userDriver.getEmail());
@@ -97,27 +139,30 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
                 break;
 //                        TODO: open Apps Requests
             case R.id.messages:
-                Toast.makeText(DriverActivity.this, "Messages", Toast.LENGTH_SHORT).show();
-//                        TODO: open Apps Messenger
+                startActivity(new Intent(this, MessengerActivity.class));
                 break;
         }
         return false;
     }
-
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.home:
-                routeSearchFragment = new RouteSearchFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,routeSearchFragment).commit();
+                driverRouteListFragment = new DriverRouteListFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,driverRouteListFragment).commit();
                 break;
             case R.id.personalData:
                 personalDataFragment = new PersonalDataFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,personalDataFragment).commit();
                 break;
             case R.id.yourRoutes:
-//                        getSupportFragmentManager().beginTransaction().replace(R.id.driverFragment,driverRouteFragment).commit();
+                riderLastRoutesFragment = new RiderLastRoutesFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,riderLastRoutesFragment).commit();
+                break;
+            case R.id.carDriver:
+                carFragment = new CarFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,carFragment).commit();
                 break;
             case R.id.logOut:
                 DriverActivity.this.userDriver.logOut(DriverActivity.this);

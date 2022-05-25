@@ -1,0 +1,124 @@
+package com.unipi.diplomaThesis.rideshare.messenger.adapter;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.unipi.diplomaThesis.rideshare.Interface.OnClickMessageSession;
+import com.unipi.diplomaThesis.rideshare.Model.Message;
+import com.unipi.diplomaThesis.rideshare.Model.MessageSession;
+import com.unipi.diplomaThesis.rideshare.Model.User;
+import com.unipi.diplomaThesis.rideshare.R;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Map;
+
+public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.ViewHolder> {
+    List<MessageSession> messageSessionList;
+    OnClickMessageSession onClickMessageSession;
+    private final SimpleDateFormat time = new SimpleDateFormat("HH:mm");
+
+    public MessengerAdapter(List<MessageSession> messageSessionList, OnClickMessageSession onClickMessageSession) {
+        this.messageSessionList = messageSessionList;
+        this.onClickMessageSession = onClickMessageSession;
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.messenger_list_layout, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.onClickMessageSession = onClickMessageSession;
+        for (String p :messageSessionList.get(position).getParticipants()){
+            if (!p.equals(FirebaseAuth.getInstance().getUid())){
+                User.loadUser(p, u -> loadUserData(u,holder));
+            }
+        }
+        if (messageSessionList.get(position).getMessages().isEmpty()) {
+            holder.lastMessage.setVisibility(View.GONE);
+            holder.timeLastMessage.setVisibility(View.GONE);
+            return;
+        }
+        Map.Entry<String, Message> m = messageSessionList.get(position).getMessages().entrySet().iterator().next();
+        Message lastMessage = m.getValue();
+        holder.lastMessage.setText(cutMessageIfIsLong(lastMessage.getMessage(),20));
+        if (!lastMessage.isSeen() &&
+                !lastMessage.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())) makeMessageUnseen(holder,position);
+        holder.timeLastMessage.setText(time.format(lastMessage.getTimestamp()));
+        holder.timeLastMessage.setVisibility(View.VISIBLE);
+        holder.lastMessage.setVisibility(View.VISIBLE);
+    }
+    private String cutMessageIfIsLong(String mess,int bound){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i=0; i<mess.length();i++){
+            if (i>=bound) break;
+            stringBuilder.append(mess.charAt(i));
+        }
+        if (stringBuilder.length()<mess.length()) stringBuilder.append("...");
+        return stringBuilder.toString();
+    }
+    private void loadUserData(User u, ViewHolder holder){
+        holder.userName.setText(u.getFullName());
+        holder.userName.setVisibility(View.VISIBLE);
+        u.loadUserImage(image ->
+        {
+            if (image != null) {
+                holder.imageUser.setImageBitmap(image);
+            }else {
+                holder.imageUser.setBackgroundResource(R.drawable.ic_default_profile);
+            }
+            holder.imageUser.setVisibility(View.VISIBLE);
+        });
+    }
+    private void makeMessageUnseen(@NonNull ViewHolder holder, int position){
+        holder.imageMessageUnseen.setVisibility(View.VISIBLE);
+        holder.lastMessage.setTextColor(holder.imageMessageUnseen.getBackgroundTintList());
+        holder.timeLastMessage.setTextColor(holder.imageMessageUnseen.getBackgroundTintList());
+
+    }
+    @Override
+    public int getItemCount() {
+        return messageSessionList.size();
+    }
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        ImageView imageUser, imageMessageUnseen;
+        TextView userName, lastMessage, timeLastMessage;
+        OnClickMessageSession onClickMessageSession;
+        public ViewHolder(@NonNull View v) {
+            super(v);
+            imageUser = v.findViewById(R.id.circleImageViewUser);
+            imageUser.setVisibility(View.INVISIBLE);
+            userName = v.findViewById(R.id.textViewUserName);
+            userName.setVisibility(View.GONE);
+            lastMessage = v.findViewById(R.id.textViewLastMessage);
+            lastMessage.setVisibility(View.GONE);
+            timeLastMessage = v.findViewById(R.id.textViewLastMessageTime);
+            timeLastMessage.setVisibility(View.GONE);
+            imageMessageUnseen = v.findViewById(R.id.circleImageMessageUnseen);
+            imageMessageUnseen.setVisibility(View.GONE);
+            v.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            onClickMessageSession.onClick(view,getAdapterPosition());
+        }
+    }
+}

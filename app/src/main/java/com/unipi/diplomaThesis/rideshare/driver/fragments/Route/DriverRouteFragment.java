@@ -18,7 +18,7 @@ import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.Route;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
-import com.unipi.diplomaThesis.rideshare.driver.adapter.DriverListAdapter;
+import com.unipi.diplomaThesis.rideshare.driver.adapter.DriverRouteListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class DriverRouteFragment extends Fragment {
     private RecyclerView recyclerView;
     private static List<Route> routeList = new ArrayList<>();
-    private DriverListAdapter driverListAdapter;
+    private DriverRouteListAdapter driverRouteListAdapter;
     private Driver driver = null;
     public DriverRouteFragment() {
         // Required empty public constructor
@@ -76,8 +76,8 @@ public class DriverRouteFragment extends Fragment {
 //        initialize recyclerView
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(linearLayoutManager);
-        driver.loadDriverRoutes(this::refreshData);
-        driverListAdapter = new DriverListAdapter(getActivity(), routeList, new OnClickDriverRoute() {
+        driver.loadDriverRoutes(route -> refreshData(route));
+        driverRouteListAdapter = new DriverRouteListAdapter(getActivity(), routeList, null, new OnClickDriverRoute() {
             @Override
             public void editDriversRoute(View v, int position) {
 //                TODO: edit Route
@@ -94,19 +94,24 @@ public class DriverRouteFragment extends Fragment {
                 alert.setPositiveButton(getString(R.string.delete), (dialog, which) ->
                 {
                     driver.deleteRoute(routeList.get(position),getActivity());
-                    driverListAdapter.removeAt(position);
+                    driverRouteListAdapter.removeAt(position);
                 });
                 alert.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.cancel());
                 alert.show();
             }
+
+            @Override
+            public void itemClick(View v, int position) {
+
+            }
         });
 
-        recyclerView.setAdapter(driverListAdapter);
+        recyclerView.setAdapter(driverRouteListAdapter);
         return v;
     }
     @SuppressLint("NotifyDataSetChanged")
     private void refreshData(Route r){
         routeList.add(r);
-        driverListAdapter.notifyDataSetChanged();
+        driverRouteListAdapter.notifyDataSetChanged();
     }
 }

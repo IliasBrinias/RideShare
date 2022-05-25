@@ -13,23 +13,24 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnCompleteRouteLoad;
 import com.unipi.diplomaThesis.rideshare.R;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 
 public class Route implements Serializable {
+    private String name;
     private String routeId;
     private String driverId;
     private RouteLatLng routeLatLng;
-    private HashMap<String, String> passengersId = new HashMap<>();
+    private ArrayList<String> passengersId = new ArrayList<>();
     private RouteDateTime routeDateTime;
     private String costPerRider;
     private int maxRiders;
     private String description;
 
-    public Route(String routeId, String driverId, RouteLatLng routeLatLng, HashMap<String, String> passengersId, RouteDateTime routeDateTime, String costPerRider, int maxRiders, String description) {
+    public Route(String name ,String routeId, String driverId, RouteLatLng routeLatLng, ArrayList<String> passengersId, RouteDateTime routeDateTime, String costPerRider, int maxRiders, String description) {
+        this.name = name;
         this.routeId = routeId;
         this.driverId = driverId;
         this.routeLatLng = routeLatLng;
@@ -43,6 +44,13 @@ public class Route implements Serializable {
     public Route() {
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getDescription() {
         return description;
@@ -100,11 +108,11 @@ public class Route implements Serializable {
         this.driverId = driverId;
     }
 
-    public HashMap<String, String> getPassengersId() {
+    public ArrayList<String> getPassengersId() {
         return passengersId;
     }
 
-    public void setPassengersId(HashMap<String, String> passengersId) {
+    public void setPassengersId(ArrayList<String> passengersId) {
         this.passengersId = passengersId;
     }
     public static void loadRoute(String routeId, OnCompleteRouteLoad onCompleteRoutesLoad){
@@ -124,7 +132,6 @@ public class Route implements Serializable {
                 });
     }
     public long getMinDiff(long userTime) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
         Calendar route = new GregorianCalendar();
         Calendar rider = new GregorianCalendar();
         Calendar newRoute = new GregorianCalendar();
@@ -146,7 +153,6 @@ public class Route implements Serializable {
         newRider.set(Calendar.MINUTE, riderMinute);
 
         Duration duration = Duration.between(newRoute.toInstant(),newRider.toInstant());
-        System.out.println(duration.toMinutes());
         return duration.toMinutes();
     }
     public CharSequence getTextForTimeDif(Context c, long userDateTime){

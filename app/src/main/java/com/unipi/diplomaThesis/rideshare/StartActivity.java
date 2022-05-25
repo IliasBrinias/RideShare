@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,11 +21,13 @@ public class StartActivity extends AppCompatActivity {
     private static String REQ_LAST_LOCATIONS = "lastLocation";
     public static final int REQ_DRIVER_ACTIVITY = 213;
     public static final int REQ_RIDER_ACTIVITY = 678;
-
+    ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        progressBar = findViewById(R.id.progressBar);
+        stopProgressBarAnimation();
 //        check if the user is already sign in
         if (FirebaseAuth.getInstance().getCurrentUser()!=null){
             User u = User.loadUserInstance(this);
@@ -102,4 +105,13 @@ public class StartActivity extends AppCompatActivity {
             }
         }
     }
+    public void startProgressBarAnimation(){
+        progressBar.setIndeterminate(true);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+    public void stopProgressBarAnimation(){
+        progressBar.setIndeterminate(false);
+        progressBar.setVisibility(View.GONE);
+    }
+
 }

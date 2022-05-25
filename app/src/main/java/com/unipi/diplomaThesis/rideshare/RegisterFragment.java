@@ -64,7 +64,7 @@ public class RegisterFragment extends Fragment implements TextWatcher {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_register, container, false);
         title = v.findViewById(R.id.textViewRegisterTitle);
-        email = v.findViewById(R.id.autoCompleteOriginPoint);
+        email = v.findViewById(R.id.autoCompleteEmail);
         password = v.findViewById(R.id.textInputRegisterPassword);
         passwordLayout = v.findViewById(R.id.textInputPasswordLayout);
         passwordVerifyLayout = v.findViewById(R.id.textInputPasswordAgainLayout);

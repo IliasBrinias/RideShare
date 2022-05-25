@@ -114,7 +114,7 @@
             android:layout_height="match_parent">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputOriginLocationLayout"
+                android:id="@+id/textInputEmailLayout"
                 style="@style/TextInputEditTextLoginStyle"
                 android:layout_width="330dp"
                 android:layout_height="wrap_content"
@@ -131,7 +131,7 @@
                 app:startIconDrawable="@drawable/ic_location_point">
 
                 <AutoCompleteTextView
-                    android:id="@+id/autoCompleteOriginPoint"
+                    android:id="@+id/autoCompleteEmail"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/search_shape_background"

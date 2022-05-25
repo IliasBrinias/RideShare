@@ -5,13 +5,16 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.unipi.diplomaThesis.rideshare.Interface.OnDataReturn;
 import com.unipi.diplomaThesis.rideshare.Interface.OnRouteSearchResponse;
+import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +23,7 @@ public class Rider extends User{
     public Rider() {
     }
 
-    public Rider(String userId, String email, String name, String description, Map<String,String> lastRoutes) {
+    public Rider(String userId, String email, String name, String description, ArrayList<String> lastRoutes) {
         super(userId, email, name, description, lastRoutes);
     }
     public void findMinMaxPrice(OnDataReturn onDataReturn){
@@ -77,6 +80,14 @@ public class Rider extends User{
                             if (r==null) continue;
 //                            check if the route has at least one seat free
                             if (r.isFull()) continue;
+//                            check if is already rider
+                            boolean isRider = false;
+                            for (String p:r.getPassengersId()){
+                                if (FirebaseAuth.getInstance().getUid().equals(p)){
+                                    isRider = true;
+                                }
+                            }
+                            if (isRider) continue;
 //                            check if the route is acceptable
                             routeFilter.filterCheck(c, r, success ->
                             {
@@ -111,5 +122,21 @@ public class Rider extends User{
                 .child(request.getRouteId())
                 .child(request.getRiderId())
                 .setValue(request).addOnCompleteListener(onCompleteListener);
+    }
+    public static void loadUser(String userId, OnUserLoadComplete onUserLoadComplete){
+        FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName())
+                .child(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        onUserLoadComplete.returnedUser(snapshot.getValue(Rider.class));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
 }

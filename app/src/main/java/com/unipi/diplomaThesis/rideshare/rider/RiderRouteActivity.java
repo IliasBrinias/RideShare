@@ -78,7 +78,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
 //        load the elements
         recyclerView = findViewById(R.id.recyclerView);
         autoCompleteDestinationPoint = findViewById(R.id.autoCompleteDestinationPoint);
-        autoCompleteOriginPoint = findViewById(R.id.autoCompleteOriginPoint);
+        autoCompleteOriginPoint = findViewById(R.id.autoCompleteEmail);
         autoCompleteDate = findViewById(R.id.autoCompleteDate);
         buttonFilter = findViewById(R.id.buttonFilter);
         textViewFilterCount = findViewById(R.id.textViewFilter);

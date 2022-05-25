@@ -76,10 +76,10 @@
             style="@style/TextInputEditTextLoginStyle"
             android:hint="@string/password"
             app:layout_constraintBottom_toTopOf="@+id/buttonLogin"
-            app:layout_constraintEnd_toEndOf="@+id/textInputOriginLocationLayout"
+            app:layout_constraintEnd_toEndOf="@+id/textInputEmailLayout"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/textInputOriginLocationLayout"
-            app:layout_constraintTop_toBottomOf="@+id/textInputOriginLocationLayout">
+            app:layout_constraintStart_toStartOf="@+id/textInputEmailLayout"
+            app:layout_constraintTop_toBottomOf="@+id/textInputEmailLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textInputRegisterPassword"
@@ -107,7 +107,7 @@
             app:layout_constraintVertical_bias="0.41000003" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputOriginLocationLayout"
+            android:id="@+id/textInputEmailLayout"
             style="@style/TextInputEditTextLoginStyle"
             android:elevation="5sp"
             android:hint="@string/email"
@@ -120,7 +120,7 @@
             >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/autoCompleteOriginPoint"
+                android:id="@+id/autoCompleteEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/trebuc"
@@ -139,7 +139,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/textInputOriginLocationLayout"
+            app:layout_constraintStart_toStartOf="@+id/textInputEmailLayout"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.083" />
 

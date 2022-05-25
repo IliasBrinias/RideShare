@@ -1,14 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".rider.RiderLastRoutesFragment">
+    android:background="@color/lastRoutesShadow"
+    tools:context=".RiderLastRoutesFragment"
+    android:orientation="vertical">
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?colorPrimary"
+            android:gravity="center">
 
-    <!-- TODO: Update blank fragment layout -->
+            <TextView
+                android:id="@+id/textViewWelcomeDriverTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="@string/your_routes"
+                android:textColor="?colorOnPrimary"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_smiley_blue"
+            android:background="?colorOnPrimary"
+            android:scaleType="fitXY"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="?colorOnPrimary"/>
+        <TextView
+            android:background="?colorOnPrimary"
+            android:paddingStart="10dp"
+            android:textAlignment="textStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TitleTextView"
+            android:textColor="?colorPrimaryVariant"
+            android:text="@string/active_routes"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewActiveRoutes"
+            android:padding="10dp"
+            android:paddingBottom="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:background="?colorOnPrimary"/>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_smiley_blue"
+        android:background="@color/lastRoutesShadow"
+        app:tint="?colorOnPrimary"
+        android:scaleType="fitXY"/>
+    <View
+        android:layout_width="match_parent"
+        android:background="@color/lastRoutesShadow"
+        android:layout_height="10dp"/>
     <TextView
+        android:paddingStart="10dp"
+        android:textAlignment="textStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TitleTextView"
+        android:textColor="?colorPrimaryVariant"
+        android:background="@color/lastRoutesShadow"
+        android:text="@string/previous_routes"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewPreviousRoutes"
+        android:padding="10dp"
+        android:paddingBottom="0dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:background="@color/lastRoutesShadow"
+        />
 
-</FrameLayout>
+</LinearLayout>

@@ -9,10 +9,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,14 +25,21 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
+import com.unipi.diplomaThesis.rideshare.Interface.OnActiveRouteResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnCompleteUserSave;
 import com.unipi.diplomaThesis.rideshare.Interface.OnImageLoad;
+import com.unipi.diplomaThesis.rideshare.Interface.OnMessageReturn;
+import com.unipi.diplomaThesis.rideshare.Interface.OnMessageSessionLoad;
+import com.unipi.diplomaThesis.rideshare.Interface.OnPreviousRouteResponse;
+import com.unipi.diplomaThesis.rideshare.Interface.OnRouteResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,17 +54,27 @@ public class User {
     private String type = Rider.class.getSimpleName();
     private long birthDay = 0;
     private Map<String,UserRating> userRating;
-    private Map<String,String> lastRoutes = new HashMap<>();
+    private ArrayList<String> lastRoutes = new ArrayList<>();
+    private ArrayList<String> messageSessionId = new ArrayList<>();
+
 
     public User() {
     }
 
-    public User(String userId, String email, String fullName, String description, Map<String,String> lastRoutes) {
+    public User(String userId, String email, String fullName, String description, ArrayList<String> lastRoutes) {
         this.userId = userId;
         this.email = email;
         this.fullName = fullName;
         this.description = description;
         this.lastRoutes = lastRoutes;
+    }
+
+    public ArrayList<String> getMessageSessionId() {
+        return messageSessionId;
+    }
+
+    public void setMessageSessionId(ArrayList<String> messageSessionId) {
+        this.messageSessionId = messageSessionId;
     }
 
     public long getBirthDay() {
@@ -117,15 +136,15 @@ public class User {
         this.fullName = fullName;
     }
 
-    public Map<String,String> getLastRoutes() {
+    public ArrayList<String> getLastRoutes() {
         return lastRoutes;
     }
 
-    public void setLastRoutes(Map<String,String> lastRoutes) {
+    public void setLastRoutes(ArrayList<String> lastRoutes) {
         this.lastRoutes = lastRoutes;
     }
 
-    public static boolean checkIfEditTextIsNull(Context context, List<EditText> editTexts){
+    public static boolean checkIfEditTextIsNull(Context context, @NonNull List<EditText> editTexts){
         boolean isNull = false;
         for (EditText currentText :editTexts){
             if (currentText.getError()!=null) {
@@ -151,7 +170,7 @@ public class User {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.child("type").getValue(String.class).equals(Driver.class.getSimpleName())){
+                        if (snapshot.child(User.REQ_TYPE_TAG).getValue(String.class).equals(Driver.class.getSimpleName())){
                             onUserLoadComplete.returnedUser(snapshot.getValue(Driver.class));
                         }else {
                             onUserLoadComplete.returnedUser(snapshot.getValue(Rider.class));
@@ -165,12 +184,13 @@ public class User {
                 });
 
     }
-    public static void saveUser(User u, OnCompleteUserSave onCompleteUserSave){
+    public static void saveUser(@NonNull User u, OnCompleteUserSave onCompleteUserSave){
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName());
         if (u.userId == null) u.userId = FirebaseAuth.getInstance().getUid();
         databaseReference.child(u.userId).setValue(u).addOnCompleteListener(onCompleteUserSave::onComplete);
     }
+    @Nullable
     public static User loadUserInstance(Context c){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(c);
         String type = preferences.getString(REQ_TYPE_TAG,null);
@@ -278,5 +298,147 @@ public class User {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
         return data;
+    }
+    public void sendMessageTo(MessageSession messageSession, Message m, OnCompleteListener<Void> onCompleteListener){
+        if (m.getMessage().endsWith("\n")){
+            m.setMessage(m.getMessage().substring(0,m.getMessage().length()-1));
+        }
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                .child(MessageSession.class.getSimpleName())
+                .child(messageSession.getMessageSessionId())
+                .child("messages");
+        m.setMessageId(ref.push().getKey());
+        ref.child(m.getMessageId())
+                .setValue(m).addOnCompleteListener(onCompleteListener);
+    }
+    public void loadLastRoutes(OnActiveRouteResponse onActiveRouteResponse, OnPreviousRouteResponse onPreviousRouteResponse){
+        FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName())
+                .child(FirebaseAuth.getInstance().getUid())
+                .child("lastRoutes")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        ArrayList<String> lastRoutes = (ArrayList<String>) snapshot.getValue();
+                        if (lastRoutes == null) return;
+                        for (String routeId:lastRoutes){
+                            Route.loadRoute(routeId, route -> {
+                                if (route.getRouteDateTime().getEndDateUnix()<=new Date().getTime()){
+                                    User.loadUser(route.getDriverId(), u -> onPreviousRouteResponse.returnRoute(route,u));
+                                }else {
+                                    User.loadUser(route.getDriverId(), u -> onActiveRouteResponse.returnRoute(route,u));
+                                }
+                            });
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                });
+    }
+    public void loadUserMessageSession(OnMessageSessionLoad onMessageSessionLoad){
+        for (String sessionId:this.messageSessionId) {
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                    .child(MessageSession.class.getSimpleName())
+                    .child(sessionId);
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    MessageSession messageSession = new MessageSession();
+                    messageSession.setMessageSessionId(snapshot.getKey());
+                    messageSession.setParticipants((ArrayList<String>) snapshot.child("participants").getValue());
+                    messageSession.setCreationTimestamp(snapshot.child("creationTimestamp").getValue(Long.class));
+                    ref.child("messages").orderByChild("timestamp").limitToLast(1)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    Map<String,Message> messageMap = new HashMap<>();
+                                    for (DataSnapshot msg : snapshot.getChildren()) {
+                                        Message m = msg.getValue(Message.class);
+                                        messageMap.put(msg.getKey(), m);
+                                        messageSession.setMessages(messageMap);
+                                        onMessageSessionLoad.returnedSession(messageSession);
+                                    }
+                                }
+                                //
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+//
+                                }
+
+                            });
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+        }
+    }
+    private void messageSeen(MessageSession messageSession,Message m){
+        FirebaseDatabase.getInstance().getReference()
+                .child(MessageSession.class.getSimpleName())
+                .child(messageSession.getMessageSessionId())
+                .child("messages")
+                .child(m.getMessageId())
+                .child("seen").setValue(true);
+    }
+    public void loadMessages(MessageSession messageSession,boolean finish, OnMessageReturn onMessageReturn){
+        ChildEventListener loadMessages = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if (!snapshot.exists()) return;
+                Message m = snapshot.getValue(Message.class);
+                if (m.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())){
+                    onMessageReturn.returnedMessage(m);
+                    return;
+                }
+                if (!m.isSeen()){
+                    m.setSeen(true);
+                    messageSeen(messageSession,m);
+                }
+                onMessageReturn.returnedMessage(m);
+            }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                onMessageReturn.returnedMessage(snapshot.getValue(Message.class));
+
+            }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        };
+        if (finish){
+            FirebaseDatabase.getInstance().getReference()
+                    .child(MessageSession.class.getSimpleName())
+                    .child(messageSession.getMessageSessionId())
+                    .child("messages").orderByChild("timestamp")
+                    .limitToLast(100)
+                    .removeEventListener(loadMessages);
+            return;
+        }
+        FirebaseDatabase.getInstance().getReference()
+                .child(MessageSession.class.getSimpleName())
+                .child(messageSession.getMessageSessionId())
+                .child("messages").orderByChild("timestamp")
+                .limitToLast(100)
+            .addChildEventListener(loadMessages);
+    }
+
+    public static void mutualRoutes(Driver driver, Rider rider, OnRouteResponse onRouteResponse){
+        for (String routeId:driver.getLastRoutes()){
+            Route.loadRoute(routeId, route->{
+                for (String p:route.getPassengersId()){
+                    if (p.equals(rider.getUserId())){
+                        onRouteResponse.returnedRoute(route);
+                    }
+                }
+            });
+        }
     }
 }

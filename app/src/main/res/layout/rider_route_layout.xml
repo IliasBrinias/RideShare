@@ -19,7 +19,7 @@
     </de.hdodenhof.circleimageview.CircleImageView>
 
     <TextView
-        android:id="@+id/textViewDriverName"
+        android:id="@+id/textViewUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ilias Brinias"
@@ -34,7 +34,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/textViewOriginRoutePoint"
+        android:id="@+id/textViewLastMessege"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/trebuc"
@@ -44,8 +44,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textViewDriverName"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDriverName"
+        app:layout_constraintStart_toStartOf="@+id/textViewUserName"
+        app:layout_constraintTop_toBottomOf="@+id/textViewUserName"
         app:layout_constraintVertical_bias="0.050000012" />
 
     <TextView
@@ -59,8 +59,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textViewDriverName"
-        app:layout_constraintTop_toBottomOf="@+id/textViewOriginRoutePoint"
+        app:layout_constraintStart_toStartOf="@+id/textViewUserName"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLastMessege"
         app:layout_constraintVertical_bias="0.00999999" />
 
     <TableRow
@@ -70,7 +70,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textViewOriginRoutePoint"
+        app:layout_constraintStart_toStartOf="@+id/textViewLastMessege"
         app:layout_constraintTop_toBottomOf="@+id/textViewDestinationRoutePoint">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -136,7 +136,7 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <TableRow
-        android:id="@+id/tableRow17"
+        android:id="@+id/tableRowTimeDiff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/shadow"
@@ -145,11 +145,11 @@
         android:paddingTop="2dp"
         android:paddingEnd="5dp"
         android:paddingBottom="2dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textViewDriverName"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewUserName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.05"
-        app:layout_constraintStart_toEndOf="@+id/textViewDriverName"
-        app:layout_constraintTop_toTopOf="@+id/textViewDriverName"
+        app:layout_constraintStart_toEndOf="@+id/textViewUserName"
+        app:layout_constraintTop_toTopOf="@+id/textViewUserName"
         app:layout_constraintVertical_bias="0.8">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -174,11 +174,12 @@
     <View
         android:id="@+id/view3"
         android:layout_width="360dp"
-        android:layout_gravity="center"
         android:layout_height="1dp"
+        android:layout_gravity="center"
         android:background="@color/shadow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.484"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

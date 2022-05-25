@@ -164,13 +164,26 @@
     <string name="classification">Classification</string>
     <string name="ride_capacity">Ride Capacity</string>
     <string name="request_send_full_capacity">This route is foul of Riders.\nSearch for new ones</string>
+    <string name="new_route">New Route</string>
+    <string name="origin">Origin</string>
+    <string name="does_the_route_repeat">Does the route repeat?</string>
+    <string name="messages">Messages</string>
+    <string name="send">Send</string>
+    <string name="seen">Seen</string>
+    <string name="first_message_chat">Send first message ...</string>
+    <string name="details">Details</string>
+    <string name="Routes">Routes</string>
+    <string name="mute_messages">Mute Messages</string>
+    <string name="leave_chat">Leave Chat</string>
+    <string name="active_routes">Active Routes</string>
+    <string name="previous_routes">Previous Routes</string>
+    <string name="car">Car</string>
+    <string name="you_are_driver_now">You are Driver now</string>
+    <string name="successfull_edit_car_driver">You saved your Car successfully</string>
     <string-array name="repeat_options">
-        <item>@string/no_repeat</item>
         <item>@string/daily</item>
         <item>@string/weekly</item>
         <item>@string/monthly</item>
-        <item>@string/yearly</item>
-        <item>@string/custom</item>
     </string-array>
     <string-array name="days">
         <item>@string/sunday</item>

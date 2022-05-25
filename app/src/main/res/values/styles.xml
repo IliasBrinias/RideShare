@@ -81,7 +81,7 @@
         <item name="android:paddingStart">5dp</item>
         <item name="android:paddingEnd">10dp</item>
         <item name="android:textAlignment">textStart</item>
-        <item name="android:textColor">?colorPrimary</item>
+        <item name="android:textColor">?colorPrimaryVariant</item>
         <item name="android:textSize">14sp</item>
     </style>
     <style name="MyAlertDialogStyle" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">

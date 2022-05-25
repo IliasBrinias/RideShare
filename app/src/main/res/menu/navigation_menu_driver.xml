@@ -23,6 +23,12 @@
             android:checked="true"
             android:title="@string/your_routes"/>
         <item
+            android:id="@+id/carDriver"
+            android:fontFamily="@font/trebuc"
+            android:icon="@drawable/ic_car_driver"
+            android:checked="true"
+            android:title="@string/car"/>
+        <item
             android:id="@+id/logOut"
             android:fontFamily="@font/trebuc"
             android:icon="@drawable/ic_log_out"

@@ -5,7 +5,7 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".driver.fragments.Route.DriverSaveRouteDateTimeFragment">
+    tools:context=".driver.fragments.Route.DriverSaveRouteTimeTableFragment">
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -13,22 +13,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView2"
-            style="@style/TitleTextViewSaveRouteSteps"
-            android:layout_width="match_parent"
-            android:text="@string/choose_date_and_time"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
 
         <TableRow
             android:id="@+id/tableRowStartDateRoute"
             android:layout_width="match_parent"
-            android:layout_height="215dp"
+            android:layout_height="150dp"
             android:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,19 +25,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <TextView
+                    android:id="@+id/textView19"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/trebuc"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/does_the_route_repeat"
+                    android:textColor="?colorPrimaryVariant"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/switchRepeat"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/switchRepeat"
+                    app:layout_constraintTop_toTopOf="@+id/switchRepeat" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputStartDateLayout"
                     style="@style/TextInputEditTextLoginStyle"
-                    android:layout_width="175dp"
+                    android:focusable="true"
                     android:hint="@string/start_date"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:focusable="true"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.08"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tableRow"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.19"
-                    app:startIconDrawable="@drawable/ic_calendar">
+                    app:startIconDrawable="@drawable/ic_calendar"
+                    app:startIconTint="?colorPrimaryVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/textInputStartDate"
@@ -57,282 +61,280 @@
                         android:focusableInTouchMode="false" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputStartTimeLayout"
-                    style="@style/TextInputEditTextLoginStyle"
-                    android:layout_width="175dp"
+                <Switch
+                    android:id="@+id/switchRepeat"
+                    style="@style/Widget.Material3.CompoundButton.Switch"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:focusable="true"
-
-                    android:hint="@string/time"
-                    app:layout_constraintBottom_toBottomOf="@+id/textInputStartDateLayout"
+                    android:checked="false"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.92"
+                    app:layout_constraintHorizontal_bias="0.06"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textInputStartDateLayout"
-                    app:layout_constraintVertical_bias="0.0"
-                    app:startIconDrawable="@drawable/ic_clock_time">
+                    app:layout_constraintTop_toBottomOf="@+id/textInputStartDateLayout"
+                    app:layout_constraintVertical_bias="0.35"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textInputStartTime"
-                        style="te"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusableInTouchMode="false"
-                        tools:ignore="TouchTargetSizeCheck" />
-                </com.google.android.material.textfield.TextInputLayout>
 
-                <TableRow
-                    android:id="@+id/tableRow"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="?colorPrimary"
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </TableRow>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"/>
+
+        <TableRow
+            android:id="@+id/tableRowRepeat"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="3dp"
+                android:layout_weight=".28">
+
+                <ImageButton
+                    android:id="@+id/imageButtonRepeat"
+                    style="@style/SubmitButtons"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_repeat"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0">
+                    app:tint="?colorPrimaryVariant" />
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/ConstraintLayout2"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <TextView
-                            android:id="@+id/textViewSetYourFirstRouteDate"
-                            style="@style/TitleTextView"
-                            android:layout_width="wrap_content"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="10dp"
-                            android:text="@string/set_your_first_route_date"
-                            android:textColor="?colorOnPrimary"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.09"
-                            app:layout_constraintStart_toEndOf="@+id/imageViewFirstStep2"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <ImageView
-                            android:id="@+id/imageViewFirstStep2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:backgroundTint="@color/white"
-                            android:src="@drawable/ic_circle"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.03"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            android:id="@+id/textViewFirstStep2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="3"
-                            android:textColor="?colorPrimary"
-                            app:layout_constraintBottom_toBottomOf="@+id/imageViewFirstStep2"
-                            app:layout_constraintEnd_toEndOf="@+id/imageViewFirstStep2"
-                            app:layout_constraintStart_toStartOf="@+id/imageViewFirstStep2"
-                            app:layout_constraintTop_toTopOf="@+id/imageViewFirstStep2" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </TableRow>
-
-                <TableRow
-                    android:id="@+id/tableRowRepeat"
-                    android:layout_width="298dp"
-                    android:layout_height="37dp"
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/spinnerRepeat"
+                    style="@style/Widget.AppCompat.Spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:divider="@android:color/transparent"
+                    android:dropDownWidth="wrap_content"
+                    android:entries="@array/repeat_options"
+                    android:textSize="14sp"
+                    android:theme="@style/Spinner"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/textInputStartDateLayout"
-                    app:layout_constraintTop_toBottomOf="@+id/textInputStartDateLayout">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="3dp"
-                        android:layout_weight=".28">
-
-                        <ImageButton
-                            android:id="@+id/imageButtonRepeat"
-                            style="@style/SubmitButtons"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@drawable/ic_repeat"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.0"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:tint="?colorPrimary" />
-
-                        <androidx.appcompat.widget.AppCompatSpinner
-                            android:id="@+id/spinnerRepeat"
-                            style="@style/Widget.AppCompat.Spinner.Underlined"
-                            android:layout_width="196dp"
-                            android:layout_height="wrap_content"
-                            android:background="@null"
-                            android:divider="@android:color/transparent"
-                            android:dropDownWidth="wrap_content"
-                            android:entries="@array/repeat_options"
-                            android:textSize="14sp"
-                            android:theme="@style/Spinner"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.0"
-                            app:layout_constraintStart_toEndOf="@+id/imageButtonRepeat"
-                            app:layout_constraintTop_toTopOf="parent" />
-                        <!--                        <Spinner-->
-                        <!--                            android:id="@+id/spinnerRepeat"-->
-                        <!--                            android:layout_width="wrap_content"-->
-                        <!--                            android:layout_height="wrap_content"-->
-                        <!--                            android:layout_centerVertical="true"-->
-                        <!--                            android:textAlignment="textStart"-->
-                        <!--                            android:layout_marginEnd="16dp"-->
-                        <!--                            android:dropDownWidth="wrap_content"-->
-                        <!--                            android:dropDownHeight="wrap_content"-->
-                        <!--                            android:paddingStart="10dp"-->
-                        <!--                            android:paddingEnd="10dp"-->
-                        <!--                            android:spinnerMode="dropdown"-->
-                        <!--                            app:layout_constraintBottom_toBottomOf="parent"-->
-                        <!--                            app:layout_constraintEnd_toEndOf="parent"-->
-                        <!--                            app:layout_constraintHorizontal_bias="1.0"-->
-                        <!--                            app:layout_constraintStart_toEndOf="@+id/imageButtonRepeat"-->
-                        <!--                            app:layout_constraintTop_toTopOf="parent" />-->
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </TableRow>
-
-
+                    app:layout_constraintStart_toEndOf="@+id/imageButtonRepeat"
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </TableRow>
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"/>
         <TableRow
             android:id="@+id/tableRowChooseDay"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
+            android:layout_height="300dp"
             android:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ToggleButton
-                    android:id="@+id/toggleButtonM"
-                    style="@style/toggleButton"
-                    android:checked="false"
-                    android:textOff="@string/m"
-                    android:textOn="@string/m"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/toggleButtonW"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/toggleButtonW"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <ToggleButton
-                    android:id="@+id/toggleButtonT"
-                    style="@style/toggleButton"
-                    android:checked="false"
-                    android:textOff="@string/t"
-                    android:textOn="@string/t"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/toggleButtonW"
-                    app:layout_constraintStart_toEndOf="@+id/toggleButtonM"
-                    app:layout_constraintTop_toTopOf="@+id/toggleButtonW"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <ToggleButton
-                    android:id="@+id/toggleButtonW"
-                    style="@style/toggleButton"
-                    android:checked="false"
-                    android:textOff="@string/w"
-                    android:textOn="@string/w"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tableRow2" />
-
-                <ToggleButton
-                    android:id="@+id/toggleButtonTH"
-                    style="@style/toggleButton"
-                    android:checked="false"
-                    android:textOff="@string/t"
-                    android:textOn="@string/t"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/toggleButtonF"
-                    app:layout_constraintStart_toEndOf="@+id/toggleButtonW"
-                    app:layout_constraintTop_toTopOf="@+id/toggleButtonW"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <ToggleButton
-                    android:id="@+id/toggleButtonF"
-                    style="@style/toggleButton"
-                    android:checked="false"
-                    android:textOff="@string/f"
-                    android:textOn="@string/f"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/toggleButtonW"
-                    app:layout_constraintTop_toTopOf="@+id/toggleButtonW"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <ToggleButton
-                    android:id="@+id/toggleButtonST"
-                    style="@style/toggleButton"
-                    android:checked="false"
-                    android:textOff="@string/s"
-                    android:textOn="@string/s"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/toggleButtonF"
-                    app:layout_constraintTop_toTopOf="@+id/toggleButtonF"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <ToggleButton
-                    android:id="@+id/toggleButtonSN"
-                    style="@style/toggleButton"
-                    android:checked="false"
-                    android:textOff="@string/s"
-                    android:textOn="@string/s"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/toggleButtonM"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/toggleButtonW"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <TableRow
-                    android:id="@+id/tableRow2"
+                <Switch
+                    android:id="@+id/switchRepeatThursday"
+                    style="@style/Widget.Material3.CompoundButton.Switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="?colorPrimary"
+                    android:checked="false"
+                    app:layout_constraintBottom_toTopOf="@+id/switchRepeatFriday"
+                    app:layout_constraintEnd_toEndOf="@+id/switchRepeatWednesday"
+                    app:layout_constraintStart_toStartOf="@+id/switchRepeatWednesday"
+                    app:layout_constraintTop_toBottomOf="@+id/switchRepeatWednesday"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                <Switch
+                    android:id="@+id/switchRepeatSunday"
+                    style="@style/Widget.Material3.CompoundButton.Switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    app:layout_constraintBottom_toTopOf="@+id/switchRepeatMonday"
+                    app:layout_constraintEnd_toEndOf="@+id/switchRepeatWednesday"
+                    app:layout_constraintStart_toStartOf="@+id/switchRepeatWednesday"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                <Switch
+                    android:id="@+id/switchRepeatSaturday"
+                    style="@style/Widget.Material3.CompoundButton.Switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/switchRepeatFriday"
+                    app:layout_constraintStart_toStartOf="@+id/switchRepeatFriday"
+                    app:layout_constraintTop_toBottomOf="@+id/switchRepeatFriday"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                <Switch
+                    android:id="@+id/switchRepeatFriday"
+                    style="@style/Widget.Material3.CompoundButton.Switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/switchRepeatThursday"
+                    app:layout_constraintStart_toStartOf="@+id/switchRepeatThursday"
+                    app:layout_constraintTop_toBottomOf="@+id/switchRepeatWednesday"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                <Switch
+                    android:id="@+id/switchRepeatMonday"
+                    style="@style/Widget.Material3.CompoundButton.Switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    app:layout_constraintBottom_toTopOf="@+id/switchRepeatWednesday"
+                    app:layout_constraintEnd_toEndOf="@+id/switchRepeatWednesday"
+                    app:layout_constraintStart_toStartOf="@+id/switchRepeatWednesday"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                <Switch
+                    android:id="@+id/switchRepeatTuesday"
+                    style="@style/Widget.Material3.CompoundButton.Switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    app:layout_constraintBottom_toTopOf="@+id/switchRepeatWednesday"
+                    app:layout_constraintEnd_toEndOf="@+id/switchRepeatWednesday"
+                    app:layout_constraintStart_toStartOf="@+id/switchRepeatWednesday"
+                    app:layout_constraintTop_toBottomOf="@+id/switchRepeatMonday"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                <Switch
+                    android:id="@+id/switchRepeatWednesday"
+                    style="@style/Widget.Material3.CompoundButton.Switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintHorizontal_bias="0.06"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.100000024">
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/ConstraintLayout3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/trebuc"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/sunday"
+                    android:textColor="?colorPrimaryVariant"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/switchRepeatSunday"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/switchRepeatSunday"
+                    app:layout_constraintTop_toTopOf="@+id/switchRepeatSunday"
+                    app:layout_constraintVertical_bias="0.551" />
 
-                        <TextView
-                            android:id="@+id/textViewDayTitle"
-                            style="@style/TitleTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="10dp"
-                            android:text="@string/choose_the_days"
-                            android:textColor="?colorOnPrimary"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/trebuc"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/monday"
+                    android:textColor="?colorPrimaryVariant"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/switchRepeatMonday"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/switchRepeatMonday"
+                    app:layout_constraintTop_toTopOf="@+id/switchRepeatMonday" />
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </TableRow>
+                <TextView
+                    android:id="@+id/textView17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/trebuc"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/tuesday"
+                    android:textColor="?colorPrimaryVariant"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/switchRepeatTuesday"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/switchRepeatTuesday"
+                    app:layout_constraintTop_toBottomOf="@+id/switchRepeatMonday" />
+
+                <TextView
+                    android:id="@+id/textView18"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/trebuc"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/Wednesday"
+                    android:textColor="?colorPrimaryVariant"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/switchRepeatWednesday"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/switchRepeatWednesday"
+                    app:layout_constraintTop_toTopOf="@+id/switchRepeatWednesday" />
+
+                <TextView
+                    android:id="@+id/textView22"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/trebuc"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/thursday"
+                    android:textColor="?colorPrimaryVariant"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/switchRepeatThursday"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/switchRepeatThursday"
+                    app:layout_constraintTop_toTopOf="@+id/switchRepeatThursday" />
+
+                <TextView
+                    android:id="@+id/textView23"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/trebuc"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/friday"
+                    android:textColor="?colorPrimaryVariant"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/switchRepeatFriday"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/switchRepeatFriday"
+                    app:layout_constraintTop_toTopOf="@+id/switchRepeatFriday" />
+
+                <TextView
+                    android:id="@+id/textView24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/trebuc"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/saturday"
+                    android:textColor="?colorPrimaryVariant"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/switchRepeatSaturday"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/switchRepeatSaturday"
+                    app:layout_constraintTop_toTopOf="@+id/switchRepeatSaturday" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -352,22 +354,21 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputEndDateLayout"
                     style="@style/TextInputEditTextLoginStyle"
-                    android:layout_width="175dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/end_date"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:startIconDrawable="@drawable/ic_calendar">
+                    app:startIconDrawable="@drawable/ic_calendar"
+                    app:startIconTint="?colorPrimaryVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/textInputEndDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        app:errorTextAppearance="@color/red" />
+                        android:focusableInTouchMode="false"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

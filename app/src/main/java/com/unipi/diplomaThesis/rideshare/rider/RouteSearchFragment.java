@@ -69,9 +69,9 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_route_search, container, false);
-        welcomeTitle = v.findViewById(R.id.textViewWelcomeTitle);
         User u = User.loadUserInstance(getActivity());
         if (u==null) getActivity().finish();
+        welcomeTitle = v.findViewById(R.id.textViewWelcomeTitle);
         String[] name =u.getFullName().split(" ");
         if (name.length!=2){
             welcomeTitle.setText("Hello "+u.getFullName()+"!");
@@ -84,7 +84,7 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
         tableRowDate = v.findViewById(R.id.tableRowDate);
         tableRowRideHistory = v.findViewById(R.id.tableRowRideHistory);
 //        autoCompletes
-        autoCompleteStartPoint = v.findViewById(R.id.autoCompleteOriginPoint);
+        autoCompleteStartPoint = v.findViewById(R.id.autoCompleteEmail);
         autoCompleteFinishPoint = v.findViewById(R.id.autoCompleteFinishPoint);
         autoCompleteDate = v.findViewById(R.id.autoCompleteDateRoute);
 //        listViews

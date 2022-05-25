@@ -48,7 +48,7 @@ public class DriverSaveRouteFragment extends Fragment {
     private View thumbView;
     private DriverSaveRouteDirectionsFragment driverSaveRouteDirectionsFragment;
     private DriverSaveRouteAdditionalInfoFragment driverSaveRouteAdditionalInfoFragment;
-    private DriverSaveRouteDateTimeFragment driverSaveRouteDateTimeFragment;
+    private DriverSaveRouteTimeTableFragment driverSaveRouteTimeTableFragment;
     @SuppressLint({"ClickableViewAccessibility", "InflateParams"})
     @Override
     public View onCreateView(LayoutInflater in, ViewGroup container,
@@ -59,7 +59,7 @@ public class DriverSaveRouteFragment extends Fragment {
 //        initialize the fragments
         driverSaveRouteDirectionsFragment = new DriverSaveRouteDirectionsFragment();
         driverSaveRouteAdditionalInfoFragment = new DriverSaveRouteAdditionalInfoFragment();
-        driverSaveRouteDateTimeFragment = new DriverSaveRouteDateTimeFragment();
+        driverSaveRouteTimeTableFragment = new DriverSaveRouteTimeTableFragment();
 
         fragment = v.findViewById(R.id.fragmentSaveRouteSteps);
         fragment.setFocusableInTouchMode(true);
@@ -106,8 +106,8 @@ public class DriverSaveRouteFragment extends Fragment {
                 getChildFragmentManager().beginTransaction().replace(R.id.fragmentSaveRouteSteps, driverSaveRouteDirectionsFragment).commit();
                 break;
             case 2:
-                driverSaveRouteDateTimeFragment = new DriverSaveRouteDateTimeFragment();
-                getChildFragmentManager().beginTransaction().replace(R.id.fragmentSaveRouteSteps,driverSaveRouteDateTimeFragment).commit();
+                driverSaveRouteTimeTableFragment = new DriverSaveRouteTimeTableFragment();
+                getChildFragmentManager().beginTransaction().replace(R.id.fragmentSaveRouteSteps, driverSaveRouteTimeTableFragment).commit();
                 break;
             case 3:
                 driverSaveRouteAdditionalInfoFragment = new DriverSaveRouteAdditionalInfoFragment();
@@ -138,9 +138,9 @@ public class DriverSaveRouteFragment extends Fragment {
         }
 //        collect all the data from the fragments and create the route Object
         RouteLatLng points = driverSaveRouteDirectionsFragment.getPoints();
-        RouteDateTime routeDateTime = driverSaveRouteDateTimeFragment.getRouteDateTime();
+        RouteDateTime routeDateTime = driverSaveRouteTimeTableFragment.getRouteDateTime();
         Map<String,String> additionalInfo = driverSaveRouteAdditionalInfoFragment.getAdditionalInfo();
-        Route r = new Route(null,
+        Route r = new Route("asd",null,
                 driver.getUserId(),
                 points,
                 null,

@@ -17,7 +17,7 @@ public class Car implements Serializable {
         this.model = model;
         this.carPlates = carPlates;
     }
-
+    public String getCarName(){return model+" "+make;}
     public String getCarPlates() {
         return carPlates;
     }

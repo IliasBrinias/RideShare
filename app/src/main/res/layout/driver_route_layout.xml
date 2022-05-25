@@ -6,7 +6,7 @@
     android:layout_height="80dp">
 
     <TextView
-        android:id="@+id/textView17"
+        android:id="@+id/textViewRouteName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/trebuc"
@@ -24,7 +24,7 @@
 
     <TextView
 
-        android:id="@+id/textViewOriginRoutePoint"
+        android:id="@+id/textViewLastMessege"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/trebuc"
@@ -34,8 +34,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textView17"
-        app:layout_constraintTop_toBottomOf="@+id/textView17"
+        app:layout_constraintStart_toStartOf="@+id/textViewRouteName"
+        app:layout_constraintTop_toBottomOf="@+id/textViewRouteName"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
@@ -50,106 +50,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textViewOriginRoutePoint"
-        app:layout_constraintTop_toBottomOf="@+id/textViewOriginRoutePoint"
+        app:layout_constraintStart_toStartOf="@+id/textViewLastMessege"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLastMessege"
         app:layout_constraintVertical_bias="0.00999999" />
 
 
     <FrameLayout
+        android:id="@+id/frameLayoutRidersImages"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="@+id/textView17"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewRouteName"
         app:layout_constraintEnd_toEndOf="@+id/textViewRouteCost"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView17">
+        app:layout_constraintTop_toTopOf="@+id/textViewRouteName">
 
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="21.5dp"
-            android:layout_height="21.5dp"
-            app:cardCornerRadius="250dp"
-            app:cardBackgroundColor="?colorSecondaryVariant">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                app:cardCornerRadius="250dp"
-                android:background="@android:color/transparent"
-                android:layout_gravity="center">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:scaleType="centerCrop"/>
-
-            </androidx.cardview.widget.CardView>
-
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="21.5dp"
-            android:layout_height="21.5dp"
-            app:cardCornerRadius="250dp"
-            android:layout_marginStart="15dp"
-            app:cardBackgroundColor="?colorSecondaryVariant">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                app:cardCornerRadius="250dp"
-                android:layout_gravity="center">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:scaleType="centerCrop"/>
-
-            </androidx.cardview.widget.CardView>
-
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="21.5dp"
-            android:layout_height="21.5dp"
-            app:cardCornerRadius="250dp"
-            android:layout_marginStart="30dp"
-            app:cardBackgroundColor="?colorSecondaryVariant">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                app:cardCornerRadius="250dp"
-                android:layout_gravity="center">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:scaleType="centerCrop"/>
-
-            </androidx.cardview.widget.CardView>
-
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="21.5dp"
-            android:layout_height="21.5dp"
-            app:cardCornerRadius="250dp"
-            android:layout_marginStart="45dp"
-            app:cardBackgroundColor="?colorSecondaryVariant">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                app:cardCornerRadius="250dp"
-                android:layout_gravity="center">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:scaleType="centerCrop"/>
-
-            </androidx.cardview.widget.CardView>
-
-        </androidx.cardview.widget.CardView>
     </FrameLayout>
 
     <TextView
@@ -158,6 +74,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/tcm"
         android:text="5,00€"
+        style="bold"
         android:textColor="?colorPrimaryVariant"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/view3"
@@ -167,7 +84,7 @@
         app:layout_constraintVertical_bias="0.0" />
     <View
         android:id="@+id/view3"
-        android:layout_width="360dp"
+        android:layout_width="320dp"
         android:layout_gravity="center"
         android:layout_height="1dp"
         android:background="@color/shadow"

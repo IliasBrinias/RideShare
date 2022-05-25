@@ -60,13 +60,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/recyclerViewDriverRouteList"
+            app:layout_constraintEnd_toEndOf="@+id/recyclerViewDriverRouteList"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="@+id/recyclerViewDriverRouteList"
+            app:layout_constraintTop_toTopOf="@+id/recyclerViewDriverRouteList" />
+
         <TableRow
-            android:id="@+id/tableRowFilter"
+            android:id="@+id/tableRowAddRoute"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/shadow"
             android:elevation="10dp"
-            android:onClick="openFilter"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:rotationX="3"
@@ -75,51 +84,32 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/recyclerViewDriverRouteList"
             app:layout_constraintVertical_bias="0.95">
+        <LinearLayout
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_gravity="center">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/trebuc"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:layout_gravity="center"
+                android:text="New Route"
+                android:textColor="?colorPrimaryVariant"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add_plus"
+                android:paddingEnd="20dp"
+                android:paddingStart="0dp"
+                />
+        </LinearLayout>
 
-                <FrameLayout
-                    android:id="@+id/buttonFilterLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="0dp"
-                    android:paddingEnd="5dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.135"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <ImageButton
-                        android:id="@+id/buttonFilter"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:background="@drawable/ic_circle"
-                        android:backgroundTint="?colorPrimary"
-                        android:src="@drawable/ic_filter"
-                        android:stateListAnimator="@null"
-                        android:visibility="visible"
-                        app:tint="?colorOnPrimary" />
-
-                </FrameLayout>
-
-                <TextView
-                    android:id="@+id/textView13"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/trebuc"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="15dp"
-                    android:text="New Route"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/buttonFilterLayout"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/buttonFilterLayout"
-                    app:layout_constraintTop_toTopOf="@+id/buttonFilterLayout" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
         </TableRow>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,140 +8,79 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingTop="10dp">
 
         <TableRow
-            android:id="@+id/tableRowStartingPoint"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:background="?colorPrimary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewSaveRouteTitle"
-            app:layout_constraintVertical_bias="0.0">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/autocomplete_fragmentStarting"
-                    android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                    android:layout_width="320dp"
-                    android:layout_height="35dp"
-                    android:background="?colorOnPrimary"
-                    android:textAlignment="center"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.824"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.533" />
-
-                <ImageView
-                    android:id="@+id/imageViewFirstStep"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="?colorOnPrimary"
-                    android:src="@drawable/ic_circle"
-                    android:backgroundTintMode="?colorOnPrimary"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/autocomplete_fragmentStarting"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/textViewFirstStep"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1"
-                    android:textColor="?colorPrimary"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/autocomplete_fragmentStarting"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRowFinishPoint"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tableRowStartingPoint"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:background="?colorPrimary">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:id="@+id/imageViewSecondStep"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/autocomplete_fragmentFinish"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_circle"
-                    android:backgroundTint="?colorOnPrimary"/>
-
-                <TextView
-                    android:id="@+id/textViewSecondStep"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/autocomplete_fragmentFinish"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="2"
-                    android:textColor="?colorPrimary" />
-
-                <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/autocomplete_fragmentFinish"
-                    android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.824"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.533"
-                    android:layout_width="320dp"
-                    android:layout_height="35dp"
-                    android:background="?colorOnPrimary"
-                    android:textAlignment="center" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        </TableRow>
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fragmentContainerViewMap"
-            android:name="com.unipi.diplomaThesis.rideshare.MapsFragment"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tableRowFinishPoint"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <TextView
-            android:id="@+id/textViewSaveRouteTitle"
-            style="@style/TitleTextViewSaveRouteSteps"
-            android:text="@string/set_your_starting_point"
+            android:id="@+id/tableRow19"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            android:layout_width="0dp"/>
+            app:layout_constraintVertical_bias="0.0">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputOriginLocationLayout"
+                    style="@style/TextInputEditTextLoginStyle"
+                    android:hint="@string/origin"
+                    app:startIconDrawable="@drawable/ic_location_point">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/autoCompleteOriginPoint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/trebuc"
+                        android:singleLine="true"
+                        android:nextFocusDown="@+id/textInputDestinationLocation"
+                        tools:ignore="TouchTargetSizeCheck" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputDestinationLocationLayout"
+                    style="@style/TextInputEditTextLoginStyle"
+                    android:hint="@string/destination"
+                    app:startIconDrawable="@drawable/ic_finish_route"
+                    app:startIconTint="@null">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/textInputDestinationLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/trebuc"
+                        android:singleLine="true"
+                        tools:ignore="TouchTargetSizeCheck" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+            </LinearLayout>
+        </TableRow>
+
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tableRow19"
+            app:layout_constraintVertical_bias="0.0" />
 
         <Button
             android:id="@+id/buttonNextStepDirections"
@@ -149,16 +88,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:elevation="2dp"
-            android:onClick="nextStep"
+            app:cornerRadius="90dp"
             android:stateListAnimator="@null"
             android:text="@string/next_step"
             android:translationZ="2dp"
-            android:visibility="invisible"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tableRowFinishPoint"
-            app:layout_constraintVertical_bias="0.932" />
+            app:layout_constraintTop_toBottomOf="@+id/tableRow19"
+            app:layout_constraintVertical_bias="0.971" />
+
+        <ListView
+            android:id="@+id/listViewLocationSearch"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tableRow19" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

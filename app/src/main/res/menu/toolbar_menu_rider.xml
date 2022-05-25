@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/messages"
-        android:icon="@drawable/ic_messenger"
+        android:icon="@drawable/ic_messages"
         app:showAsAction="ifRoom|withText"
         android:title="">
     </item>

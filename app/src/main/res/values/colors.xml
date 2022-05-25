@@ -23,6 +23,7 @@
     <color name="sliderYellow">#FFDF00</color>
     <color name="sliderOrange">#FFAA00</color>
     <color name="sliderRed">#FF0000</color>
+    <color name="lastRoutesShadow">#82F1F1F1</color>
     <color name="backgroundBlue">
         <gradient
             android:startColor = "#FF008ED1"

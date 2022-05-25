@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/linearLayoutReceive"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+    <TextView
+        android:id="@+id/textViewTimeReceiver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12:40"
+        android:padding="10dp"
+        android:layout_gravity="center"/>
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/userImage"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_default_profile"
+            android:layout_gravity="bottom"
+            />
+        <View
+            android:layout_width="5dp"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:id="@+id/textViewMessageReceive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/trebuc"
+            android:padding="10dp"
+            android:background="@drawable/chat_message_background_single"
+            android:text="Hi...How are y?"
+            />
+    </LinearLayout>
+</LinearLayout>

@@ -8,6 +8,7 @@ import android.location.Geocoder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -75,9 +76,6 @@ public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.Vi
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        Hour Difference
-        holder.timeDifference.setText(currentRoute.getTextForTimeDif(c,userDateTime));
-
         User currentDriver = null;
         for (User driver:driverList){
             if (currentRoute.getDriverId().equals(driver.getUserId())){
@@ -103,6 +101,14 @@ public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.Vi
         }else {
             loadDriverData(holder, currentDriver);
         }
+        if (userDateTime==0) {
+            holder.tableRowTimeDiff.setVisibility(View.GONE);
+            return;
+        }
+        holder.tableRowTimeDiff.setVisibility(View.VISIBLE);
+//          Hour Difference
+        holder.timeDifference.setText(currentRoute.getTextForTimeDif(c, userDateTime));
+
     }
     public void setDateTime(long dateTime){
         this.userDateTime = dateTime;
@@ -154,18 +160,20 @@ public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.Vi
                 reviewCount,
                 cost,
                 timeDifference;
+        TableRow tableRowTimeDiff;
         private OnRiderRouteClickListener onRiderRouteClickListener;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             userImage = itemView.findViewById(R.id.CircleImageDriverImage);
-            driverName = itemView.findViewById(R.id.textViewDriverName);
-            startPointAddress = itemView.findViewById(R.id.textViewOriginRoutePoint);
+            driverName = itemView.findViewById(R.id.textViewUserName);
+            startPointAddress = itemView.findViewById(R.id.textViewLastMessege);
             endPointAddress = itemView.findViewById(R.id.textViewDestinationRoutePoint);
             finalReviews = itemView.findViewById(R.id.textViewDriverRating);
             reviewCount = itemView.findViewById(R.id.textViewCountRatings);
             cost = itemView.findViewById(R.id.textViewRouteCost);
             timeDifference = itemView.findViewById(R.id.textViewTimeDifference);
+            tableRowTimeDiff = itemView.findViewById(R.id.tableRowTimeDiff);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

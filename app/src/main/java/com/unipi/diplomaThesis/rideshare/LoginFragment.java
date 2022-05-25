@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,7 +95,7 @@ public class LoginFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_login, container, false);
         registerTitle = v.findViewById(R.id.textViewOpenRegister);
         registerTitle.setOnClickListener(this::register);
-        email = v.findViewById(R.id.autoCompleteOriginPoint);
+        email = v.findViewById(R.id.autoCompleteEmail);
         password = v.findViewById(R.id.textInputRegisterPassword);
         login = v.findViewById(R.id.buttonLogin);
         tableRowGoogleLogin = v.findViewById(R.id.tableRowGoogleLogin);
@@ -132,8 +131,12 @@ public class LoginFragment extends Fragment {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user == null){
-
+//                TODO: handle the auth state change
+                switch (user.getProviderId()){
+                    case "Google":
+                        break;
+                    case "Facebook":
+                        break;
                 }
             }
         };
@@ -149,13 +152,11 @@ public class LoginFragment extends Fragment {
     }
 
     private void handleFacebookToken(AccessToken token){
-        Log.d("FACEBOOK_LOGIN", "handleFacebookToken" + token);
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
-                    Log.d("FACEBOOK_LOGIN", "sign in with credential: success");
                     FirebaseUser user = mAuth.getCurrentUser();
                     updateUiFacebook(user);
                 }else{
@@ -186,6 +187,7 @@ public class LoginFragment extends Fragment {
         editTexts.add(email);
         editTexts.add(password);
         if (User.checkIfEditTextIsNull(this.getContext(), editTexts)) return;
+        ((StartActivity) getActivity()).startProgressBarAnimation();
         mAuth.signInWithEmailAndPassword(email.getText().toString(),password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -212,6 +214,7 @@ public class LoginFragment extends Fragment {
                             }else {
                                 getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class),StartActivity.REQ_RIDER_ACTIVITY);
                             }
+                            ((StartActivity) getActivity()).stopProgressBarAnimation();
                         }
                     });
                 }else{
@@ -256,6 +259,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void handleSignInResult(GoogleSignInAccount acc) {
+        ((StartActivity) getActivity()).startProgressBarAnimation();
         AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(acc.getIdToken(), null);
         mAuth.signInWithCredential(firebaseCredential)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
@@ -306,6 +310,7 @@ public class LoginFragment extends Fragment {
         }else {
             getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class),StartActivity.REQ_RIDER_ACTIVITY);
         }
+        ((StartActivity) getActivity()).stopProgressBarAnimation();
     }
     public void register(View view){
         ((StartActivity) getActivity()).register(view);
