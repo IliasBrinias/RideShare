@@ -1,6 +1,7 @@
 package com.unipi.diplomaThesis.rideshare.messenger;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.unipi.diplomaThesis.rideshare.Interface.OnClickMessageSession;
 import com.unipi.diplomaThesis.rideshare.Model.MessageSession;
+import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.messenger.adapter.MessengerAdapter;
@@ -21,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MessengerActivity extends AppCompatActivity {
+    protected MyApplication mMyApp;
+
     RecyclerView recyclerViewMessageSession;
     User user;
     ProgressBar progressBar;
@@ -37,7 +41,7 @@ public class MessengerActivity extends AppCompatActivity {
         //        initialize recyclerView
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         recyclerViewMessageSession.setLayoutManager(linearLayoutManager);
-        messengerAdapter = new MessengerAdapter(messageSessionList, new OnClickMessageSession() {
+        messengerAdapter = new MessengerAdapter(messageSessionList,this, new OnClickMessageSession() {
             @Override
             public void onClick(View v, int position) {
                 Intent i =new Intent(MessengerActivity.this,ChatActivity.class);
@@ -46,28 +50,42 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
         recyclerViewMessageSession.setAdapter(messengerAdapter);
-        RouteSearch();
+        routeSearch();
+        mMyApp = (MyApplication) this.getApplicationContext();
+        mMyApp.setCurrentActivity(this);
+
     }
+    @Override
+    protected void onStart() {
+        mMyApp.setCurrentActivity(this);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        mMyApp.setCurrentActivity(this);
+        super.onStop();
+    }
+
     @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
     private void refreshData(MessageSession messageSession){
         stopProgressBarAnimation();
         if (messageSession == null) return;
 //        check if the messageSession exists
-        boolean exists=false;
         for (int i=0; i<messageSessionList.size(); i++){
             if (messageSessionList.get(i).getMessageSessionId().equals(messageSession.getMessageSessionId())){
-                messageSessionList.set(i,messageSession);
-                exists = true;
+                messageSessionList.remove(i);
                 break;
             }
         }
-        if (!exists) messageSessionList.add(messageSession);
+        messageSessionList.add(messageSession);
         messengerAdapter.notifyDataSetChanged();
     }
     @SuppressLint("NotifyDataSetChanged")
-    private void RouteSearch() {
+    private void routeSearch() {
         startProgressBarAnimation();
         messageSessionList.clear();
+        messengerAdapter.notifyDataSetChanged();
         user.loadUserMessageSession(this::refreshData);
     }
     private void startProgressBarAnimation(){
@@ -83,8 +101,29 @@ public class MessengerActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==REQ_CHAT_ACTIVITY){
-            RouteSearch();
+            routeSearch();
         }
-
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMyApp.setCurrentActivity(this);
+    }
+    @Override
+    public void onPause() {
+        mMyApp.setCurrentActivity(this);
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        clearReferences();
+        super.onDestroy();
+    }
+    private void clearReferences(){
+        Activity currActivity = mMyApp.getCurrentActivity();
+        if (this.equals(currActivity))
+            mMyApp.setCurrentActivity(null);
+    }
+
 }

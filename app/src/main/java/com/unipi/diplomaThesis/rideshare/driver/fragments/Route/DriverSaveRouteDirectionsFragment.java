@@ -17,6 +17,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -37,12 +39,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DriverSaveRouteDirectionsFragment extends Fragment implements AdapterView.OnItemClickListener, TextWatcher, OnMapReadyCallback {
+public class DriverSaveRouteDirectionsFragment extends Fragment implements AdapterView.OnItemClickListener, TextWatcher, OnMapReadyCallback, View.OnFocusChangeListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the mapFragmentView initialization parameters, e.g. ARG_ITEM_NUMBER
     private String apiKey;
-    LatLng startingPoint, endPoint;
+    LatLng startingPoint, destinationPoint;
     private Button nextStep;
     DriverSaveRouteActivity parentActivity;
     ListView listViewLocationSearch;
@@ -52,12 +54,9 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
     MapView mapView;
     MapDrawer m;
     GoogleMap googleMap;
+    ConstraintLayout constraintLayout;
 
-    public DriverSaveRouteDirectionsFragment() {
-        // Required empty public constructor
-    }
-
-
+    public DriverSaveRouteDirectionsFragment() {}
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,23 +68,30 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
         // Inflate the layout for this mapFragmentView
         View v = inflater.inflate(R.layout.driver_route_directions_fragment, container, false);
         listViewLocationSearch = v.findViewById(R.id.listViewLocationSearch);
-        originTextView = v.findViewById(R.id.autoCompleteOriginPoint);
-        destinationTextView = v.findViewById(R.id.textInputDestinationLocation);
+        originTextView = v.findViewById(R.id.autoCompleteOrigin);
+        destinationTextView = v.findViewById(R.id.autoCompleteDestination);
         mapView = v.findViewById(R.id.mapView);
-        originTextView.addTextChangedListener(this);
-        destinationTextView.addTextChangedListener(this);
-        listViewLocationSearch.setOnItemClickListener(this);
+        nextStep = v.findViewById(R.id.buttonNextStepDirections);
         apiKey = getActivity().getString(R.string.android_api_key);
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(apiKey);
         }
         mapView.onCreate(mapViewBundle);
-        mapView.getMapAsync(this);
-        nextStep = v.findViewById(R.id.buttonNextStepDirections);
         nextStep.setOnClickListener(view -> parentActivity.nextStep());
         nextStep.setVisibility(View.GONE);
         parentActivity = (DriverSaveRouteActivity) getActivity();
+        constraintLayout = v.findViewById(R.id.constraintLayout);
+
+
+        originTextView.addTextChangedListener(this);
+        originTextView.requestFocus();
+        destinationTextView.addTextChangedListener(this);
+        listViewLocationSearch.setOnItemClickListener(this);
+        originTextView.setOnFocusChangeListener(this);
+        destinationTextView.setOnFocusChangeListener(this);
+        mapView.getMapAsync(this);
+
         return v;
     }
     public RouteLatLng getPoints(){
@@ -94,8 +100,8 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
                 startingPoint.latitude,
                 startingPoint.longitude,
                 jsonToPlaceId(destinationLocation),
-                endPoint.latitude,
-                endPoint.longitude,
+                destinationPoint.latitude,
+                destinationPoint.longitude,
                 m.getDistance());
     }
     Toast t;
@@ -105,21 +111,24 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
             if (originTextView.isFocused()){
                 originLocation = locations.getJSONObject(position);
                 originTextView.setText(originLocation.getString("formatted_address"));
-                originTextView.clearFocus();
             }else if (destinationTextView.isFocused()){
                 destinationLocation = locations.getJSONObject(position);
                 destinationTextView.setText(destinationLocation.getString("formatted_address"));
-                if (destinationTextView.getText().toString().equals(originTextView.getText().toString())){
-                    if (t!=null) t.cancel();
-                    t.makeText(getActivity(), getResources().getString(R.string.same_start_finish_point_error), Toast.LENGTH_SHORT).show();
-                    destinationTextView.setText("");
-                    destinationLocation = null;
-                    return;
-                }
-                destinationTextView.clearFocus();
             }
             listViewLocationSearch.setVisibility(View.GONE);
-            mapView.setVisibility(View.VISIBLE);
+            if (destinationTextView.getText().toString().equals(originTextView.getText().toString())){
+                if (t!=null) t.cancel();
+                t.makeText(getActivity(), getResources().getString(R.string.same_start_finish_point_error), Toast.LENGTH_SHORT).show();
+                if (originTextView.isFocused()){
+                    originTextView.setText("");
+                    originLocation = null;
+                }else if (destinationTextView.isFocused()){
+                    destinationTextView.setText("");
+                    destinationLocation = null;
+                }
+                return;
+            }
+
             if (originLocation!=null && destinationLocation!=null){
                 nextStep.setVisibility(View.VISIBLE);
             }else {
@@ -132,31 +141,28 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
     }
 
     @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
     @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
-
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
     @Override
     public void afterTextChanged(Editable editable) {
 //        Call to PlacesApi and handle the returned Data
         try {
             if (originLocation.getString("formatted_address").equals(editable.toString())){
-                mapView.setVisibility(View.VISIBLE);
                 return;
             }else if (destinationLocation.getString("formatted_address").equals(editable.toString())){
                 listViewLocationSearch.setVisibility(View.GONE);
-                mapView.setVisibility(View.VISIBLE);
                 return;
             }
         }catch (Exception ignored){}
+        if (editable.toString().length()==0){
+            listViewLocationSearch.setVisibility(View.GONE);
+            return;
+        }
+        listViewLocationSearch.setVisibility(View.VISIBLE);
+
         ApiCalls.getLocationPlaces(getActivity(), editable.toString(), new OnPlacesApiResponse() {
-            @Override
+                @Override
             public void results(JSONArray locations) {
                 DriverSaveRouteDirectionsFragment.this.locations = locations;
                 List<String> streetNames = new ArrayList<>();
@@ -167,10 +173,6 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }
-                if (editable.toString().length()>0){
-                    listViewLocationSearch.setVisibility(View.VISIBLE);
-                    mapView.setVisibility(View.GONE);
                 }
                 listViewLocationSearch.setAdapter(new ArrayAdapter<>(getActivity().getApplicationContext(),
                         R.layout.list_item,
@@ -206,18 +208,18 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
 
     private void drawMap(){
         if (m == null) return;
-        if (destinationLocation == null){
-            if (originLocation != null) {
-                startingPoint =jsonToLatLng(originLocation);
-                m.setOriginSpot(startingPoint);
-                return;
-            }
-            return;
+        if (originTextView.isFocused()){
+            startingPoint =jsonToLatLng(originLocation);
+            m.setOriginSpot(startingPoint);
+            closeKeyboard(getActivity(),originTextView.getWindowToken());
+        }else if (destinationTextView.isFocused()){
+            destinationPoint =jsonToLatLng(destinationLocation);
+            m.setDestinationSpot(destinationPoint);
+            closeKeyboard(getActivity(),destinationTextView.getWindowToken());
         }
-        closeKeyboard(getActivity(),destinationTextView.getWindowToken());
-        startingPoint =jsonToLatLng(originLocation);
-        LatLng destinationPoint = jsonToLatLng(destinationLocation);
+        if (originLocation==null||destinationLocation==null) return;
         m.directions(apiKey,startingPoint,destinationPoint,mapView);
+        m.zoomToDirection(mapView);
     }
     @Override
     public void onResume() {
@@ -239,5 +241,19 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
     public void closeKeyboard(Context c, IBinder windowToken) {
         InputMethodManager mgr = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(windowToken, 0);
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean b) {
+        if (!b) return;
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(constraintLayout);
+        if (view.getId()==originTextView.getId()){
+            constraintSet.connect(R.id.listViewLocationSearch,ConstraintSet.TOP,R.id.textInputOriginLayout,ConstraintSet.BOTTOM,0);
+            constraintSet.applyTo(constraintLayout);
+        }else if (view.getId()==destinationTextView.getId()){
+            constraintSet.connect(R.id.listViewLocationSearch, ConstraintSet.TOP, R.id.textInputDestinationLayout, ConstraintSet.BOTTOM, 0);
+            constraintSet.applyTo(constraintLayout);
+        }
     }
 }

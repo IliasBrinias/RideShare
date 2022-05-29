@@ -1,47 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".driver.fragments.Route.DriverSaveRouteAdditionalInfoFragment">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputPassengersLayout"
+            android:id="@+id/textInputRouteNameLayout"
             style="@style/TextInputEditTextLoginStyle"
-            android:layout_height="65dp"
-            android:hint="@string/passengers"
-            app:layout_constraintBottom_toTopOf="@+id/textInputDescriptionLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewDescriptionTitle"
-            app:layout_constraintVertical_bias="0.13"
-            app:placeholderText="4"
-            app:startIconDrawable="@drawable/ic_team">
+            android:layout_height="wrap_content"
+            android:hint="@string/route_name"
+            app:startIconDrawable="@drawable/ic_tag_name">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textInputPassengers"
+                android:id="@+id/textInputRouteName"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:ignore="TouchTargetSizeCheck"
-                android:inputType="numberSigned"/>
+                tools:ignore="TouchTargetSizeCheck"/>
         </com.google.android.material.textfield.TextInputLayout>
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"/>
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputPassengersCostLayout"
             style="@style/TextInputEditTextLoginStyle"
-            android:layout_height="65dp"
+            android:layout_height="wrap_content"
             android:hint="@string/cost_per_passenger"
-            app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputPassengersLayout"
-            app:placeholderText="15.50"
-            app:startIconDrawable="@drawable/ic_car_price">
+            app:placeholderText="15.5"
+            app:startIconDrawable="@drawable/ic_euro">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textInputPassengersCost"
@@ -50,79 +42,74 @@
                 android:inputType="numberDecimal"
                 tools:ignore="TouchTargetSizeCheck" />
         </com.google.android.material.textfield.TextInputLayout>
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"/>
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout"
-            style="@style/TextInputEditTextDropdownStyle"
-            android:layout_height="65dp"
-            android:hint="@string/available_cars"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/textInputDescriptionLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputPassengersLayout"
-            app:layout_constraintVertical_bias="0.78"
-            app:startIconDrawable="@drawable/ic_car_keys">
-
-            <AutoCompleteTextView
-                android:id="@+id/availableCars"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="none"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.491"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputEmailLayout"
-                app:layout_constraintVertical_bias="0.087" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputDescriptionLayout"
+            android:id="@+id/textInputCapacityLayout"
             style="@style/TextInputEditTextLoginStyle"
-            android:hint="@string/description"
-            android:maxLines="4"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.508"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewDescriptionTitle"
-            app:layout_constraintVertical_bias="0.723"
-            app:startIconDrawable="@drawable/ic_description">
+            android:layout_height="wrap_content"
+            android:hint="@string/ride_capacity"
+            app:placeholderText="4"
+            app:startIconDrawable="@drawable/ic_passengers_capacity"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textInputDescription"
+                android:id="@+id/textInputCapacityDeviation"
                 android:layout_width="match_parent"
-                android:layout_height="160dp"
+                android:layout_height="match_parent"
+                android:inputType="numberSigned"
                 tools:ignore="TouchTargetSizeCheck" />
         </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:id="@+id/textViewDescriptionTitle"
-            style="@style/TitleTextViewSaveRouteSteps"
+        <View
             android:layout_width="match_parent"
-            android:text="@string/declare_additional_information"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            android:layout_height="10dp"/>
 
-        <Button
-            android:id="@+id/buttonNextStepDateTime"
-            style="@style/SubmitButtons"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputMaximumDeviationLayout"
+            style="@style/TextInputEditTextLoginStyle"
+            android:layout_height="wrap_content"
+            android:hint="@string/maximum_deviation"
+            app:placeholderText="5"
+            app:startIconDrawable="@drawable/ic_kilometer">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputMaximumDeviation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="numberDecimal"
+                tools:ignore="TouchTargetSizeCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"/>
+        <TextView
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:textSize="14sp"
+            android:textColor="@color/shadow"
+            android:text="@string/maximum_deviation_info"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"/>
+        <Button
+            android:id="@+id/buttonSaveRoute"
+            style="@style/SubmitButtons"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="2dp"
             android:stateListAnimator="@null"
-            android:text="@string/save"
+            android:text="@string/save_route"
             android:translationZ="2dp"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputDescriptionLayout" />
+    </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</FrameLayout>
+</ScrollView>

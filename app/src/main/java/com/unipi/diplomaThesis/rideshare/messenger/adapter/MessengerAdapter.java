@@ -1,5 +1,7 @@
 package com.unipi.diplomaThesis.rideshare.messenger.adapter;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +26,10 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
     List<MessageSession> messageSessionList;
     OnClickMessageSession onClickMessageSession;
     private final SimpleDateFormat time = new SimpleDateFormat("HH:mm");
+    Context c;
 
-    public MessengerAdapter(List<MessageSession> messageSessionList, OnClickMessageSession onClickMessageSession) {
+    public MessengerAdapter(List<MessageSession> messageSessionList, Context c, OnClickMessageSession onClickMessageSession) {
+        this.c = c;
         this.messageSessionList = messageSessionList;
         this.onClickMessageSession = onClickMessageSession;
     }
@@ -47,15 +51,23 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
             }
         }
         if (messageSessionList.get(position).getMessages().isEmpty()) {
-            holder.lastMessage.setVisibility(View.GONE);
-            holder.timeLastMessage.setVisibility(View.GONE);
+            holder.lastMessage.setText(c.getString(R.string.first_message_chat));
+            holder.lastMessage.setVisibility(View.VISIBLE);
+            makeMessageUnseen(holder);
             return;
         }
         Map.Entry<String, Message> m = messageSessionList.get(position).getMessages().entrySet().iterator().next();
         Message lastMessage = m.getValue();
         holder.lastMessage.setText(cutMessageIfIsLong(lastMessage.getMessage(),20));
-        if (!lastMessage.isSeen() &&
-                !lastMessage.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())) makeMessageUnseen(holder,position);
+        if (!lastMessage.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())) {
+            if (!lastMessage.isSeen()) {
+                makeMessageUnseen(holder);
+            }else {
+                makeMessageSeen(holder);
+            }
+        }else {
+            makeMessageSeen(holder);
+        }
         holder.timeLastMessage.setText(time.format(lastMessage.getTimestamp()));
         holder.timeLastMessage.setVisibility(View.VISIBLE);
         holder.lastMessage.setVisibility(View.VISIBLE);
@@ -82,12 +94,17 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
             holder.imageUser.setVisibility(View.VISIBLE);
         });
     }
-    private void makeMessageUnseen(@NonNull ViewHolder holder, int position){
+    private void makeMessageUnseen(@NonNull ViewHolder holder){
         holder.imageMessageUnseen.setVisibility(View.VISIBLE);
-        holder.lastMessage.setTextColor(holder.imageMessageUnseen.getBackgroundTintList());
-        holder.timeLastMessage.setTextColor(holder.imageMessageUnseen.getBackgroundTintList());
-
+        holder.lastMessage.setTextColor(holder.unSeenColor);
+        holder.timeLastMessage.setTextColor(holder.unSeenColor);
     }
+    private void makeMessageSeen(@NonNull ViewHolder holder){
+        holder.imageMessageUnseen.setVisibility(View.INVISIBLE);
+        holder.lastMessage.setTextColor(holder.seenColor);
+        holder.timeLastMessage.setTextColor(holder.seenColor);
+    }
+
     @Override
     public int getItemCount() {
         return messageSessionList.size();
@@ -101,6 +118,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
         ImageView imageUser, imageMessageUnseen;
         TextView userName, lastMessage, timeLastMessage;
         OnClickMessageSession onClickMessageSession;
+        ColorStateList seenColor,unSeenColor;
         public ViewHolder(@NonNull View v) {
             super(v);
             imageUser = v.findViewById(R.id.circleImageViewUser);
@@ -109,10 +127,12 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
             userName.setVisibility(View.GONE);
             lastMessage = v.findViewById(R.id.textViewLastMessage);
             lastMessage.setVisibility(View.GONE);
+            seenColor = lastMessage.getTextColors();
             timeLastMessage = v.findViewById(R.id.textViewLastMessageTime);
             timeLastMessage.setVisibility(View.GONE);
             imageMessageUnseen = v.findViewById(R.id.circleImageMessageUnseen);
             imageMessageUnseen.setVisibility(View.GONE);
+            unSeenColor = imageMessageUnseen.getBackgroundTintList();
             v.setOnClickListener(this);
         }
 

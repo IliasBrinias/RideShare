@@ -203,18 +203,6 @@ public class User {
             return gson.fromJson(json, Rider.class);
         }
     }
-//    update User instance
-    public void updateUserInstance(Context c){
-//        save into the Preferences and the Firebase
-        Gson gson = new Gson();
-        String json = gson.toJson(this);
-        PreferenceManager.getDefaultSharedPreferences(c).edit()
-                .putString(User.class.getSimpleName(),json).apply();
-        FirebaseDatabase.getInstance().getReference()
-                .child(User.class.getSimpleName())
-                .child(this.userId)
-                .setValue(this);
-    }
 
     public void loadUserImage(OnImageLoad onImageLoad) {
         try {
@@ -348,25 +336,27 @@ public class User {
                     messageSession.setMessageSessionId(snapshot.getKey());
                     messageSession.setParticipants((ArrayList<String>) snapshot.child("participants").getValue());
                     messageSession.setCreationTimestamp(snapshot.child("creationTimestamp").getValue(Long.class));
-                    ref.child("messages").orderByChild("timestamp").limitToLast(1)
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    Map<String,Message> messageMap = new HashMap<>();
-                                    for (DataSnapshot msg : snapshot.getChildren()) {
-                                        Message m = msg.getValue(Message.class);
-                                        messageMap.put(msg.getKey(), m);
-                                        messageSession.setMessages(messageMap);
-                                        onMessageSessionLoad.returnedSession(messageSession);
-                                    }
+                    if (snapshot.child("messages").getChildrenCount()==0){
+                        onMessageSessionLoad.returnedSession(messageSession);
+                        return;
+                    }
+                    ref.child("messages")
+                        .orderByChild("timestamp")
+                        .limitToLast(1)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                Map<String,Message> messageMap = new HashMap<>();
+                                for (DataSnapshot msg : snapshot.getChildren()) {
+                                    Message m = msg.getValue(Message.class);
+                                    messageMap.put(msg.getKey(), m);
+                                    messageSession.setMessages(messageMap);
+                                    onMessageSessionLoad.returnedSession(messageSession);
                                 }
-                                //
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-//
-                                }
-
-                            });
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {}
+                        });
                 }
 
                 @Override
@@ -385,49 +375,40 @@ public class User {
                 .child(m.getMessageId())
                 .child("seen").setValue(true);
     }
-    public void loadMessages(MessageSession messageSession,boolean finish, OnMessageReturn onMessageReturn){
-        ChildEventListener loadMessages = new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (!snapshot.exists()) return;
-                Message m = snapshot.getValue(Message.class);
-                if (m.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())){
-                    onMessageReturn.returnedMessage(m);
-                    return;
-                }
-                if (!m.isSeen()){
-                    m.setSeen(true);
-                    messageSeen(messageSession,m);
-                }
-                onMessageReturn.returnedMessage(m);
-            }
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                onMessageReturn.returnedMessage(snapshot.getValue(Message.class));
-
-            }
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
-        };
-        if (finish){
-            FirebaseDatabase.getInstance().getReference()
-                    .child(MessageSession.class.getSimpleName())
-                    .child(messageSession.getMessageSessionId())
-                    .child("messages").orderByChild("timestamp")
-                    .limitToLast(100)
-                    .removeEventListener(loadMessages);
-            return;
-        }
-        FirebaseDatabase.getInstance().getReference()
+    ChildEventListener loadMessages;
+    public void loadMessages(MessageSession messageSession, OnMessageReturn onMessageReturn){
+        loadMessages = FirebaseDatabase.getInstance().getReference()
                 .child(MessageSession.class.getSimpleName())
                 .child(messageSession.getMessageSessionId())
                 .child("messages").orderByChild("timestamp")
                 .limitToLast(100)
-            .addChildEventListener(loadMessages);
+            .addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    if (!snapshot.exists()) return;
+                    Message m = snapshot.getValue(Message.class);
+                    if (m.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())){
+                        onMessageReturn.returnedMessage(m);
+                        return;
+                    }
+                    if (!m.isSeen()){
+                        m.setSeen(true);
+                        messageSeen(messageSession,m);
+                    }
+                    onMessageReturn.returnedMessage(m);
+                }
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    onMessageReturn.returnedMessage(snapshot.getValue(Message.class));
+
+                }
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {}
+            });
     }
 
     public static void mutualRoutes(Driver driver, Rider rider, OnRouteResponse onRouteResponse){
@@ -440,5 +421,14 @@ public class User {
                 }
             });
         }
+    }
+
+    public void stopLoadingMessages(MessageSession messageSession) {
+        FirebaseDatabase.getInstance().getReference()
+                .child(MessageSession.class.getSimpleName())
+                .child(messageSession.getMessageSessionId())
+                .child("messages").orderByChild("timestamp")
+                .limitToLast(100)
+                .removeEventListener(loadMessages);
     }
 }

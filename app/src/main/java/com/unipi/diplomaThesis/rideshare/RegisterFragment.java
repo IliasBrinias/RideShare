@@ -116,8 +116,8 @@ public class RegisterFragment extends Fragment implements TextWatcher {
                         }
 //                Create User object
                         User u = new Rider(null,
-                                    email.toString(),
-                                    name.toString(),
+                                    email.getText().toString(),
+                                    name.getText().toString(),
                                     null,
                                     null);
 //                Save the user Object

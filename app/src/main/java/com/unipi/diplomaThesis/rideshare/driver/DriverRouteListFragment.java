@@ -1,6 +1,7 @@
 package com.unipi.diplomaThesis.rideshare.driver;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +33,7 @@ import java.util.List;
  */
 public class DriverRouteListFragment extends Fragment {
 
+    private static final int REQ_NEW_ROUTE_ACTIVITY = 123;
     private TextView welcomeTitle;
     private RecyclerView recyclerViewDriver;
     private Driver driver;
@@ -83,7 +86,7 @@ public class DriverRouteListFragment extends Fragment {
             }
         });
         recyclerViewDriver.setAdapter(driverRouteListAdapter);
-        tableRowAddRoute.setOnClickListener(view -> startActivity(new Intent(getActivity(), DriverSaveRouteActivity.class)));
+        tableRowAddRoute.setOnClickListener(view -> startActivityForResult(new Intent(getActivity(), DriverSaveRouteActivity.class),REQ_NEW_ROUTE_ACTIVITY));
         routeSearch();
         initializeTitle();
         return v;
@@ -119,5 +122,12 @@ public class DriverRouteListFragment extends Fragment {
             welcomeTitle.setText("Hello "+name[0]+"!");
         }
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQ_NEW_ROUTE_ACTIVITY && resultCode == Activity.RESULT_OK){
+            routeSearch();
+        }
     }
 }

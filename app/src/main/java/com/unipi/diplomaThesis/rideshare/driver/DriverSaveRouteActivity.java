@@ -1,22 +1,33 @@
 package com.unipi.diplomaThesis.rideshare.driver;
 
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TableRow;
+import android.view.ViewTreeObserver;
+import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.unipi.diplomaThesis.rideshare.Model.Driver;
+import com.unipi.diplomaThesis.rideshare.Model.Route;
+import com.unipi.diplomaThesis.rideshare.Model.RouteDateTime;
+import com.unipi.diplomaThesis.rideshare.Model.RouteLatLng;
+import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteAdditionalInfoFragment;
-import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteTimeTableFragment;
 import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteDirectionsFragment;
+import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteTimeTableFragment;
+
+import java.util.Map;
 
 public class DriverSaveRouteActivity extends AppCompatActivity{
     int progress = 0;
-    public int COUNT_STEPS=4;
-    TableRow tableRowStages,tableRowProgress;
+    public int COUNT_STEPS=3;
+    ProgressBar progressBar;
     DriverSaveRouteDirectionsFragment driverSaveRouteDirectionsFragment;
     DriverSaveRouteTimeTableFragment driverSaveRouteTimeTableFragment;
     DriverSaveRouteAdditionalInfoFragment driverSaveRouteAdditionalInfoFragment;
@@ -24,8 +35,7 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_save_route);
-        tableRowProgress = findViewById(R.id.tableRowProgress);
-        tableRowStages = findViewById(R.id.tableRowStages);
+        progressBar = findViewById(R.id.progressBar);
         handleStep(0);
     }
     public void nextStep(){
@@ -37,7 +47,7 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
         handleStep(progress);
     }
     private void handleStep(int progress){
-        changeProgressBar(progress);
+        changeProgressBar(progress+1);
         switch (progress){
             case 0: // Directions
                 driverSaveRouteDirectionsFragment = new DriverSaveRouteDirectionsFragment();
@@ -51,18 +61,23 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
                 driverSaveRouteAdditionalInfoFragment = new DriverSaveRouteAdditionalInfoFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView,driverSaveRouteAdditionalInfoFragment).commit();
                 break;
+            case 4:
+                saveRoute();
         }
     }
     private void changeProgressBar(int progress){
-        if (progress == COUNT_STEPS-1){
-            tableRowProgress.setVisibility(View.GONE);
-            tableRowStages.setBackgroundTintList(tableRowProgress.getBackgroundTintList());
-        }else {
-            tableRowProgress.setVisibility(View.VISIBLE);
-            changeWidthWithAnim(tableRowProgress.getLayoutParams().width, //start
-                    (tableRowStages.getLayoutParams().width/COUNT_STEPS)*(progress+1) + 10 //end
-            );
-        }
+        progressBar.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                progressBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                if (progress == COUNT_STEPS){
+                    changeWidthWithAnim(progressBar.getProgress(), 100);
+                }else {
+                    changeWidthWithAnim(progressBar.getProgress(), (100/(COUNT_STEPS))*progress);
+                }
+            }
+        });
     }
     private void changeWidthWithAnim(int startValueWidth, int endValueWidth){
         ValueAnimator anim = ValueAnimator.ofInt(
@@ -73,13 +88,44 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 int val = (Integer) valueAnimator.getAnimatedValue();
-                ViewGroup.LayoutParams layoutParams = tableRowProgress.getLayoutParams();
-                layoutParams.width = val;
-                tableRowProgress.setLayoutParams(layoutParams);
+                progressBar.setProgress(val);
             }
         });
         anim.setDuration(1000);
         anim.start();
-
+    }
+    public void saveRoute(){
+        Driver driver = null;
+        try {
+            driver = (Driver) User.loadUserInstance(this);
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            FirebaseAuth.getInstance().signOut();
+            finish();
+        }
+//        collect all the data from the fragments and create the route Object
+        RouteLatLng points = driverSaveRouteDirectionsFragment.getPoints();
+        RouteDateTime routeDateTime = driverSaveRouteTimeTableFragment.getRouteDateTime();
+        Map<String,Object> additionalInfo = driverSaveRouteAdditionalInfoFragment.getAdditionalInfo();
+        points.setMaximumDeviation((double) additionalInfo.get("maximumDeviation"));
+        Route r = new Route(
+                additionalInfo.get("name").toString(),
+                null,
+                driver.getUserId(),
+                points,
+                null,
+                routeDateTime,
+                additionalInfo.get("costPreRider").toString(),
+                (int) additionalInfo.get("rideCapacity")
+        );
+        driver.saveRoute(r, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    setResult(Activity.RESULT_OK);
+                    finish();
+                }
+            }
+        });
     }
 }

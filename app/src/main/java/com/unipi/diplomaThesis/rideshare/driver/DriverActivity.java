@@ -17,23 +17,22 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
-import com.unipi.diplomaThesis.rideshare.Model.Request;
+import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.PersonalDataFragment;
 import com.unipi.diplomaThesis.rideshare.R;
-import com.unipi.diplomaThesis.rideshare.messenger.MessengerActivity;
 import com.unipi.diplomaThesis.rideshare.RiderLastRoutesFragment;
+import com.unipi.diplomaThesis.rideshare.messenger.MessengerActivity;
 import com.unipi.diplomaThesis.rideshare.rider.CarFragment;
 import com.unipi.diplomaThesis.rideshare.rider.RouteSearchFragment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, NavigationView.OnNavigationItemSelectedListener {
+    protected MyApplication mMyApp;
+
     private MaterialToolbar topAppBar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -56,11 +55,6 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
             if (userDriver == null) {
                 finish();
             }
-//            if (true){
-//                test();
-//                return;
-//            }
-
         }catch (ClassCastException classCastException){
             classCastException.printStackTrace();
             finish();
@@ -89,27 +83,8 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
         topAppBar.setOnMenuItemClickListener(this);
 //        Navigation Items
         navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    private void test() {
-        FirebaseDatabase.getInstance().getReference()
-                        .child(Request.class.getSimpleName())
-                        .child("-Myws8ZECZ2e45bxAYFm")
-                        .child("nRSzDcNrftUqrIBDRX8YoB5QF7r2")
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                Request r = snapshot.getValue(Request.class);
-                                userDriver.acceptRequest(r);
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
-
-
+        mMyApp = (MyApplication) this.getApplicationContext();
+        mMyApp.setCurrentActivity(this);
     }
 
     private void loadUserData(){
@@ -122,12 +97,6 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
                 imageNavigationHeader.setBackgroundResource(R.drawable.ic_default_profile);
             }
         });
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finishAffinity();
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -165,9 +134,9 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
                 getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,carFragment).commit();
                 break;
             case R.id.logOut:
-                DriverActivity.this.userDriver.logOut(DriverActivity.this);
                 Intent i = new Intent();
-                i.putExtra("LogOut","true");
+                i.putExtra("LogOut", FirebaseAuth.getInstance().getCurrentUser().getProviderId());
+                DriverActivity.this.userDriver.logOut(DriverActivity.this);
                 setResult(Activity.RESULT_OK, i);
                 finish();
                 break;
@@ -175,4 +144,30 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAffinity();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        clearReferences();
+        super.onDestroy();
+    }
+    private void clearReferences(){
+        Activity currActivity = mMyApp.getCurrentActivity();
+        if (this.equals(currActivity))
+            mMyApp.setCurrentActivity(null);
+    }
+
 }

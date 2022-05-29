@@ -26,10 +26,9 @@ public class Route implements Serializable {
     private ArrayList<String> passengersId = new ArrayList<>();
     private RouteDateTime routeDateTime;
     private String costPerRider;
-    private int maxRiders;
-    private String description;
+    private int rideCapacity;
 
-    public Route(String name ,String routeId, String driverId, RouteLatLng routeLatLng, ArrayList<String> passengersId, RouteDateTime routeDateTime, String costPerRider, int maxRiders, String description) {
+    public Route(String name, String routeId, String driverId, RouteLatLng routeLatLng, ArrayList<String> passengersId, RouteDateTime routeDateTime, String costPerRider, int rideCapacity) {
         this.name = name;
         this.routeId = routeId;
         this.driverId = driverId;
@@ -37,11 +36,18 @@ public class Route implements Serializable {
         this.passengersId = passengersId;
         this.routeDateTime = routeDateTime;
         this.costPerRider = costPerRider;
-        this.maxRiders = maxRiders;
-        this.description = description;
+        this.rideCapacity = rideCapacity;
     }
 
     public Route() {
+    }
+
+    public int getRideCapacity() {
+        return rideCapacity;
+    }
+
+    public void setRideCapacity(int rideCapacity) {
+        this.rideCapacity = rideCapacity;
     }
 
     public String getName() {
@@ -50,14 +56,6 @@ public class Route implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public RouteLatLng getRouteLatLng() {
@@ -82,14 +80,6 @@ public class Route implements Serializable {
 
     public void setCostPerRider(String costPerRider) {
         this.costPerRider = costPerRider;
-    }
-
-    public int getMaxRiders() {
-        return maxRiders;
-    }
-
-    public void setMaxRiders(int maxRiders) {
-        this.maxRiders = maxRiders;
     }
 
     public String getRouteId() {
@@ -137,7 +127,7 @@ public class Route implements Serializable {
         Calendar newRoute = new GregorianCalendar();
         Calendar newRider = new GregorianCalendar();
 
-        route.setTimeInMillis(this.getRouteDateTime().getStartTimeUnix());
+        route.setTimeInMillis(this.getRouteDateTime().getStartDateUnix());
         rider.setTimeInMillis(userTime);
 
         int routeHour = route.get(Calendar.HOUR_OF_DAY);
@@ -174,9 +164,9 @@ public class Route implements Serializable {
         return "";
     }
     public int getColorForRideCapacitySlider(){
-        int maxRiders = this.maxRiders;
-        int halfRiders = (int) Math.ceil((double)maxRiders / 2);
-        if (this.passengersId.size() == maxRiders){
+        if (passengersId == null) return 0;
+        int halfRiders = (int) Math.ceil((double)this.rideCapacity / 2);
+        if (this.passengersId.size() == this.rideCapacity){
             return R.color.sliderRed;
         }else if (this.passengersId.size() > halfRiders){
             return R.color.sliderOrange;
@@ -187,6 +177,7 @@ public class Route implements Serializable {
         }
     }
     public boolean isFull(){
-        return this.maxRiders == this.passengersId.size();
+        if (passengersId == null) return false;
+        return this.rideCapacity == this.passengersId.size();
     }
 }

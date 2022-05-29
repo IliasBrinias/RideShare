@@ -59,11 +59,6 @@ public class DriverRouteFragment extends Fragment {
         }
         recyclerView = v.findViewById(R.id.recyclerDriveRoute);
         CircleImageView addRoute = v.findViewById(R.id.buttonAddRoute);
-        DriverSaveRouteFragment driverSaveRouteFragment = new DriverSaveRouteFragment();
-//        add Route onClick Listener
-        addRoute.setOnClickListener(view -> {
-            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,driverSaveRouteFragment).commit();
-        });
 //        enable scrolling in a scrollview
         recyclerView.setOnTouchListener((view, event) -> {
             try {

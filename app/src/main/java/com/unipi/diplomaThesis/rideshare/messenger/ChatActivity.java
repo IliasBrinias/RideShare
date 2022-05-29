@@ -1,6 +1,7 @@
 package com.unipi.diplomaThesis.rideshare.messenger;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.Model.Message;
 import com.unipi.diplomaThesis.rideshare.Model.MessageSession;
+import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.messenger.adapter.ChatAdapter;
@@ -29,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
+    protected MyApplication mMyApp;
 
     TextView userName, userMessage;
     RecyclerView recyclerView;
@@ -64,7 +67,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setAdapter(chatAdapter);
         RouteSearch();
         loadParticipantData();
+        mMyApp = (MyApplication) this.getApplicationContext();
     }
+
 
     @Override
     public void onClick(View view) {
@@ -92,18 +97,28 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
     @SuppressLint("NotifyDataSetChanged")
     private void refreshData(Message m){
+        boolean messageExists = false;
         try {
-            if (messageList.get(messageList.size()-1).getMessageId().equals(m.getMessageId())){
-                messageList.remove(messageList.size()-1);
-
+            for (int i=messageList.size()-1; i>=0; i--){
+                if (messageList.get(i).getMessageId().equals(m.getMessageId())){
+                    messageList.set(i,m);
+                    messageExists = true;
+                    break;
+                }
             }
         }catch (IndexOutOfBoundsException ignore){}
-        messageList.add(m);
+        if (!messageExists) messageList.add(m);
         chatAdapter.notifyDataSetChanged();
+        recyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                recyclerView.scrollToPosition(chatAdapter.getItemCount() - 1);
+            }
+        }, 500);
     }
     private void RouteSearch() {
         messageList.clear();
-        senderUser.loadMessages(messageSession,false,this::refreshData);
+        senderUser.loadMessages(messageSession,this::refreshData);
     }
     public void closeKeyboard(Context c, IBinder windowToken) {
         InputMethodManager mgr = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -143,13 +158,25 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onPause() {
+        senderUser.stopLoadingMessages(messageSession);
+        mMyApp.setCurrentActivity(this);
         super.onPause();
-        senderUser.loadMessages(messageSession,true,null);
-
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMyApp.setCurrentActivity(this);
     }
 
     @Override
     protected void onDestroy() {
+        clearReferences();
         super.onDestroy();
     }
+    private void clearReferences(){
+        Activity currActivity = mMyApp.getCurrentActivity();
+        if (this.equals(currActivity))
+            mMyApp.setCurrentActivity(null);
+    }
+
 }

@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -84,33 +85,60 @@ public class Driver extends User{
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
-    public void saveRoute(Route r, Context c, OnCompleteListener<Void> onCompleteListener){
+    public void saveRoute(Route r, OnCompleteListener<Void> onCompleteListener){
 //      save route
         DatabaseReference database = FirebaseDatabase.getInstance().getReference()
                 .child(Route.class.getSimpleName());
         if (r.getRouteId()==null) r.setRouteId(database.push().getKey());
-        database.child(r.getRouteId()).setValue(r).addOnCompleteListener(onCompleteListener);
+        database.child(r.getRouteId())
+                .setValue(r).addOnCompleteListener(onCompleteListener);
 //      save route id to drivers data
-        this.getLastRoutes().add(r.getRouteId());
+        DatabaseReference ref =
+        FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName())
+                .child(FirebaseAuth.getInstance().getUid())
+                .child("lastRoutes");
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        int newRouteId= (int) (snapshot.getChildrenCount());
+                        ref.child(String.valueOf(newRouteId)).setValue(r.getRouteId());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
 //        Update the driver Object
-        updateUserInstance(c);
     }
     public void loadDriverRoutes(OnRouteResponse onRouteResponse){
         DatabaseReference database = FirebaseDatabase.getInstance().getReference()
                 .child(Route.class.getSimpleName());
-//        return all the driver routes
-        if (this.getLastRoutes().isEmpty()) return;
-        for (String routeId:this.getLastRoutes()){
-            database.child(routeId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Route route = snapshot.getValue(Route.class);
-                    onRouteResponse.returnedRoute(route);
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {}
-            });
-        }
+        FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName())
+                .child(this.getUserId())
+                .child("lastRoutes")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        ArrayList<String> routeIds = (ArrayList<String>) snapshot.getValue();
+                        System.out.println(routeIds.toString());
+                        for (String id:routeIds) {
+                            database.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    Route route = snapshot.getValue(Route.class);
+                                    onRouteResponse.returnedRoute(route);
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {}
+                            });
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                });
     }
     public void deleteRoute(Route deletedRoute, Context c){
 //        delete all the route data
@@ -126,7 +154,6 @@ public class Driver extends User{
                 .child(deletedRoute.getRouteId())
                 .removeValue();
         this.getLastRoutes().remove(deletedRoute.getRouteId());
-        this.updateUserInstance(c);
     }
     public void saveCar(Car c, byte[] carImage, OnCompleteListener<Void> onCompleteListener, OnFailureListener onFailureListener){
         saveCarImage(carImage, new OnCompleteListener<UploadTask.TaskSnapshot>() {

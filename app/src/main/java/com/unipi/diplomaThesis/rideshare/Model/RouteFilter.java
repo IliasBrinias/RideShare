@@ -5,12 +5,9 @@ import android.content.Context;
 import com.unipi.diplomaThesis.rideshare.Interface.OnFilterResult;
 
 import java.io.Serializable;
-import java.time.YearMonth;
-import java.util.ArrayList;
+import java.time.Duration;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 public class RouteFilter implements Serializable {
     private double maximumDistance = 0.1;
@@ -273,24 +270,6 @@ public class RouteFilter implements Serializable {
 //                });
     }
 
-    private long getCombineDate(long date, long time) {
-        Calendar dateCal = new GregorianCalendar();
-        Calendar timeCal = new GregorianCalendar();
-
-        dateCal.setTimeInMillis(date);
-        timeCal.setTimeInMillis(time);
-
-        int year = dateCal.get(Calendar.YEAR);
-        int month = dateCal.get(Calendar.MONTH);
-        int day = dateCal.get(Calendar.DAY_OF_MONTH);
-
-        int hour = timeCal.get(Calendar.HOUR_OF_DAY);
-        int minute = timeCal.get(Calendar.MINUTE);
-        int second = timeCal.get(Calendar.SECOND);
-        Calendar c = new GregorianCalendar();
-        c.set(year,month,day,hour,minute,second);
-        return c.getTimeInMillis();
-    }
     private boolean checkDate(Route r){
 //      Date
 //      start
@@ -312,66 +291,26 @@ public class RouteFilter implements Serializable {
         if (routeCalendarStart.getTimeInMillis() > userInput.getTimeInMillis() || userInput.getTimeInMillis() > routeCalendarEnd.getTimeInMillis()){
             return false;
         }
+        if (!r.getRouteDateTime().isRepeat()){
+            if (routeCalendarStart.get(Calendar.YEAR) != userInput.get(Calendar.YEAR) ||
+                    routeCalendarStart.get(Calendar.MONTH) != userInput.get(Calendar.MONTH) ||
+                    routeCalendarStart.get(Calendar.DAY_OF_MONTH) != userInput.get(Calendar.DAY_OF_MONTH)) {
+                return false;
+            }
+        }
         switch (r.getRouteDateTime().getTimetable()){
-            case 0://one time
-                if (routeCalendarStart.get(Calendar.YEAR) != userInput.get(Calendar.YEAR) ||
-                        routeCalendarStart.get(Calendar.MONTH) != userInput.get(Calendar.MONTH) ||
-                        routeCalendarStart.get(Calendar.DAY_OF_MONTH) != userInput.get(Calendar.DAY_OF_MONTH)) {
-                    return false;
-                }
-                break;
-            case 1: // daily
+            case 0: // daily
                 if (routeCalendarStart.getTimeInMillis() > RouteFilter.this.timeUnix ||
                         RouteFilter.this.timeUnix > routeCalendarEnd.getTimeInMillis()){
                     return false;
                 }
                 break;
-            case 2://weekly
+            case 1://weekly
 //              check if the day of week is the same and if the user date is between start and end route date
                 if (routeCalendarStart.get(Calendar.DAY_OF_WEEK) != userInput.get(Calendar.DAY_OF_WEEK)){
                     return false;
                 }
                 break;
-            case 3://monthly
-//              find the last day Month of user Input
-                int lastDayMonth = YearMonth.of(userInput.get(Calendar.YEAR),userInput.get(Calendar.MONTH)+1).lengthOfMonth();
-//              if is it smaller check for the day of the month
-                if (lastDayMonth > routeCalendarStart.get(Calendar.DAY_OF_MONTH)){
-                    if (routeCalendarStart.get(Calendar.DAY_OF_MONTH) != userInput.get(Calendar.DAY_OF_MONTH)){
-                        return false;
-                    }else {
-                        break;
-                    }
-                }else {
-//                  else check if is it the last day
-                    if (lastDayMonth != userInput.get(Calendar.DAY_OF_MONTH)){
-                        return false;
-                    }
-                }
-                break;
-            case 4://yearly
-
-                break;
-            case 5:
-
-                //create a list of the selected Days
-                List<String> selectedDays = new ArrayList<>(r.getRouteDateTime().getSelectedDays().values());
-                Collections.sort(selectedDays);
-                boolean isSameDayOfTheWeek = false;
-                for (String days: selectedDays){
-                    Calendar currentCalendar = new GregorianCalendar();
-                    currentCalendar.setTimeInMillis(r.getRouteDateTime().getStartDateUnix());
-//                  for every day create a Calendar with the startRouteDateTime as Unix time
-//                   and check if the Day of Week is the same with the users
-                    currentCalendar.set(Calendar.DAY_OF_WEEK, Integer.valueOf(days));
-                    if (currentCalendar.get(Calendar.DAY_OF_WEEK) == userInput.get(Calendar.DAY_OF_WEEK)) {
-                        isSameDayOfTheWeek = true;
-                        break;
-                    }
-                }
-                if (!isSameDayOfTheWeek) {
-                    return false;
-                }
         }
         return true;
     }
@@ -395,10 +334,12 @@ public class RouteFilter implements Serializable {
     private boolean checkTime(Route r){
 //      time check
         if (minTime != defaultMinTime || maxTime != defaultMaxTime){
-
-            float hourDifference = (
-                    getCombineDate(r.getRouteDateTime().getStartDateUnix(),
-                            r.getRouteDateTime().getStartTimeUnix()) - RouteFilter.this.timeUnix) /(60.f*60.f*1000);
+            Calendar routeCalendar =new GregorianCalendar();
+            routeCalendar.setTimeInMillis(r.getRouteDateTime().getStartDateUnix());
+            Calendar routeFilterCalendar =new GregorianCalendar();
+            routeFilterCalendar.setTimeInMillis(RouteFilter.this.timeUnix);
+            Duration duration = Duration.between(routeCalendar.toInstant(), routeFilterCalendar.toInstant());
+            float hourDifference = duration.toHours();
             if (RouteFilter.this.minTime > hourDifference || RouteFilter.this.maxTime < hourDifference) {
                 return false;
             }

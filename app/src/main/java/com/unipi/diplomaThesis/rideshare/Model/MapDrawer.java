@@ -203,11 +203,18 @@ public class MapDrawer {
         destinationMarker = new MarkerOptions();
         destinationMarker.position(point);
         destinationMarker.icon(bitmapDescriptorFromVector(c, R.drawable.ic_finish_route));
-        destination = map.addMarker(startMarker);
+        destination = map.addMarker(destinationMarker);
         updateCamera(point);
 
     }
     private void updateCamera(LatLng point){
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 15));
+    }
+    public void zoomToDirection(View mapView){
+        LatLngBounds bounds = new LatLngBounds.Builder().include(
+                startMarker.getPosition()).include(
+                destinationMarker.getPosition()).build();
+        int padding = (int) (mapView.getWidth() * this.getEdgesOffsetFromTheMap()); // offset from edges of the map - 20% of screen
+        map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,mapView.getWidth(),mapView.getHeight(),padding));
     }
 }

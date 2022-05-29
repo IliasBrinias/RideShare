@@ -68,7 +68,7 @@
     <string name="set_your_first_route_date">Set the date of your first route</string>
     <string name="start_date">Start Date</string>
     <string name="choose_the_days">Choose the Days</string>
-    <string name="save">Save</string>
+    <string name="save_route">Save Route</string>
     <string name="starting_route">Starting Route</string>
     <string name="finish_route">Finish Route</string>
     <string name="cost_per_passenger">Cost per Passenger</string>
@@ -180,10 +180,18 @@
     <string name="car">Car</string>
     <string name="you_are_driver_now">You are Driver now</string>
     <string name="successfull_edit_car_driver">You saved your Car successfully</string>
+    <string name="accepte_request_msg">was accepted your request</string>
+    <string name="request_accepted">Request Accepted</string>
+    <string name="route_start">Route start</string>
+    <string name="route_end">Route End</string>
+    <string name="end_date_error_daily">Your last day trip must be at least one day after the beginning</string>
+    <string name="end_date_error_week">Your last day trip must be at least one week after the beginning</string>
+    <string name="route_name">Route Name</string>
+    <string name="maximum_deviation">Maximum Deviation</string>
+    <string name="maximum_deviation_info">You must define the number of kilometres that your able to drive extra for your passengers</string>
     <string-array name="repeat_options">
         <item>@string/daily</item>
         <item>@string/weekly</item>
-        <item>@string/monthly</item>
     </string-array>
     <string-array name="days">
         <item>@string/sunday</item>

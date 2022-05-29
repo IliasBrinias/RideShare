@@ -29,7 +29,7 @@ import java.util.List;
 
 public class ChatInfoActivity extends AppCompatActivity {
     String participantId;
-    ImageView userImage, imageCar, imageLeave;
+    ImageView userImage, imageCar, imageLeave, imageExit;
     TextView userName,
             carName,
             carYear,
@@ -51,6 +51,7 @@ public class ChatInfoActivity extends AppCompatActivity {
         if (!getIntent().hasExtra(User.class.getSimpleName())) finish();
         userImage = findViewById(R.id.imageViewUser);
         imageCar = findViewById(R.id.imageViewCarImage);
+        imageExit = findViewById(R.id.exitChatInfo);
         imageLeave = findViewById(R.id.leaveChat);
         userName = findViewById(R.id.textViewUserName);
         carName = findViewById(R.id.textViewCarName);
@@ -62,6 +63,7 @@ public class ChatInfoActivity extends AppCompatActivity {
         muteMessage = findViewById(R.id.switchMute);
         recyclerView = findViewById(R.id.recyclerView);
         tableRowCar = findViewById(R.id.tableRowCar);
+        imageExit.setOnClickListener(view -> finish());
         imageLeave.setOnClickListener(view -> finish());
         tableRowCar.setVisibility(View.GONE);
         participantId = getIntent().getStringExtra(User.class.getSimpleName());

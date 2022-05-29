@@ -1,5 +1,8 @@
 package com.unipi.diplomaThesis.rideshare;
 
+import static com.unipi.diplomaThesis.rideshare.StartActivity.REQ_DRIVER_ACTIVITY;
+import static com.unipi.diplomaThesis.rideshare.StartActivity.REQ_RIDER_ACTIVITY;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -69,8 +72,6 @@ public class LoginFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private String WEB_CLIENT_TOKEN = "719991187082-6o6stl5ugq4u52jkja0vulajud89sjun.apps.googleusercontent.com";
     private int REQ_USER_ACTIVITY = 719;
-    private OnUserLoadComplete onUserLoadComplete;
-    private FirebaseAuth.AuthStateListener authStateListener;
     private AccessTokenTracker accessTokenTracker;
     private TextView registerTitle;
     private Button login, register;
@@ -127,19 +128,6 @@ public class LoginFragment extends Fragment {
                 e.printStackTrace();
             }
         });
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-//                TODO: handle the auth state change
-                switch (user.getProviderId()){
-                    case "Google":
-                        break;
-                    case "Facebook":
-                        break;
-                }
-            }
-        };
         accessTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(@Nullable AccessToken accessToken, @Nullable AccessToken currentAccessToken) {
@@ -210,9 +198,9 @@ public class LoginFragment extends Fragment {
                             PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
                                     .putString(User.class.getSimpleName(),json).apply();
                             if (u.getType().equals(Driver.class.getSimpleName())){
-                                getActivity().startActivityForResult(new Intent(getActivity(), DriverActivity.class),StartActivity.REQ_DRIVER_ACTIVITY);
+                                getActivity().startActivityForResult(new Intent(getActivity(), DriverActivity.class), REQ_DRIVER_ACTIVITY);
                             }else {
-                                getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class),StartActivity.REQ_RIDER_ACTIVITY);
+                                getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class), REQ_RIDER_ACTIVITY);
                             }
                             ((StartActivity) getActivity()).stopProgressBarAnimation();
                         }
@@ -246,8 +234,15 @@ public class LoginFragment extends Fragment {
             } catch (ApiException e) {
                 e.printStackTrace();
             }
-        }else if(requestCode == REQ_USER_ACTIVITY){
-            if (resultCode == Activity.RESULT_OK && data.getStringExtra("LogOut").equals("true")){
+        }else if(requestCode == REQ_RIDER_ACTIVITY || requestCode == REQ_DRIVER_ACTIVITY){
+            if (resultCode == Activity.RESULT_OK){
+                if (data == null) return;
+                switch (data.getStringExtra("LogOut")){
+                    case "Google":
+                        mGoogleApiClient.signOut();
+                    case "Facebook":
+
+                }
                 try {
                     mGoogleApiClient.signOut();
                 }catch (Exception ignored){
@@ -306,9 +301,9 @@ public class LoginFragment extends Fragment {
         PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
                 .putString(User.class.getSimpleName(),json).apply();
         if (u.getType().equals(Driver.class.getSimpleName())){
-            getActivity().startActivityForResult(new Intent(getActivity(), DriverActivity.class),StartActivity.REQ_DRIVER_ACTIVITY);
+            startActivityForResult(new Intent(getActivity(), DriverActivity.class), REQ_DRIVER_ACTIVITY);
         }else {
-            getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class),StartActivity.REQ_RIDER_ACTIVITY);
+            startActivityForResult(new Intent(getActivity(), RiderActivity.class), REQ_RIDER_ACTIVITY);
         }
         ((StartActivity) getActivity()).stopProgressBarAnimation();
     }

@@ -78,11 +78,11 @@ public class DriverRouteListAdapter extends RecyclerView.Adapter<DriverRouteList
                 holder.frameLayoutPassengersIcon.addView(c);
             });
         }
-        for (int i=currentRoute.getPassengersId().size();i<currentRoute.getMaxRiders();i++){
+        for (int i=currentRoute.getPassengersId().size();i<currentRoute.getRideCapacity();i++){
             CardView c =customCardView.getCardView(i, null);
             holder.frameLayoutPassengersIcon.addView(c);
         }
-        if (position == 0){
+        if (routeList.size() == 0){
             holder.division.setVisibility(View.INVISIBLE);
         }else if (routeList.size() == position){
             holder.division.setVisibility(View.INVISIBLE);

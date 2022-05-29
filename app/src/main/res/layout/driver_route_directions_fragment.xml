@@ -1,113 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/constraintLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".driver.fragments.Route.DriverSaveRouteDirectionsFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="10dp">
 
-        <TableRow
-            android:id="@+id/tableRow19"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputOriginLayout"
+        style="@style/TextInputEditTextLoginStyle"
+        android:layout_marginTop="8dp"
+        android:elevation="5sp"
+        android:hint="@string/route_start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:startIconDrawable="@drawable/ic_location_point">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/autoCompleteOrigin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0">
+            android:fontFamily="@font/trebuc"
+            tools:ignore="TouchTargetSizeCheck" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputDestinationLayout"
+        style="@style/TextInputEditTextLoginStyle"
+        android:layout_marginTop="8dp"
+        android:elevation="5sp"
+        android:hint="@string/route_end"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/textInputOriginLayout"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="@+id/textInputOriginLayout"
+        app:layout_constraintTop_toBottomOf="@+id/textInputOriginLayout"
+        app:layout_constraintVertical_bias="0.0"
+        app:startIconDrawable="@drawable/ic_finish_route"
+        app:startIconTint="@null">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputOriginLocationLayout"
-                    style="@style/TextInputEditTextLoginStyle"
-                    android:hint="@string/origin"
-                    app:startIconDrawable="@drawable/ic_location_point">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/autoCompleteDestination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/trebuc"
+            tools:ignore="TouchTargetSizeCheck" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/autoCompleteOriginPoint"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/trebuc"
-                        android:singleLine="true"
-                        android:nextFocusDown="@+id/textInputDestinationLocation"
-                        tools:ignore="TouchTargetSizeCheck" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputDestinationLocationLayout"
-                    style="@style/TextInputEditTextLoginStyle"
-                    android:hint="@string/destination"
-                    app:startIconDrawable="@drawable/ic_finish_route"
-                    app:startIconTint="@null">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textInputDestinationLocation"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/trebuc"
-                        android:singleLine="true"
-                        tools:ignore="TouchTargetSizeCheck" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp" />
-            </LinearLayout>
-        </TableRow>
-
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="24dp"
+        android:elevation="5dp"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/textInputDestinationLayout"
+        app:layout_constraintStart_toStartOf="@+id/textInputDestinationLayout"
+        app:layout_constraintTop_toBottomOf="@+id/textInputDestinationLayout"
+        app:layout_constraintVertical_bias="0.0">
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/mapView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tableRow19"
-            app:layout_constraintVertical_bias="0.0" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </androidx.cardview.widget.CardView>
 
-        <Button
-            android:id="@+id/buttonNextStepDirections"
-            style="@style/SubmitButtons"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="2dp"
-            app:cornerRadius="90dp"
-            android:stateListAnimator="@null"
-            android:text="@string/next_step"
-            android:translationZ="2dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tableRow19"
-            app:layout_constraintVertical_bias="0.971" />
+    <Button
+        android:id="@+id/buttonNextStepDirections"
+        style="@style/SubmitButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:stateListAnimator="@null"
+        android:text="@string/next_step"
+        android:translationZ="2dp"
+        android:visibility="visible"
+        app:cornerRadius="90dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.977" />
+    <ListView
+        android:id="@+id/listViewLocationSearch"
+        android:layout_width="0dp"
+        android:layout_height="300dp"
+        android:background="?colorOnPrimary"
+        android:backgroundTint="?colorOnPrimary"
+        android:visibility="gone"
+        android:translationZ="90dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/textInputDestinationLayout"
+        app:layout_constraintStart_toStartOf="@+id/textInputDestinationLayout"
+        app:layout_constraintTop_toBottomOf="@+id/textInputOriginLayout"
+        app:layout_constraintVertical_bias="0.0"/>
 
-        <ListView
-            android:id="@+id/listViewLocationSearch"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tableRow19" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

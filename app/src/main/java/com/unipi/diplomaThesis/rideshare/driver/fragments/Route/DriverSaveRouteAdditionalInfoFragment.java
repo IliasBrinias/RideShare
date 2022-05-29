@@ -4,24 +4,23 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.unipi.diplomaThesis.rideshare.R;
+import com.unipi.diplomaThesis.rideshare.driver.DriverSaveRouteActivity;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class DriverSaveRouteAdditionalInfoFragment extends Fragment {
 
-    EditText passengers, description, costPerPassenger;
-    AutoCompleteTextView car;
-    Button save;
-    DriverSaveRouteFragment parentFragment;
+    TextInputLayout routeNameLayout, costLayout, capacityLayout, maximumDeviationLayout;
+    EditText routeName, cost, capacity, maximumDeviation;
+    Button saveRoute;
     public DriverSaveRouteAdditionalInfoFragment() {
         // Required empty public constructor
     }
@@ -37,30 +36,28 @@ public class DriverSaveRouteAdditionalInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.driver_save_route_additional_info_fragment, container, false);
-        passengers = v.findViewById(R.id.textInputPassengers);
-        description = v.findViewById(R.id.textInputDescription);
-        car = v.findViewById(R.id.availableCars);
-        costPerPassenger = v.findViewById(R.id.textInputPassengersCost);
-//        TODO: get Drivers cars
-        String[] a1 = new String[3];
-        a1[0]="Fiesta";
-        a1[1]="Octavia";
-        a1[2]="C3";
+        routeName = v.findViewById(R.id.textInputRouteName);
+        routeNameLayout = v.findViewById(R.id.textInputRouteNameLayout);
 
-        ArrayAdapter a = new ArrayAdapter(getActivity(),R.layout.list_item,a1);
-        car.setAdapter(a);
-        parentFragment = (DriverSaveRouteFragment) DriverSaveRouteAdditionalInfoFragment.this.getParentFragment();
-        save = v.findViewById(R.id.buttonNextStepDateTime);
-        save.setOnClickListener(view -> parentFragment.saveRoute());
+        cost = v.findViewById(R.id.textInputPassengersCost);
+        costLayout = v.findViewById(R.id.textInputPassengersCostLayout);
+
+        capacity = v.findViewById(R.id.textInputCapacityDeviation);
+        capacityLayout = v.findViewById(R.id.textInputCapacityLayout);
+
+        maximumDeviation = v.findViewById(R.id.textInputMaximumDeviation);
+        maximumDeviationLayout = v.findViewById(R.id.textInputMaximumDeviationLayout);
+
+        saveRoute = v.findViewById(R.id.buttonSaveRoute);
+        saveRoute.setOnClickListener(view-> ((DriverSaveRouteActivity) getActivity()).saveRoute());
         return v;
     }
-
-    public Map<String,String> getAdditionalInfo(){
-        Map<String,String> additionalInfo = new HashMap<>();
-        additionalInfo.put("maxPassengers",passengers.getText().toString());
-        additionalInfo.put("description",description.getText().toString());
-        additionalInfo.put("car",car.getText().toString());
-        additionalInfo.put("price",costPerPassenger.getText().toString());
+    public Map<String,Object> getAdditionalInfo(){
+        Map<String,Object> additionalInfo = new HashMap<>();
+        additionalInfo.put("maximumDeviation",Double.parseDouble(maximumDeviation.getText().toString()));
+        additionalInfo.put("rideCapacity",Integer.parseInt(capacity.getText().toString()));
+        additionalInfo.put("costPreRider", cost.getText().toString());
+        additionalInfo.put("name",routeName.getText().toString());
         return additionalInfo;
     }
 }

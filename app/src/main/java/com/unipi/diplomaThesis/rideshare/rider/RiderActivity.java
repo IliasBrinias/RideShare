@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,22 +16,23 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.PersonalDataFragment;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.RiderLastRoutesFragment;
-import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverRouteFragment;
-import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteFragment;
 import com.unipi.diplomaThesis.rideshare.messenger.MessengerActivity;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RiderActivity extends AppCompatActivity {
+    protected MyApplication mMyApp;
+
+
     private MaterialToolbar topAppBar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private DriverRouteFragment driverRouteFragment;
-    private DriverSaveRouteFragment driverSaveRouteFragment;
     RiderLastRoutesFragment riderLastRoutesFragment;
 
     private CarFragment carFragment;
@@ -59,8 +59,6 @@ public class RiderActivity extends AppCompatActivity {
         imageNavigationHeader = headerView.findViewById(R.id.CircleImageDriverImage);
 //        load User data
         loadUserData();
-        driverSaveRouteFragment = new DriverSaveRouteFragment();
-        driverRouteFragment = new DriverRouteFragment();
         topAppBar.setNavigationOnClickListener(view -> drawerLayout.open());
 //        ToolBar Items
         topAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -68,10 +66,7 @@ public class RiderActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.messages:
-                        Toast.makeText(RiderActivity.this, "Messages", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(RiderActivity.this, MessengerActivity.class));
-
-//                        TODO: open Apps Messenger
                         break;
 
                 }
@@ -101,9 +96,9 @@ public class RiderActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,carFragment).commit();
                         break;
                     case R.id.logOut:
-                        RiderActivity.this.u.logOut(RiderActivity.this);
                         Intent i = new Intent();
-                        i.putExtra("LogOut","true");
+                        i.putExtra("LogOut", FirebaseAuth.getInstance().getCurrentUser().getProviderId());
+                        RiderActivity.this.u.logOut(RiderActivity.this);
                         setResult(Activity.RESULT_OK, i);
                         finish();
                         break;
@@ -112,6 +107,8 @@ public class RiderActivity extends AppCompatActivity {
                 return true;
             }
         });
+        mMyApp = (MyApplication) this.getApplicationContext();
+        mMyApp.setCurrentActivity(this);
     }
     private void loadUserData(){
         userNameNavigationHeader.setText(u.getFullName());
@@ -130,4 +127,25 @@ public class RiderActivity extends AppCompatActivity {
         super.onBackPressed();
         finishAffinity();
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        clearReferences();
+        super.onDestroy();
+    }
+    private void clearReferences(){
+        Activity currActivity = mMyApp.getCurrentActivity();
+        if (this.equals(currActivity))
+            mMyApp.setCurrentActivity(null);
+    }
+
 }

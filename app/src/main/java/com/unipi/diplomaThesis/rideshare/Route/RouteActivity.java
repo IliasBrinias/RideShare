@@ -68,6 +68,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 
 public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback {
     private String apiKey;
@@ -195,7 +196,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                 originRoute.setText(getString(R.string.from)+" "+start);
                 destinationRoute.setText(getString(R.string.to)+" "+end);
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat timeFormat = new SimpleDateFormat("hh.mm aa");
-                timeRoute.setText(timeFormat.format(r.getRouteDateTime().getStartTimeUnix()));
+                timeRoute.setText(timeFormat.format(r.getRouteDateTime().getStartDateUnix()));
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -213,9 +214,9 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     }
     private void initializeSliderRiderCapacity(Route r){
         sliderRiderCapacity.setValueFrom(0.f);
-        sliderRiderCapacity.setValueTo(r.getMaxRiders());
+        sliderRiderCapacity.setValueTo(r.getRideCapacity());
         sliderRiderCapacity.setValue(r.getPassengersId().size());
-        sliderRiderCapacityTo.setText(String.valueOf(r.getMaxRiders()) );
+        sliderRiderCapacityTo.setText(String.valueOf(r.getRideCapacity()) );
         int selectedColor = r.getColorForRideCapacitySlider();
         sliderRiderCapacity.setTrackActiveTintList(ColorStateList.valueOf(getColor(selectedColor)));
         sliderRiderCapacity.setThumbTintList(ColorStateList.valueOf(getColor(selectedColor)));
@@ -225,7 +226,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         this.getTheme().resolveAttribute(com.google.android.material.R.attr.colorSecondaryVariant, typedValue, true);
         int color = typedValue.data;
         sliderRiderCapacity.setTickTintList(ColorStateList.valueOf(color));
-        if (r.getPassengersId().size()==r.getMaxRiders()) {
+        if (r.getPassengersId().size()==r.getRideCapacity()) {
             contactDriver.setOnClickListener(view -> {
                 Toast.makeText(this, getString(R.string.request_send_full_capacity), Toast.LENGTH_SHORT).show();
                 this.finish();
@@ -356,38 +357,18 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                 dailyRepeat(materialCalendarView, c);
                 break;
             case 1: //weekly
-                weeklyRepeat(materialCalendarView, c);
-                break;
-            case 2: // monthly
-                monthlyRepeat(materialCalendarView, c);
+                for (Map.Entry<String,String> entry: r.getRouteDateTime().getSelectedDays().entrySet()) {
+                    c.set(Calendar.DAY_OF_WEEK,Integer.parseInt(entry.getValue()));
+                    Calendar currentDayCalendar = new GregorianCalendar();
+                    currentDayCalendar.setTimeInMillis(c.getTimeInMillis());
+                    weeklyRepeat(materialCalendarView, currentDayCalendar);
+                }
                 break;
         }
         alertDialog.show();
         alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
     }
 
-    private void monthlyRepeat(MaterialCalendarView materialCalendarView, @NonNull Calendar c) {
-        int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
-        while (r.getRouteDateTime().getEndDateUnix() > c.getTimeInMillis()) {
-            materialCalendarView.setDateSelected(
-                    CalendarDay.from(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)), true);
-
-//                    change year if the month is december
-            if (c.get(Calendar.MONTH) == Calendar.DECEMBER) {
-                c.add(Calendar.YEAR, 1);
-                c.set(Calendar.MONTH, Calendar.JANUARY);
-            } else {
-                c.add(Calendar.MONTH,1);
-//                  check if the selected day_of_month is bigger than the last day of month
-                if (YearMonth.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1).lengthOfMonth() <= c.get(Calendar.DAY_OF_MONTH)) {
-//                  check the last day of the month
-                    c.set(Calendar.DAY_OF_MONTH, YearMonth.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1).lengthOfMonth());
-                }else {
-                    c.set(Calendar.DAY_OF_MONTH,dayOfMonth);
-                }
-            }
-        }
-    }
 
     private void weeklyRepeat(MaterialCalendarView materialCalendarView, @NonNull Calendar c) {
         while (r.getRouteDateTime().getEndDateUnix() > c.getTimeInMillis()) {

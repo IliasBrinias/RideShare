@@ -10,6 +10,7 @@ public class RouteLatLng implements Serializable {
     private double endLat;
     private double endLng;
     private double distance;
+    private double maximumDeviation;
     public RouteLatLng() {}
 
 
@@ -21,6 +22,14 @@ public class RouteLatLng implements Serializable {
         this.endLat = endLat;
         this.endLng = endLng;
         this.distance = distance;
+    }
+
+    public double getMaximumDeviation() {
+        return maximumDeviation;
+    }
+
+    public void setMaximumDeviation(double maximumDeviation) {
+        this.maximumDeviation = maximumDeviation;
     }
 
     public double getDistance() {

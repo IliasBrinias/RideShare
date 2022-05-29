@@ -101,8 +101,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }else {holder.time.setVisibility(View.GONE);}
         holder.message.setText(messageList.get(position).getMessage());
         holder.linearLayout.setPadding(10, setPadding(position),10,10);
-        if (position != messageList.size()-1) return;
-        System.out.println(messageList.get(position).getMessage()+"-->"+messageList.get(position).isSeen());
+        if (messageList.size()-1!=position) {
+            holder.viewProgress.setVisibility(View.GONE);
+            return;
+        }
         if (messageList.get(position).isSeen()){
             holder.viewProgress.setText(c.getString(R.string.seen));
         }else {

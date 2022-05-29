@@ -2,13 +2,14 @@ package com.unipi.diplomaThesis.rideshare.Model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class MessageSession implements Serializable {
     private String messageSessionId;
     private ArrayList<String> participants = new ArrayList<>();
     private long creationTimestamp;
-    private Map<String,Message> messages;
+    private Map<String,Message> messages=new HashMap<>();
 
     public MessageSession(String messageSessionId, ArrayList<String> participants, long creationTimestamp, Map<String,Message> messages) {
         this.messageSessionId = messageSessionId;

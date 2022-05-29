@@ -1,34 +1,35 @@
 package com.unipi.diplomaThesis.rideshare.Model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 public class RouteDateTime implements Serializable {
     private String routeDateId;
     private long startDateUnix;
-    private long startTimeUnix;
+    private boolean repeat;
     private int timetable;
-    Map<String,String> selectedDays;
+    Map<String,String> selectedDays = new HashMap<>();
     private long endDateUnix;
 
     public RouteDateTime() {
     }
 
-    public RouteDateTime(String routeDateId, long startDateUnix, long startTimeUnix, int timetable, Map<String, String> selectedDays, long endDateUnix) {
+    public RouteDateTime(String routeDateId, long startDateUnix, boolean repeat, int timetable, Map<String, String> selectedDays, long endDateUnix) {
         this.routeDateId = routeDateId;
         this.startDateUnix = startDateUnix;
-        this.startTimeUnix = startTimeUnix;
+        this.repeat = repeat;
         this.timetable = timetable;
         this.selectedDays = selectedDays;
         this.endDateUnix = endDateUnix;
     }
 
-    public RouteDateTime(String routeDateId, long startDateUnix, long startTimeUnix, int timetable, long endDateUnix) {
-        this.routeDateId = routeDateId;
-        this.startDateUnix = startDateUnix;
-        this.startTimeUnix = startTimeUnix;
-        this.timetable = timetable;
-        this.endDateUnix = endDateUnix;
+    public boolean isRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(boolean repeat) {
+        this.repeat = repeat;
     }
 
     public String getRouteDateId() {
@@ -45,14 +46,6 @@ public class RouteDateTime implements Serializable {
 
     public void setStartDateUnix(long startDateUnix) {
         this.startDateUnix = startDateUnix;
-    }
-
-    public long getStartTimeUnix() {
-        return startTimeUnix;
-    }
-
-    public void setStartTimeUnix(long startTimeUnix) {
-        this.startTimeUnix = startTimeUnix;
     }
 
     public int getTimetable() {
