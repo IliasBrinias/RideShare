@@ -1,6 +1,7 @@
 package com.unipi.diplomaThesis.rideshare.driver;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.unipi.diplomaThesis.rideshare.Interface.RequestOnClickListener;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
+import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
 import com.unipi.diplomaThesis.rideshare.Model.Request;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
@@ -20,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RequestsActivity extends AppCompatActivity {
+    protected MyApplication mMyApp;
+
     ImageView imageViewBack;
     RecyclerView recyclerView;
     RequestAdapter requestAdapter;
@@ -58,13 +62,33 @@ public class RequestsActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(requestAdapter);
         requestSearch();
+        mMyApp = (MyApplication) this.getApplicationContext();
+        mMyApp.setCurrentActivity(this);
+
     }
     private void requestSearch(){
         driver.loadRequests(this::refreshData);
     }
     @SuppressLint("NotifyDataSetChanged")
     private void refreshData(Request request){
+        for (Request r:requestList){
+            if (r.getRouteId().equals(request.getRouteId()) && r.getRiderId().equals(request.getRiderId())){
+                requestList.remove(r);
+                break;
+            }
+        }
         requestList.add(request);
         requestAdapter.notifyDataSetChanged();
     }
+    @Override
+    protected void onDestroy() {
+        clearReferences();
+        super.onDestroy();
+    }
+    private void clearReferences(){
+        Activity currActivity = mMyApp.getCurrentActivity();
+        if (this.equals(currActivity))
+            mMyApp.setCurrentActivity(null);
+    }
+
 }

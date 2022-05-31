@@ -142,6 +142,7 @@ public class Rider extends User{
         }
     }
     public void makeRequest(Request request, OnCompleteListener<Void> onCompleteListener){
+        request.setSeen(false);
         FirebaseDatabase.getInstance().getReference()
                 .child(Request.class.getSimpleName())
                 .child(request.getRouteId())

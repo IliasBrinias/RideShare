@@ -1,26 +1,22 @@
 package com.unipi.diplomaThesis.rideshare.Model;
 
-public class Request {
-    public static final String REQ_REQUEST_CODE="223";
-    public static final String REQ_ACCEPT_CODE="333";
-    public static final String REQ_DECLINE_CODE="000";
-    public static final String REQ_UNSEEN="755";
-    public static final String REQ_SEEN="946";
+import com.google.firebase.database.FirebaseDatabase;
 
+public class Request {
     private String routeId;
     private String riderId;
     private String description;
     private long timestamp;
-    private String status;
-    private String seen = REQ_UNSEEN;
+    private boolean seen=false;
     private double distanceDeviation;
 
-    public Request(String routeId, String riderId, String description, long timestamp, double distanceDeviation) {
+    public Request(String routeId, String riderId, String description, long timestamp, double distanceDeviation, boolean seen) {
         this.routeId = routeId;
         this.riderId = riderId;
         this.description = description;
         this.timestamp = timestamp;
         this.distanceDeviation = distanceDeviation;
+        this.seen = seen;
     }
 
     public Request() {
@@ -34,11 +30,11 @@ public class Request {
         this.distanceDeviation = distanceDeviation;
     }
 
-    public String getSeen() {
+    public boolean isSeen() {
         return seen;
     }
 
-    public void setSeen(String seen) {
+    public void setSeen(boolean seen) {
         this.seen = seen;
     }
 
@@ -74,11 +70,11 @@ public class Request {
         this.description = description;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void makeSeen() {
+        FirebaseDatabase.getInstance().getReference()
+                .child(Request.class.getSimpleName())
+                .child(this.getRouteId())
+                .child(this.riderId)
+                .child("seen").setValue(true);
     }
 }

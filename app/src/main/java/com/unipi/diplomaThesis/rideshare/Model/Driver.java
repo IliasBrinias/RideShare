@@ -279,7 +279,7 @@ public class Driver extends User{
         loadDriverRoutes(route->{
             FirebaseDatabase.getInstance().getReference()
                     .child(Request.class.getSimpleName())
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                    .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.hasChild(route.getRouteId())){

@@ -321,12 +321,12 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             @Override
             public void onClick(View view) {
 //                make the request
-
-                Request request = new Request(r.getRouteId(),
+                Request request = new Request(
+                        r.getRouteId(),
                         user.getUserId(),
                         description.getText().toString(),
                         new Date().getTime(),
-                        distanceDeviation);
+                        distanceDeviation,false);
                 ((Rider) user).makeRequest(request, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

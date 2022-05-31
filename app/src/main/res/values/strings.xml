@@ -197,6 +197,8 @@
     <string name="few_words_about_your_ride">Few words about your ride</string>
     <string name="submit">Submit</string>
     <string name="other_people_reviews">Other people Reviews</string>
+    <string name="request">Request</string>
+    <string name="is_instrested_for">is interested for</string>
     <string-array name="repeat_options">
         <item>@string/daily</item>
         <item>@string/weekly</item>

@@ -23,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.unipi.diplomaThesis.rideshare.Interface.OnMessageReturn;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.driver.DriverActivity;
+import com.unipi.diplomaThesis.rideshare.driver.RequestsActivity;
 import com.unipi.diplomaThesis.rideshare.messenger.ChatActivity;
 import com.unipi.diplomaThesis.rideshare.messenger.MessengerActivity;
 import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
@@ -34,6 +35,7 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
     private ChildEventListener messageSessionChildListener;
     Activity currentActivity;
     Application myApplication;
+    ValueEventListener childEventListenerRequest;
     public ActivityLifecycle(Application myApplication) {
         this.myApplication = myApplication;
     }
@@ -50,12 +52,18 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
     @Override
     public void onActivityPostCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
         Application.ActivityLifecycleCallbacks.super.onActivityPostCreated(activity, savedInstanceState);
-        try {
-            Activity currentActivity = ((MyApplication) myApplication.getApplicationContext()).getCurrentActivity();
-            if (currentActivity instanceof RiderActivity || currentActivity instanceof DriverActivity) {
-                startMessageSessionIdListener();
+        Activity currentActivity = ((MyApplication) myApplication.getApplicationContext()).getCurrentActivity();
+        if (currentActivity instanceof RiderActivity || currentActivity instanceof DriverActivity) {
+            startMessageSessionIdListener();
+            if (currentActivity instanceof DriverActivity){
+                try {
+                    startRequestListener();
+                }catch (Exception e){
+                    e.printStackTrace();
+                    stopRequestListener();
+                }
             }
-        }catch (Exception ignore){}
+        }
 
 
     }
@@ -72,7 +80,12 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
             if (currentActivity instanceof ChatActivity||currentActivity instanceof MessengerActivity) {
                 stopMessageSessionIdListener();
             }
-        }catch (Exception ignore){}
+            if (currentActivity instanceof RequestsActivity){
+                stopRequestListener();
+            }
+        }catch (Exception ignore){
+            ignore.printStackTrace();
+        }
 
     }
 
@@ -113,6 +126,7 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
     public void onActivityDestroyed(@NonNull Activity activity) {
     }
     public static final String MESSAGE_CHANNEL_ID="123";
+    public static final String REQUEST_CHANNEL_ID="234";
     private void createNotificationMessage(Message m, User u, MessageSession messageSession){
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(currentActivity, ChatActivity.class);
@@ -129,6 +143,28 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        // Issue the notification.
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(currentActivity);
+
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(0, builder.build());
+    }
+    private void createNotificationRequest(User u, Route r){
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(currentActivity, RequestsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(currentActivity, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(currentActivity, MESSAGE_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_car_notification_icon)
+                .setContentTitle(currentActivity.getString(R.string.request))
+                .setContentText(u.getFullName())
+                .setStyle(
+                        new NotificationCompat.BigTextStyle().bigText(u.getFullName()+" "+currentActivity.getString(R.string.is_instrested_for)+" "+r.getName())
+                )
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setCategory(NotificationCompat.CATEGORY_EVENT)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         // Issue the notification.
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(currentActivity);
@@ -254,5 +290,47 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
+    private void startRequestListener(){
+        Driver driver;
+        try {
+           driver = (Driver) User.loadUserInstance(currentActivity);
+           if (driver == null) throw new ClassCastException();
+        }catch (ClassCastException ignore){
+            return;
+        }
+        driver.loadDriversRouteId(ids -> {
+            childEventListenerRequest = FirebaseDatabase.getInstance().getReference()
+                    .child(Request.class.getSimpleName())
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (String id:ids) {
+                                if (!snapshot.hasChild(id)) continue;
+                                for (DataSnapshot requests : snapshot.child(id).getChildren()) {
+                                    Request request = requests.getValue(Request.class);
+                                    if (!request.isSeen()){
+                                        createNotificationChannel(currentActivity,"request","requestInfo",REQUEST_CHANNEL_ID);
+                                        User.loadUser(request.getRiderId(),u -> {
+                                            Route.loadRoute(request.getRouteId(),route -> {
+                                                createNotificationRequest(u,route);
+                                            });
+                                        });
+                                        request.makeSeen();
+                                    }
+                                }
+                            }
+                        }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+        });
+    }
+    private void stopRequestListener(){
+        FirebaseDatabase.getInstance().getReference()
+                .child(Request.class.getSimpleName())
+                .removeEventListener(childEventListenerRequest);
+    }
 }
