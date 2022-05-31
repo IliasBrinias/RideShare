@@ -31,6 +31,8 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnImageLoad;
 import com.unipi.diplomaThesis.rideshare.Interface.OnMessageReturn;
 import com.unipi.diplomaThesis.rideshare.Interface.OnMessageSessionLoad;
 import com.unipi.diplomaThesis.rideshare.Interface.OnPreviousRouteResponse;
+import com.unipi.diplomaThesis.rideshare.Interface.OnReturnedIds;
+import com.unipi.diplomaThesis.rideshare.Interface.OnReviewResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnRouteResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.R;
@@ -57,16 +59,14 @@ public class User {
     private ArrayList<String> lastRoutes = new ArrayList<>();
     private ArrayList<String> messageSessionId = new ArrayList<>();
 
-
     public User() {
     }
 
-    public User(String userId, String email, String fullName, String description, ArrayList<String> lastRoutes) {
+    public User(String userId, String email, String fullName, String type) {
         this.userId = userId;
         this.email = email;
         this.fullName = fullName;
-        this.description = description;
-        this.lastRoutes = lastRoutes;
+        this.type =type;
     }
 
     public ArrayList<String> getMessageSessionId() {
@@ -324,48 +324,70 @@ public class User {
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
-    public void loadUserMessageSession(OnMessageSessionLoad onMessageSessionLoad){
-        for (String sessionId:this.messageSessionId) {
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
-                    .child(MessageSession.class.getSimpleName())
-                    .child(sessionId);
-            ref.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    MessageSession messageSession = new MessageSession();
-                    messageSession.setMessageSessionId(snapshot.getKey());
-                    messageSession.setParticipants((ArrayList<String>) snapshot.child("participants").getValue());
-                    messageSession.setCreationTimestamp(snapshot.child("creationTimestamp").getValue(Long.class));
-                    if (snapshot.child("messages").getChildrenCount()==0){
-                        onMessageSessionLoad.returnedSession(messageSession);
-                        return;
+    public void getMessageSessionId(OnReturnedIds onReturnedIds){
+        FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName())
+                .child(this.getUserId())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.hasChild("messageSessionId")){
+                            ArrayList<String> ids = (ArrayList<String>) snapshot.child("messageSessionId").getValue();
+                            onReturnedIds.returnIds(ids);
+                        }
                     }
-                    ref.child("messages")
-                        .orderByChild("timestamp")
-                        .limitToLast(1)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                Map<String,Message> messageMap = new HashMap<>();
-                                for (DataSnapshot msg : snapshot.getChildren()) {
-                                    Message m = msg.getValue(Message.class);
-                                    messageMap.put(msg.getKey(), m);
-                                    messageSession.setMessages(messageMap);
-                                    onMessageSessionLoad.returnedSession(messageSession);
-                                }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {}
-                        });
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-                }
-            });
+                    }
+                });
+    }
+    public void loadUserMessageSession(OnMessageSessionLoad onMessageSessionLoad){
+        getMessageSessionId(sessionIds -> {
+            for (String id:sessionIds) {
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                        .child(MessageSession.class.getSimpleName())
+                        .child(id);
+                ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        MessageSession messageSession = new MessageSession();
+                        messageSession.setMessageSessionId(snapshot.getKey());
+                        messageSession.setParticipants((ArrayList<String>) snapshot.child("participants").getValue());
+                        messageSession.setCreationTimestamp(snapshot.child("creationTimestamp").getValue(Long.class));
+                        if (snapshot.child("messages").getChildrenCount() == 0) {
+                            onMessageSessionLoad.returnedSession(messageSession);
+                            return;
+                        }
+                        ref.child("messages")
+                                .orderByChild("timestamp")
+                                .limitToLast(1)
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        Map<String, Message> messageMap = new HashMap<>();
+                                        for (DataSnapshot msg : snapshot.getChildren()) {
+                                            Message m = msg.getValue(Message.class);
+                                            messageMap.put(msg.getKey(), m);
+                                            messageSession.setMessages(messageMap);
+                                            onMessageSessionLoad.returnedSession(messageSession);
+                                        }
+                                    }
 
-        }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
     }
     private void messageSeen(MessageSession messageSession,Message m){
         FirebaseDatabase.getInstance().getReference()
@@ -431,4 +453,23 @@ public class User {
                 .limitToLast(100)
                 .removeEventListener(loadMessages);
     }
+    public static void loadReviews(String driverId,OnReviewResponse onReviewResponse){
+        FirebaseDatabase.getInstance().getReference()
+                .child(Review.class.getSimpleName())
+                .child(driverId)
+                .orderByChild("timestamp")
+                .limitToLast(100)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.getChildrenCount() == 0) onReviewResponse.returnReview(null);
+                        for (DataSnapshot reviewMap:snapshot.getChildren()){
+                            onReviewResponse.returnReview(reviewMap.getValue(Review.class));
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                });
+    }
+
 }

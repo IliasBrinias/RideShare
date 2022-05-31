@@ -14,17 +14,18 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnDataReturn;
 import com.unipi.diplomaThesis.rideshare.Interface.OnRouteSearchResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Rider extends User{
 
-    public Rider() {
+    public Rider(){
+        super();
     }
 
-    public Rider(String userId, String email, String name, String description, ArrayList<String> lastRoutes) {
-        super(userId, email, name, description, lastRoutes);
+    public Rider(String userId, String email, String name) {
+        super(userId, email, name, Rider.class.getSimpleName());
     }
     public void findMinMaxPrice(OnDataReturn onDataReturn){
         FirebaseDatabase.getInstance().getReference()
@@ -68,18 +69,26 @@ public class Rider extends User{
                     }
                 });
     }
+    private static int routeCount=0;
     public void routeSearch(Context c, RouteFilter routeFilter, OnRouteSearchResponse onRouteSearchResponse){
         FirebaseDatabase.getInstance().getReference()
                 .child(Route.class.getSimpleName())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        routeCount = Math.toIntExact(snapshot.getChildrenCount()-1);
                         for (DataSnapshot route:snapshot.getChildren()) {
                             Route r = route.getValue(Route.class);
 //                            check if route exists
-                            if (r==null) continue;
+                            if (r==null) {
+                                if (checkIfIsTheLastRoute()) onRouteSearchResponse.returnedData(null,null,0);
+                                continue;
+                            }
 //                            check if the route has at least one seat free
-                            if (r.isFull()) continue;
+                            if (r.isFull()) {
+                                if (checkIfIsTheLastRoute()) onRouteSearchResponse.returnedData(null,null,0);
+                                continue;
+                            }
 //                            check if is already rider
                             boolean isRider = false;
                             for (String p:r.getPassengersId()){
@@ -87,18 +96,24 @@ public class Rider extends User{
                                     isRider = true;
                                 }
                             }
-                            if (isRider) continue;
+                            if (isRider) {
+                                if (checkIfIsTheLastRoute()) onRouteSearchResponse.returnedData(null,null,0);
+                                continue;
+                            }
 //                            check if the route is acceptable
-                            routeFilter.filterCheck(c, r, success ->
+                            routeFilter.filterCheck(c, r, (success, distanceDeviation) ->
                             {
-                                if (!success) return;
+                                if (!success) {
+                                    if (checkIfIsTheLastRoute()) onRouteSearchResponse.returnedData(null,null,0);
+                                    return;
+                                }
                                 FirebaseDatabase.getInstance().getReference()
                                         .child(User.class.getSimpleName())
                                         .child(r.getDriverId())
                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot user) {
-                                                onRouteSearchResponse.returnedData(r, user.getValue(User.class));
+                                                onRouteSearchResponse.returnedData(r, user.getValue(User.class),distanceDeviation);
                                             }
 
                                             @Override
@@ -106,7 +121,9 @@ public class Rider extends User{
 
                                             }
                                         });
+                                if (checkIfIsTheLastRoute()) onRouteSearchResponse.returnedData(null,null,0);
                             });
+
                         }
                     }
 
@@ -115,6 +132,14 @@ public class Rider extends User{
 
                     }
                 });
+    }
+    private boolean checkIfIsTheLastRoute(){
+        if (routeCount==0){
+            return true;
+        }else {
+            routeCount--;
+            return false;
+        }
     }
     public void makeRequest(Request request, OnCompleteListener<Void> onCompleteListener){
         FirebaseDatabase.getInstance().getReference()
@@ -138,5 +163,14 @@ public class Rider extends User{
 
                     }
                 });
+    }
+
+    public void saveReview(String participantId, double rating, String description) {
+        Review review = new Review(participantId,rating,description,new Date().getTime(),this.getUserId());
+        FirebaseDatabase.getInstance().getReference()
+                .child(Review.class.getSimpleName())
+                .child(participantId)
+                .child(this.getUserId())
+                .setValue(review);
     }
 }

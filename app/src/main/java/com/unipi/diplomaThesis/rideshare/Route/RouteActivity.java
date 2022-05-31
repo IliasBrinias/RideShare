@@ -104,6 +104,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     User user;
     GoogleMap map;
     ConstraintLayout constraintLayoutRouteActivity;
+    Double distanceDeviation=0.;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,7 +116,8 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             finish();
         }
         if (!getIntent().hasExtra(Route.class.getSimpleName()) ||
-                !getIntent().hasExtra(Driver.class.getSimpleName())){
+                !getIntent().hasExtra(Driver.class.getSimpleName())||
+                !getIntent().hasExtra("distanceDeviation")){
             finish();
         }
 
@@ -136,7 +138,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         routeId = getIntent().getStringExtra(Route.class.getSimpleName());
         driverId = getIntent().getStringExtra(Driver.class.getSimpleName());
         userDateTime = getIntent().getLongExtra("userDateTime",0);
-
+        distanceDeviation = getIntent().getDoubleExtra("distanceDeviation",0.);
         imageViewClose.setOnClickListener(view->finish());
         mBottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -253,9 +255,9 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
     private void loadBottomSheetElements(View v){
         circleImageDriver = v.findViewById(R.id.circleImageDriver);
-        circleImageDriver.setVisibility(View.GONE);
+        circleImageDriver.setVisibility(View.INVISIBLE);
         imageViewCarImage = v.findViewById(R.id.imageViewCarImage);
-        imageViewCarImage.setVisibility(View.GONE);
+        imageViewCarImage.setVisibility(View.INVISIBLE);
         tableRowShowRepeat = v.findViewById(R.id.tableRowShowRepeat);
         driverName = v.findViewById(R.id.textViewUserName);
         originRoute = v.findViewById(R.id.textViewLastMessege);
@@ -274,7 +276,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         contactDriver = v.findViewById(R.id.buttonContactDriver);
         tableRowShowRepeat.setOnClickListener(this::showRepeat);
         if (user instanceof Driver){
-            contactDriver.setVisibility(View.GONE);
+            contactDriver.setVisibility(View.INVISIBLE);
         }
         contactDriver.setOnClickListener(this::routeRequest);
     }
@@ -283,6 +285,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             @Override
             public void returnedUser(User u) {
                 driverUser = (Driver) u;
+                if (driverUser == null) finish();
                 driverUser.loadUserImage(image -> {
                     if (image!=null){
                         circleImageDriver.setImageBitmap(image);
@@ -313,12 +316,17 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         AlertDialog alertDialog = new AlertDialog.Builder(this,android.R.style.Theme_Material_Dialog).setView(dialogView).create();
         alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
         alertDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.alert_dialog_background));
+        EditText description= dialogView.findViewById(R.id.editTextDesription);
         dialogView.findViewById(R.id.buttonSendRequest).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 //                make the request
-                EditText description= dialogView.findViewById(R.id.editTextDesription);
-                Request request = new Request(r.getRouteId(), user.getUserId(),description.getText().toString(),new Date().getTime(),Request.REQ_REQUEST_CODE);
+
+                Request request = new Request(r.getRouteId(),
+                        user.getUserId(),
+                        description.getText().toString(),
+                        new Date().getTime(),
+                        distanceDeviation);
                 ((Rider) user).makeRequest(request, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

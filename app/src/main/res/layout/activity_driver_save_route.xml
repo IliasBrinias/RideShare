@@ -81,7 +81,7 @@
                     android:layout_height="60dp"
                     android:layout_weight="1"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_euro"
+                    app:srcCompat="@drawable/ic_checked"
                     app:tint="?colorOnPrimary" />
             </LinearLayout>
 

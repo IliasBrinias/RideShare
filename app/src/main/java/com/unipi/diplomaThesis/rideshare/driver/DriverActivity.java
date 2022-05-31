@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,10 +15,18 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.badge.BadgeDrawable;
+import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
+import com.unipi.diplomaThesis.rideshare.Model.Message;
 import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
+import com.unipi.diplomaThesis.rideshare.Model.Request;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.PersonalDataFragment;
 import com.unipi.diplomaThesis.rideshare.R;
@@ -27,6 +34,8 @@ import com.unipi.diplomaThesis.rideshare.RiderLastRoutesFragment;
 import com.unipi.diplomaThesis.rideshare.messenger.MessengerActivity;
 import com.unipi.diplomaThesis.rideshare.rider.CarFragment;
 import com.unipi.diplomaThesis.rideshare.rider.RouteSearchFragment;
+
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -45,7 +54,12 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
     private Driver userDriver;
     private TextView userNameNavigationHeader,emailNavigationHeader;
     private CircleImageView imageNavigationHeader;
+    ArrayList<String> newRequests = new ArrayList<>();
+    ArrayList<String> newMessages = new ArrayList<>();
+    BadgeDrawable badgeDrawableRequests;
+    BadgeDrawable badgeDrawableMessages;
 
+    @SuppressLint("UnsafeOptInUsageError")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +84,6 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
 //        set Menu
         navigationView.getMenu().clear();
         navigationView.inflateMenu(R.menu.navigation_menu_driver);
-
         topAppBar.getMenu().clear();
         topAppBar.inflateMenu(R.menu.toolbar_menu_driver);
         topAppBar.setNavigationOnClickListener(view -> drawerLayout.open());
@@ -85,8 +98,10 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
         navigationView.setNavigationItemSelectedListener(this);
         mMyApp = (MyApplication) this.getApplicationContext();
         mMyApp.setCurrentActivity(this);
+        badgeDrawableRequests = BadgeDrawable.create(this);
+        badgeDrawableMessages = BadgeDrawable.create(this);
+        startChecking();
     }
-
     private void loadUserData(){
         userNameNavigationHeader.setText(userDriver.getFullName());
         emailNavigationHeader.setText(userDriver.getEmail());
@@ -104,9 +119,8 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()){
             case R.id.requests:
-                Toast.makeText(DriverActivity.this, "Requests", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, RequestsActivity.class));
                 break;
-//                        TODO: open Apps Requests
             case R.id.messages:
                 startActivity(new Intent(this, MessengerActivity.class));
                 break;
@@ -157,6 +171,9 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
     @Override
     protected void onResume() {
         super.onResume();
+        startChecking();
+        newRequests.clear();
+        newMessages.clear();
     }
 
     @Override
@@ -170,4 +187,61 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
             mMyApp.setCurrentActivity(null);
     }
 
+    @SuppressLint("UnsafeOptInUsageError")
+    private void startChecking(){
+        userDriver.loadDriversRouteId(ids -> {
+            FirebaseDatabase.getInstance().getReference()
+                .child(Request.class.getSimpleName())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (String id:ids) {
+                            if (!snapshot.hasChild(id)) continue;
+                            for (DataSnapshot requests : snapshot.child(id).getChildren()) {
+                                String userId = requests.getKey();
+                                if (!newRequests.contains(userId)) {
+                                    newRequests.add(userId);
+                                }
+                            }
+                            if (newRequests == null) return;
+                        }
+                        if (newRequests.size() == 0) {
+                            BadgeUtils.detachBadgeDrawable(badgeDrawableRequests, topAppBar, R.id.requests);
+                            return;
+                        }
+                        badgeDrawableRequests.setNumber(newRequests.size());
+                        BadgeUtils.attachBadgeDrawable(badgeDrawableRequests, topAppBar, R.id.requests);
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                });
+        });
+        userDriver.loadUserMessageSession(messageSession -> {
+            Message m = messageSession.getMessages().entrySet().iterator().next().getValue();
+
+            if (m.getUserSenderId().equals(userDriver.getUserId())){
+                if (newMessages.contains(messageSession.getMessageSessionId())){
+                    newMessages.remove(messageSession.getMessageSessionId());
+                }
+            }else{
+                if (m.isSeen()){
+                    if (newMessages.contains(messageSession.getMessageSessionId())){
+                        newMessages.remove(messageSession.getMessageSessionId());
+                    }
+                }else{
+                    if (!newMessages.contains(messageSession.getMessageSessionId())){
+                        newMessages.add(messageSession.getMessageSessionId());
+                    }
+                }
+
+            }
+            if (newMessages == null) return;
+            if (newMessages.size() == 0){
+                BadgeUtils.detachBadgeDrawable(badgeDrawableMessages,topAppBar,R.id.messages);
+                return;
+            }
+            badgeDrawableMessages.setNumber(newMessages.size());
+            BadgeUtils.attachBadgeDrawable(badgeDrawableMessages,topAppBar,R.id.messages);
+        });
+    }
 }

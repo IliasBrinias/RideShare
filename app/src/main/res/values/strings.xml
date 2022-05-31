@@ -189,6 +189,14 @@
     <string name="route_name">Route Name</string>
     <string name="maximum_deviation">Maximum Deviation</string>
     <string name="maximum_deviation_info">You must define the number of kilometres that your able to drive extra for your passengers</string>
+    <string name="full_name">Full Name</string>
+    <string name="decline">Decline</string>
+    <string name="accept">Accept</string>
+    <string name="reviews">Reviews</string>
+    <string name="few_words_about_your_driver">Few words about your driver</string>
+    <string name="few_words_about_your_ride">Few words about your ride</string>
+    <string name="submit">Submit</string>
+    <string name="other_people_reviews">Other people Reviews</string>
     <string-array name="repeat_options">
         <item>@string/daily</item>
         <item>@string/weekly</item>

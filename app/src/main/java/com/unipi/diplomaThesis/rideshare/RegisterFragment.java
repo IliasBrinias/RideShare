@@ -73,7 +73,7 @@ public class RegisterFragment extends Fragment implements TextWatcher {
         openLogin.setOnClickListener(this::login);
         passwordLayout.setEndIconVisible(false);
         passwordVerifyLayout.setEndIconVisible(false);
-        name = v.findViewById(R.id.textInputPersonalDataFirstName);
+        name = v.findViewById(R.id.textInputPersonalDataFullName);
         register = v.findViewById(R.id.buttonRegister);
         register.setOnClickListener(this::register);
         mAuth = FirebaseAuth.getInstance();
@@ -115,18 +115,15 @@ public class RegisterFragment extends Fragment implements TextWatcher {
                             return;
                         }
 //                Create User object
-                        User u = new Rider(null,
-                                    email.getText().toString(),
-                                    name.getText().toString(),
-                                    null,
-                                    null);
+                        User u = new Rider(null,email.getText().toString(),
+                                    name.getText().toString());
 //                Save the user Object
                         User.saveUser(u, new OnCompleteUserSave() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()){
                                     PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-                                            .putString(User.REQ_TYPE_TAG,u.getType().toString()).apply();
+                                            .putString(User.REQ_TYPE_TAG,u.getType()).apply();
                                     Gson gson = new Gson();
                                     String json = gson.toJson(u);
                                     PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
@@ -153,27 +150,35 @@ public class RegisterFragment extends Fragment implements TextWatcher {
         if (charSequence.hashCode() == password.getText().hashCode()){
             password.setError(checkPasswordFormat(charSequence.toString()));
             if (password.getError() == null && password.getText() != null){
-                passwordLayout.setEndIconVisible(true);
-                passwordLayout.setBoxStrokeColor(Color.GREEN);
-                passwordLayout.setHintTextColor(ColorStateList.valueOf(Color.GREEN));
-                passwordLayout.setEndIconTintList(ColorStateList.valueOf(Color.GREEN));
-                passwordLayout.setStartIconTintList(ColorStateList.valueOf(Color.GREEN));
+                makeFieldAcceptable(passwordLayout,password);
             }else{
-                passwordLayout.setEndIconVisible(false);
-                passwordLayout.setBoxStrokeColor(Color.RED);
-                passwordLayout.setHintTextColor(ColorStateList.valueOf(Color.RED));
-                passwordLayout.setStartIconTintList(ColorStateList.valueOf(Color.RED));
+                makeFieldError(passwordLayout,password);
             }
         }else if (charSequence.hashCode() == passwordVerify.getText().hashCode()){
             if (passwordVerify.getText() == null) return;
             if (!charSequence.toString().equals(password.getText().toString())){
-                passwordVerify.setError(getString(R.string.password_match_error));
+                makeFieldError(passwordVerifyLayout,passwordVerify);
             }else {
-                passwordVerify.setError(null);
+                makeFieldAcceptable(passwordVerifyLayout,passwordVerify);
             }
-            passwordVerifyLayout.setEndIconVisible(passwordVerify.getError() == null && passwordVerify.getText() != null);
         }
     }
     @Override
     public void afterTextChanged(Editable editable) {
-    }}
+    }
+    private void makeFieldError(TextInputLayout layout, EditText editText){
+        editText.setError(getString(R.string.password_match_error));
+        layout.setEndIconVisible(false);
+        layout.setBoxStrokeColor(Color.RED);
+        layout.setHintTextColor(ColorStateList.valueOf(Color.RED));
+        layout.setStartIconTintList(ColorStateList.valueOf(Color.RED));
+    }
+    private void makeFieldAcceptable(TextInputLayout layout, EditText editText){
+        editText.setError(null);
+        layout.setEndIconVisible(true);
+        layout.setBoxStrokeColor(Color.GREEN);
+        layout.setHintTextColor(ColorStateList.valueOf(Color.GREEN));
+        layout.setEndIconTintList(ColorStateList.valueOf(Color.GREEN));
+        layout.setStartIconTintList(ColorStateList.valueOf(Color.GREEN));
+    }
+}

@@ -10,10 +10,13 @@ import android.widget.EditText;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.driver.DriverSaveRouteActivity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DriverSaveRouteAdditionalInfoFragment extends Fragment {
@@ -49,7 +52,15 @@ public class DriverSaveRouteAdditionalInfoFragment extends Fragment {
         maximumDeviationLayout = v.findViewById(R.id.textInputMaximumDeviationLayout);
 
         saveRoute = v.findViewById(R.id.buttonSaveRoute);
-        saveRoute.setOnClickListener(view-> ((DriverSaveRouteActivity) getActivity()).saveRoute());
+        saveRoute.setOnClickListener(view-> {
+            List<EditText> editTexts = new ArrayList<>();
+            editTexts.add(routeName); editTexts.add(cost);
+            editTexts.add(capacity); editTexts.add(maximumDeviation);
+
+            if (!User.checkIfEditTextIsNull(getActivity(),editTexts)){
+                ((DriverSaveRouteActivity) getActivity()).saveRoute();
+            }
+        });
         return v;
     }
     public Map<String,Object> getAdditionalInfo(){

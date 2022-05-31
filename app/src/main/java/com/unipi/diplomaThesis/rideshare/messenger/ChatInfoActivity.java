@@ -1,9 +1,15 @@
 package com.unipi.diplomaThesis.rideshare.messenger;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Switch;
@@ -17,12 +23,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.unipi.diplomaThesis.rideshare.Interface.OnClickDriverRoute;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
+import com.unipi.diplomaThesis.rideshare.Model.Review;
 import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.Route;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.Route.RouteActivity;
 import com.unipi.diplomaThesis.rideshare.driver.adapter.DriverRouteListAdapter;
+import com.unipi.diplomaThesis.rideshare.messenger.adapter.ReviewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,8 +96,9 @@ public class ChatInfoActivity extends AppCompatActivity {
         recyclerView.setAdapter(riderRouteAdapter);
         routeList.clear();
     }
+    User u;
     private void loadParticipantData() {
-        User u = User.loadUserInstance(this);
+        u = User.loadUserInstance(this);
         if (u.getType().equals(Rider.class.getSimpleName())){
             Driver.loadDriver(participantId,d->searchMutualRoutes((Driver) d, (Rider) u));
         }else {
@@ -127,6 +136,97 @@ public class ChatInfoActivity extends AppCompatActivity {
 //        check if the driver exists
         riderRouteAdapter.notifyDataSetChanged();
     }
+    ReviewAdapter reviewAdapter;
+    List<Review> reviewList = new ArrayList<>();
+    RatingBar reviewRatingBar;
+    EditText reviewDescription;
+    public void openReviews(View v){
+        final View dialogView = View.inflate(this, R.layout.rating_alert_dialog, null);
+        AlertDialog alertDialog = new AlertDialog.Builder(this,android.R.style.Theme_Material_Dialog).setView(dialogView).create();
+        alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+        alertDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.alert_dialog_background));
+        RecyclerView recyclerView = dialogView.findViewById(R.id.recyclerViewReviews);
+        reviewRatingBar = dialogView.findViewById(R.id.ratingBar);
+        Button buttonSubmit = dialogView.findViewById(R.id.buttonSubmitReview);
+        reviewDescription = dialogView.findViewById(R.id.editTextReviewDescription);
+        buttonSubmit.setOnClickListener(view->saveReview(reviewRatingBar.getRating(),reviewDescription.getText().toString()));
+        buttonSubmit.setVisibility(View.GONE);
+        reviewDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                if (charSequence.toString().length()!=0){
+                    try {
+                        if (!userReview.getDescription().equals(charSequence.toString())){
+                            buttonSubmit.setVisibility(View.VISIBLE);
+                        }else {
+                            throw new NullPointerException();
+                        }
+                    }catch (NullPointerException nullPointerException){
+                        buttonSubmit.setVisibility(View.GONE);
+                    }
+                }else {
+                    buttonSubmit.setVisibility(View.GONE);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+        reviewRatingBar.setOnRatingBarChangeListener((ratingBar, v1, b) -> {
+            if (v1 !=0){
+                try {
+                    if (userReview.getReview()!=v1){
+                        buttonSubmit.setVisibility(View.VISIBLE);
+                    }else {
+                        throw new NullPointerException();
+                    }
+                }catch (NullPointerException nullPointerException){
+                    buttonSubmit.setVisibility(View.GONE);
+                }
+            }else {
+                buttonSubmit.setVisibility(View.GONE);
+            }
+        });
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        reviewAdapter = new ReviewAdapter(reviewList);
+        recyclerView.setAdapter(reviewAdapter);
+        reviewSearch();
+
+        alertDialog.setCancelable(true);
+        alertDialog.show();
+        alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+    }
+
+    private void saveReview(float rating, String description) {
+        try {
+            rider = (Rider) u;
+            if (rider != null) {
+                rider.saveReview(participantId, rating, description);
+            }
+        }catch (ClassCastException classCastException){
+            classCastException.printStackTrace();
+            finish();
+        }
+    }
+    private void reviewSearch() {
+        routeList.clear();
+        User.loadReviews(participantId,this::refreshData);
+    }
+    Review userReview;
+    @SuppressLint("NotifyDataSetChanged")
+    private void refreshData(Review review){
+        if (review==null) return;
+        if (review.getUserId().equals(FirebaseAuth.getInstance().getUid())){
+            userReview = review;
+            reviewRatingBar.setRating((float) review.getReview());
+            reviewDescription.setText(review.getDescription());
+            return;
+        }
+        reviewList.add(review);
+        reviewAdapter.notifyDataSetChanged();
+    }
 
 }

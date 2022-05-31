@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
@@ -29,6 +30,7 @@ public class MessengerActivity extends AppCompatActivity {
     User user;
     ProgressBar progressBar;
     MessengerAdapter messengerAdapter;
+    ImageView imageViewBack;
     static List<MessageSession> messageSessionList=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,8 @@ public class MessengerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messenger);
         user = User.loadUserInstance(this);
         if (user==null) finish();
+        imageViewBack = findViewById(R.id.imageViewBack);
+        imageViewBack.setOnClickListener(v->finish());
         recyclerViewMessageSession = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.progressBar);
         //        initialize recyclerView

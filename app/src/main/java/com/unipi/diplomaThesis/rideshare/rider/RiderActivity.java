@@ -15,14 +15,20 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.badge.BadgeDrawable;
+import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.unipi.diplomaThesis.rideshare.Model.Message;
 import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.PersonalDataFragment;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.RiderLastRoutesFragment;
 import com.unipi.diplomaThesis.rideshare.messenger.MessengerActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -41,6 +47,8 @@ public class RiderActivity extends AppCompatActivity {
     private User u;
     private TextView userNameNavigationHeader,emailNavigationHeader;
     private CircleImageView imageNavigationHeader;
+    List<String> newMessages=new ArrayList<>();
+    BadgeDrawable badgeDrawableMessages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +117,8 @@ public class RiderActivity extends AppCompatActivity {
         });
         mMyApp = (MyApplication) this.getApplicationContext();
         mMyApp.setCurrentActivity(this);
+        badgeDrawableMessages = BadgeDrawable.create(this);
+        startChecking();
     }
     private void loadUserData(){
         userNameNavigationHeader.setText(u.getFullName());
@@ -135,6 +145,7 @@ public class RiderActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        startChecking();
     }
 
     @Override
@@ -148,4 +159,36 @@ public class RiderActivity extends AppCompatActivity {
             mMyApp.setCurrentActivity(null);
     }
 
+    @SuppressLint("UnsafeOptInUsageError")
+    private void startChecking() {
+
+        u.loadUserMessageSession(messageSession -> {
+            Message m = messageSession.getMessages().entrySet().iterator().next().getValue();
+
+            if (m.getUserSenderId().equals(u.getUserId())) {
+                if (newMessages.contains(messageSession.getMessageSessionId())) {
+                    newMessages.remove(messageSession.getMessageSessionId());
+                }
+            } else {
+                if (m.isSeen()) {
+                    if (newMessages.contains(messageSession.getMessageSessionId())) {
+                        newMessages.remove(messageSession.getMessageSessionId());
+                    }
+                } else {
+                    if (!newMessages.contains(messageSession.getMessageSessionId())) {
+                        newMessages.add(messageSession.getMessageSessionId());
+                    }
+                }
+
+            }
+            if (newMessages == null) return;
+            if (newMessages.size() == 0) {
+                BadgeUtils.detachBadgeDrawable(badgeDrawableMessages, topAppBar, R.id.messages);
+                return;
+            }
+            badgeDrawableMessages.setNumber(newMessages.size());
+            BadgeUtils.attachBadgeDrawable(badgeDrawableMessages, topAppBar, R.id.messages);
+        });
+
+    }
 }

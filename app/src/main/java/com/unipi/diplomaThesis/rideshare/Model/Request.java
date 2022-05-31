@@ -13,16 +13,25 @@ public class Request {
     private long timestamp;
     private String status;
     private String seen = REQ_UNSEEN;
+    private double distanceDeviation;
 
-    public Request(String routeId, String riderId, String description, long timestamp, String status) {
+    public Request(String routeId, String riderId, String description, long timestamp, double distanceDeviation) {
         this.routeId = routeId;
         this.riderId = riderId;
         this.description = description;
         this.timestamp = timestamp;
-        this.status = status;
+        this.distanceDeviation = distanceDeviation;
     }
 
     public Request() {
+    }
+
+    public double getDistanceDeviation() {
+        return distanceDeviation;
+    }
+
+    public void setDistanceDeviation(double distanceDeviation) {
+        this.distanceDeviation = distanceDeviation;
     }
 
     public String getSeen() {

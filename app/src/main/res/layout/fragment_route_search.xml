@@ -253,8 +253,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:placeholderText="@string/at"
-                app:startIconDrawable="@drawable/ic_calendar"
-                app:startIconTint="@null"
+                app:startIconDrawable="@drawable/ic_date"
                 >
 
                 <AutoCompleteTextView

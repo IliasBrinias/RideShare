@@ -6,9 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.ArrayList;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -20,8 +18,15 @@ public class ExampleUnitTest extends Activity{
     JSONObject jsonObject = new JSONObject();
     @Test
     public void addition_isCorrect(){
-        Calendar c = new GregorianCalendar();
-        c.setTimeInMillis(new Date().getTime());
-        System.out.println(c.get(Calendar.DAY_OF_WEEK));
+        ArrayList<String> s1 = new ArrayList<>();
+        s1.add("a");
+        s1.add("b");
+        s1.add("c");
+        s1.add("d");
+        ArrayList<String> s2 = new ArrayList<>();
+        s2.add("e");
+        s2.add("j");
+        s2.add("c");
+        System.out.println(s1.contains("c"));
     }
 }

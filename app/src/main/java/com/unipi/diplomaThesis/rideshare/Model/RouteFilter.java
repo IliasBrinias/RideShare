@@ -2,7 +2,10 @@ package com.unipi.diplomaThesis.rideshare.Model;
 
 import android.content.Context;
 
+import com.unipi.diplomaThesis.rideshare.Interface.OnDistanceResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnFilterResult;
+
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -225,49 +228,46 @@ public class RouteFilter implements Serializable {
     }
 
     public void filterCheck(Context c, Route r, OnFilterResult onFilterResult){
-        onFilterResult.result(true);
+//        onFilterResult.result(true,0);
 //
-//        ApiCalls.getDistanceWithWaypoints(c,
-//                r.getRouteLatLng().getStartPlaceId(),
-//                r.getRouteLatLng().getEndPlaceId(),
-//                originRiderPlaceId,
-//                destinationRiderPlaceId, new OnDistanceResponse() {
-//                    @Override
-//                    public void returnedData(JSONObject response, Double distance) {
-////                          TODO:  Test Mode
-//                            if (RouteFilter.this.maximumDistance <= 0 || RouteFilter.this.maximumDistance >= 1)
-//                                RouteFilter.this.maximumDistance = 0.2;
-////                         if the route with the rider is maximum 20% bigger than before is acceptable
-//                            if (distance - r.getRouteLatLng().getDistance() >= RouteFilter.this.maximumDistance * r.getRouteLatLng().getDistance()) {
-//                                onFilterResult.result(false);
-//                                return;
-//                            }
-//
-////                        Cost Check
-//                            if (!checkCost(r)) {
-//                                onFilterResult.result(false);
-//                                return;
-//                            }
-////                         timetable check
-//                            if (RouteFilter.this.timetable != r.getRouteDateTime().getTimetable() && RouteFilter.this.timetable != RouteFilter.this.defaultTimetable) {
-//                                onFilterResult.result(false);
-//                                return;
-//                            }
-////                        date check
-//                            if (!checkDate(r)) {
-//                                onFilterResult.result(false);
-//                                return;
-//                            }
-////                        time check
-//                            if (!checkTime(r)) {
-//                                onFilterResult.result(false);
-//                                return;
-//                            }
-//
-////                      TODO:  Rating Check
-//                        onFilterResult.result(true);
-//                    }
-//                });
+        ApiCalls.getDistanceWithWaypoints(c,
+                r.getRouteLatLng().getStartPlaceId(),
+                r.getRouteLatLng().getEndPlaceId(),
+                originRiderPlaceId,
+                destinationRiderPlaceId, new OnDistanceResponse() {
+                    @Override
+                    public void returnedData(JSONObject response, Double distance) {
+                        if (distance - r.getRouteLatLng().getDistance() >= r.getRouteLatLng().getMaximumDeviation()*1000) {
+                                onFilterResult.result(false,0);
+                                return;
+                        }
+//                        Cost Check
+                        System.out.println("!checkCost(r) "+!checkCost(r));
+                        if (!checkCost(r)) {
+                            onFilterResult.result(false,0);
+                            return;
+                        }
+//                         timetable check
+                        System.out.println("RouteFilter.this.timetable "+(RouteFilter.this.timetable != r.getRouteDateTime().getTimetable() && RouteFilter.this.timetable != RouteFilter.this.defaultTimetable));
+                        if (RouteFilter.this.timetable != r.getRouteDateTime().getTimetable() && RouteFilter.this.timetable != RouteFilter.this.defaultTimetable) {
+                            onFilterResult.result(false,0);
+                            return;
+                        }
+//                        date check
+                        if (!checkDate(r)) {
+                            onFilterResult.result(false,0);
+                            return;
+                        }
+//                        time check
+                        if (!checkTime(r)) {
+                            onFilterResult.result(false,0);
+                            return;
+                        }
+
+//                      TODO:  Rating Check
+                        onFilterResult.result(true,distance - r.getRouteLatLng().getDistance());
+                    }
+                });
     }
 
     private boolean checkDate(Route r){

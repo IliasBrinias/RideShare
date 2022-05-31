@@ -146,7 +146,6 @@ public class CarFragment extends Fragment implements TextWatcher {
                         Toast.makeText(getActivity(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                         stopProgressBarAnimation();
-
                     }
                 });
     }

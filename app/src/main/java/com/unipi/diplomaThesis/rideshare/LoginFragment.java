@@ -263,7 +263,7 @@ public class LoginFragment extends Fragment {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Rider r = new Rider(mAuth.getUid(),acc.getEmail(),acc.getDisplayName(),null,null);
+                            Rider r = new Rider(mAuth.getUid(),acc.getEmail(),acc.getDisplayName());
                             FirebaseDatabase.getInstance()
                                     .getReference()
                                     .child(User.class.getSimpleName())

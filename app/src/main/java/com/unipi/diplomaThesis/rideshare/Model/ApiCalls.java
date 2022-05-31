@@ -122,7 +122,7 @@ public class ApiCalls {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            int distance = 0;
+                            double distance = 0;
                             for (int i=0; i<response.getJSONArray("routes").length();i++){
                                 distance += response.getJSONArray("routes")
                                         .getJSONObject(i)
@@ -132,7 +132,7 @@ public class ApiCalls {
                                         .getInt("value");
 
                             }
-                            onDistanceResponse.returnedData(response,distance/1000.);
+                            onDistanceResponse.returnedData(response,distance);
                         }catch (JSONException e) {
                             e.printStackTrace();
                         }

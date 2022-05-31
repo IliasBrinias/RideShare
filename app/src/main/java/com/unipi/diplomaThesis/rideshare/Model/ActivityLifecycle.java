@@ -174,29 +174,26 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                        String userId=null;
                         try {
-                            userId = FirebaseAuth.getInstance().getUid();
-                        }catch (Exception e){
-                            stopMessageSessionIdListener();
-                            return;
-                        }
-                        ArrayList<String> participants = (ArrayList<String>) snapshot.child("participants").getValue();
-                        for (String p:participants){
-                            if (!userId.equals(p)){
-                                MessageSession messageSession = snapshot.getValue(MessageSession.class);
-                                if (PreferenceManager.getDefaultSharedPreferences(currentActivity)
-                                        .getLong(messageSession.getMessageSessionId(),0L) != 0L){
+                            ArrayList<String> participants = (ArrayList<String>) snapshot.child("participants").getValue();
+                            for (String p:participants){
+                                if (!FirebaseAuth.getInstance().getUid().equals(p)){
+                                    MessageSession messageSession = snapshot.getValue(MessageSession.class);
+                                    if (PreferenceManager.getDefaultSharedPreferences(currentActivity)
+                                            .getLong(messageSession.getMessageSessionId(),0L) != 0L){
+                                        return;
+                                    }
+                                    PreferenceManager.getDefaultSharedPreferences(currentActivity).edit()
+                                            .putLong(messageSession.getMessageSessionId(), messageSession.getCreationTimestamp()).apply();
+                                    createNotificationChannel(currentActivity,"messageSession","messageInfo",MESSAGE_SESSION_CHANNEL_ID);
+                                    User.loadUser(p, messageSessionCreator -> {
+                                        createNotificationMessageSession(messageSessionCreator, snapshot.getValue(MessageSession.class));
+                                    });
                                     return;
                                 }
-                                PreferenceManager.getDefaultSharedPreferences(currentActivity).edit()
-                                        .putLong(messageSession.getMessageSessionId(), messageSession.getCreationTimestamp()).apply();
-                                createNotificationChannel(currentActivity,"messageSession","messageInfo",MESSAGE_SESSION_CHANNEL_ID);
-                                User.loadUser(p, messageSessionCreator -> {
-                                    createNotificationMessageSession(messageSessionCreator, snapshot.getValue(MessageSession.class));
-                                });
-                                return;
                             }
+                        }catch (Exception e){
+                            stopMessageSessionIdListener();
                         }
                     }
                     @Override

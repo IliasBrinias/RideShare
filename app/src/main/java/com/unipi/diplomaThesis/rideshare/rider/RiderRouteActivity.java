@@ -48,7 +48,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RiderRouteActivity extends AppCompatActivity implements TextWatcher, AdapterView.OnItemClickListener {
     private RecyclerView recyclerView;
@@ -135,6 +137,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
                 i.putExtra(Route.class.getSimpleName(),routeList.get(position).getRouteId());
                 i.putExtra(Driver.class.getSimpleName(),routeList.get(position).getDriverId());
                 i.putExtra("userDateTime",dateTimeUnix);
+                i.putExtra("distanceDeviation",distanceDeviationMap.get(routeList.get(position).getRouteId()));
                 startActivity(i);
             }
         });
@@ -143,10 +146,13 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         listViewLocationSearch.setOnItemClickListener(this);
         RouteSearch();
     }
+    Map<String,Double> distanceDeviationMap = new HashMap<>();
     @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
-    private void refreshData(Route r, User driver){
+    private void refreshData(Route r, User driver, double distanceDeviation){
         stopProgressBarAnimation();
+        if (r==null) return;
         routeList.add(r);
+        distanceDeviationMap.put(r.getRouteId(),distanceDeviation);
         if (routeFilter.getClassification()!=routeFilter.getDefaultClassification()){
             routeList = classificationBasedRouteFilter(routeList,routeFilter.getClassification());
         }
@@ -317,6 +323,8 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         dialogView.findViewById(R.id.date_time_cancel).setOnClickListener(view1 -> alertDialog.dismiss());
         alertDialog.setCancelable(true);
         alertDialog.show();
+        alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+
     }
     Float min;
     Float max;

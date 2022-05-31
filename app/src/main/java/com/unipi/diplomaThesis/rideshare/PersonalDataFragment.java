@@ -67,7 +67,7 @@ public class PersonalDataFragment extends Fragment {
         birthDateLayout = v.findViewById(R.id.textInputPersonalDataBirthDayLayout);
         emailLayout = v.findViewById(R.id.textInputPersonalDataEmailLayout);
 //          editTexts
-        name = v.findViewById(R.id.textInputPersonalDataFirstName);
+        name = v.findViewById(R.id.textInputPersonalDataFullName);
         birthDate = v.findViewById(R.id.textInputPersonalDataBirthDay);
         email = v.findViewById(R.id.textInputPersonalDataEmail);
 //        initialize the listeners
