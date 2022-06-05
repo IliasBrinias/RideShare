@@ -82,10 +82,12 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
         return stringBuilder.toString();
     }
     private void loadUserData(User u, ViewHolder holder){
-        holder.userName.setText(u.getFullName());
+        holder.userName.setText(User.reformatLengthString(u.getFullName(),25));
         holder.userName.setVisibility(View.VISIBLE);
         u.loadUserImage(image ->
         {
+            holder.imageUser.setBackgroundResource(0);
+            holder.imageUser.setImageBitmap(null);
             if (image != null) {
                 holder.imageUser.setImageBitmap(image);
             }else {

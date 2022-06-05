@@ -41,12 +41,20 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="20dp"/>
-            <ImageView
-                android:id="@+id/imageViewUser"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@drawable/ic_default_profile"
-                />
+            <androidx.cardview.widget.CardView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:cardCornerRadius="260dp">
+                <ImageView
+                    android:id="@+id/imageViewUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_default_profile"
+                    />
+            </androidx.cardview.widget.CardView>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"/>
             <TextView
                 android:id="@+id/textViewUserName"
                 android:layout_width="wrap_content"
@@ -175,7 +183,7 @@
 
             </TableRow>
             <TableRow
-                android:id="@+id/tableRow14"
+                android:id="@+id/tableRowRating"
                 android:layout_width="match_parent"
                 android:padding="20dp"
                 android:layout_height="wrap_content">
@@ -192,12 +200,11 @@
                         style="?android:attr/ratingBarStyleIndicator"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:min="1"
+                        android:min="0"
                         android:minWidth="5dp"
                         android:minHeight="5dp"
                         android:numStars="5"
                         android:progressTint="@color/quantum_yellow"
-                        android:rating="4.5"
                         android:secondaryProgressTint="@color/quantum_yellow"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"

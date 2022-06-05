@@ -26,10 +26,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.unipi.diplomaThesis.rideshare.Interface.OnCompleteUserSave;
-import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.User;
-import com.unipi.diplomaThesis.rideshare.driver.DriverActivity;
 import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
 
 import java.util.ArrayList;
@@ -126,13 +124,9 @@ public class RegisterFragment extends Fragment implements TextWatcher {
                                             .putString(User.REQ_TYPE_TAG,u.getType()).apply();
                                     Gson gson = new Gson();
                                     String json = gson.toJson(u);
-                                    PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-                                            .putString(User.class.getSimpleName(),json).apply();
-                                    if (u.getType().equals(Driver.class.getSimpleName())){
-                                        getActivity().startActivityForResult(new Intent(getActivity(), DriverActivity.class), StartActivity.REQ_DRIVER_ACTIVITY);
-                                    }else {
-                                        getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class),StartActivity.REQ_RIDER_ACTIVITY);
-                                    }
+                                    PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                            .edit().putString(User.class.getSimpleName(),json).apply();
+                                    getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class),StartActivity.REQ_RIDER_ACTIVITY);
                                 }
                             }
                         });

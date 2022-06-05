@@ -1,7 +1,6 @@
 package com.unipi.diplomaThesis.rideshare.driver;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -53,17 +52,18 @@ public class RequestsActivity extends AppCompatActivity {
                 requestAdapter.notifyDataSetChanged();
             }
 
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void decline(View view, int position) {
                 driver.declineRequest(requestList.get(position));
                 requestList.remove(position);
                 requestAdapter.notifyDataSetChanged();
+                if (requestList.isEmpty()) finish();
             }
         });
         recyclerView.setAdapter(requestAdapter);
         requestSearch();
         mMyApp = (MyApplication) this.getApplicationContext();
-        mMyApp.setCurrentActivity(this);
 
     }
     private void requestSearch(){
@@ -82,13 +82,6 @@ public class RequestsActivity extends AppCompatActivity {
     }
     @Override
     protected void onDestroy() {
-        clearReferences();
         super.onDestroy();
     }
-    private void clearReferences(){
-        Activity currActivity = mMyApp.getCurrentActivity();
-        if (this.equals(currActivity))
-            mMyApp.setCurrentActivity(null);
-    }
-
 }

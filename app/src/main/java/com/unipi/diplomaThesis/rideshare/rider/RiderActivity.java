@@ -4,9 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +23,7 @@ import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.unipi.diplomaThesis.rideshare.CarFragment;
 import com.unipi.diplomaThesis.rideshare.Model.Message;
 import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
 import com.unipi.diplomaThesis.rideshare.Model.User;
@@ -29,8 +34,6 @@ import com.unipi.diplomaThesis.rideshare.messenger.MessengerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RiderActivity extends AppCompatActivity {
     protected MyApplication mMyApp;
@@ -46,7 +49,7 @@ public class RiderActivity extends AppCompatActivity {
     private PersonalDataFragment personalDataFragment;
     private User u;
     private TextView userNameNavigationHeader,emailNavigationHeader;
-    private CircleImageView imageNavigationHeader;
+    private ImageView imageNavigationHeader;
     List<String> newMessages=new ArrayList<>();
     BadgeDrawable badgeDrawableMessages;
 
@@ -66,7 +69,7 @@ public class RiderActivity extends AppCompatActivity {
         emailNavigationHeader = headerView.findViewById(R.id.textViewNavigationUserEmail);
         imageNavigationHeader = headerView.findViewById(R.id.CircleImageDriverImage);
 //        load User data
-        loadUserData();
+        loadUserData(u);
         topAppBar.setNavigationOnClickListener(view -> drawerLayout.open());
 //        ToolBar Items
         topAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -116,14 +119,16 @@ public class RiderActivity extends AppCompatActivity {
             }
         });
         mMyApp = (MyApplication) this.getApplicationContext();
-        mMyApp.setCurrentActivity(this);
         badgeDrawableMessages = BadgeDrawable.create(this);
         startChecking();
     }
-    private void loadUserData(){
-        userNameNavigationHeader.setText(u.getFullName());
-        emailNavigationHeader.setText(u.getEmail());
+    public void loadUserData(User u){
+        userNameNavigationHeader.setText(User.reformatLengthString(u.getFullName(),15));
+        emailNavigationHeader.setText(User.reformatLengthString(u.getEmail(),20));
         u.loadUserImage(image -> {
+            imageNavigationHeader.setImageBitmap(null);
+            imageNavigationHeader.setBackgroundResource(0);
+
             if (image!=null){
                 imageNavigationHeader.setImageBitmap(image);
             }else{
@@ -132,10 +137,25 @@ public class RiderActivity extends AppCompatActivity {
         });
     }
 
+    boolean doubleBackToExitPressedOnce = false;
+
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finishAffinity();
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, getString(R.string.msg_back_again_exit), Toast.LENGTH_SHORT).show();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 
     @Override
@@ -150,19 +170,21 @@ public class RiderActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        clearReferences();
         super.onDestroy();
     }
-    private void clearReferences(){
-        Activity currActivity = mMyApp.getCurrentActivity();
-        if (this.equals(currActivity))
-            mMyApp.setCurrentActivity(null);
-    }
-
     @SuppressLint("UnsafeOptInUsageError")
     private void startChecking() {
 
         u.loadUserMessageSession(messageSession -> {
+            if (messageSession == null) return;
+            if (messageSession.getMessages().isEmpty()){
+                if (!newMessages.contains(messageSession.getMessageSessionId())) {
+                    newMessages.add(messageSession.getMessageSessionId());
+                }
+                badgeDrawableMessages.setNumber(newMessages.size());
+                BadgeUtils.attachBadgeDrawable(badgeDrawableMessages, topAppBar, R.id.messages);
+                return;
+            }
             Message m = messageSession.getMessages().entrySet().iterator().next().getValue();
 
             if (m.getUserSenderId().equals(u.getUserId())) {

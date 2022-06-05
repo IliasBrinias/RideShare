@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -160,7 +161,6 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
         i.putExtra("originLocation", startLocation.toString());
         i.putExtra("destinationLocation", finishLocation.toString());
         i.putExtra("date", routeDateUnix);
-        System.out.println("date on Route SearchFragment:"+routeDateUnix);
         startActivity(i);
     }
     private boolean checkIfLocationExists(JSONArray savedLocations,JSONObject newLocation){
@@ -215,9 +215,14 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
                         tableRowRideHistory.setVisibility(View.VISIBLE);
                     }
                 }
-                listViewSearchedLocation.setAdapter(new ArrayAdapter<>(getActivity().getApplicationContext(),
-                        R.layout.list_item,
-                        streetNames.toArray(new String[streetNames.size()])));
+                try {
+                    listViewSearchedLocation.setAdapter(new ArrayAdapter<>(getActivity().getApplicationContext(),
+                            R.layout.list_item,
+                            streetNames.toArray(new String[streetNames.size()])));
+                }catch (Exception ignore){
+                    listViewSearchedLocation.setVisibility(View.GONE);
+                    tableRowRideHistory.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
@@ -258,6 +263,11 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
         alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.alert_dialog_background));
         TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.time_picker);
         DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(new Date().getTime());
+        datePicker.setMinDate(calendar.getTimeInMillis());
+        calendar.add(Calendar.YEAR,1);
+        datePicker.setMaxDate(calendar.getTimeInMillis());
         timePicker.setVisibility(View.GONE);
         dialogView.findViewById(R.id.date_time_set).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -272,7 +282,6 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
                             timePicker.getHour(),
                             timePicker.getMinute());
                     routeDateUnix = calendar.getTimeInMillis();
-                    System.out.println("date on Route SearchFragment After Calendar:"+routeDateUnix);
                     autoCompleteDate.setText(simpleDateFormat.format(routeDateUnix));
                     openRiderRouteActivity();
                     alertDialog.dismiss();

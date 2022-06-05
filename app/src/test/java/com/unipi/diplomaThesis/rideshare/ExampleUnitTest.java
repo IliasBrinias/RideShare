@@ -18,15 +18,19 @@ public class ExampleUnitTest extends Activity{
     JSONObject jsonObject = new JSONObject();
     @Test
     public void addition_isCorrect(){
-        ArrayList<String> s1 = new ArrayList<>();
-        s1.add("a");
-        s1.add("b");
-        s1.add("c");
-        s1.add("d");
-        ArrayList<String> s2 = new ArrayList<>();
-        s2.add("e");
-        s2.add("j");
-        s2.add("c");
-        System.out.println(s1.contains("c"));
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add("1");
+        arrayList.add("2");
+        arrayList.add("3");
+        arrayList.add("4");
+        arrayList.add("5");
+        for (String s:arrayList){
+            if (arrayList.indexOf(s) == arrayList.size()-1){
+                System.out.println("!!!!!!!!!!!!!!!!");
+            }
+            if (s.equals(arrayList.get(arrayList.size()-1))){
+                System.out.println("sssssssssssssssssssssssss");
+            }
+        }
     }
 }

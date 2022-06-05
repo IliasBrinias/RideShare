@@ -34,11 +34,7 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
     private static final String MESSAGE_SESSION_CHANNEL_ID = "789";
     private ChildEventListener messageSessionChildListener;
     Activity currentActivity;
-    Application myApplication;
     ValueEventListener childEventListenerRequest;
-    public ActivityLifecycle(Application myApplication) {
-        this.myApplication = myApplication;
-    }
 
     @Override
     public void onActivityPostStopped(@NonNull Activity activity) {
@@ -47,15 +43,11 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    }
-
-    @Override
-    public void onActivityPostCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-        Application.ActivityLifecycleCallbacks.super.onActivityPostCreated(activity, savedInstanceState);
-        Activity currentActivity = ((MyApplication) myApplication.getApplicationContext()).getCurrentActivity();
-        if (currentActivity instanceof RiderActivity || currentActivity instanceof DriverActivity) {
+        currentActivity = activity;
+        if (activity instanceof RiderActivity || activity instanceof DriverActivity) {
             startMessageSessionIdListener();
-            if (currentActivity instanceof DriverActivity){
+
+            if (activity instanceof DriverActivity){
                 try {
                     startRequestListener();
                 }catch (Exception e){
@@ -65,42 +57,50 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
             }
         }
 
+    }
 
+    @Override
+    public void onActivityPreCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+        Application.ActivityLifecycleCallbacks.super.onActivityPreCreated(activity, savedInstanceState);
+        currentActivity = activity;
     }
 
     @Override
     public void onActivityResumed(Activity activity) {
+        currentActivity = activity;
+
     }
 
     @Override
     public void onActivityPostResumed(@NonNull Activity activity) {
         Application.ActivityLifecycleCallbacks.super.onActivityPostResumed(activity);
+        currentActivity = activity;
         try {
-            Activity currentActivity = ((MyApplication) myApplication.getApplicationContext()).getCurrentActivity();
-            if (currentActivity instanceof ChatActivity||currentActivity instanceof MessengerActivity) {
+            if (activity instanceof ChatActivity||activity instanceof MessengerActivity) {
                 stopMessageSessionIdListener();
             }
-            if (currentActivity instanceof RequestsActivity){
+            if (activity instanceof RequestsActivity){
                 stopRequestListener();
             }
-        }catch (Exception ignore){
-            ignore.printStackTrace();
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
-        this.currentActivity = activity;
+        currentActivity = activity;
 
     }
 
     @Override
     public void onActivityPostPaused(@NonNull Activity activity) {
         Application.ActivityLifecycleCallbacks.super.onActivityPostPaused(activity);
+        currentActivity = activity;
+
         try {
-            Activity currentActivity = ( (MyApplication) myApplication.getApplicationContext()).getCurrentActivity();
-            if (currentActivity instanceof ChatActivity||currentActivity instanceof MessengerActivity){
+            if (activity instanceof ChatActivity||activity instanceof MessengerActivity){
                 startMessageSessionIdListener();
             }
         }catch (Exception ignore){}
@@ -114,12 +114,14 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
 
     @Override
     public void onActivityStarted(Activity activity) {
-        this.currentActivity = activity;
+        currentActivity = activity;
 
     }
 
     @Override
     public void onActivityStopped(Activity activity) {
+        currentActivity = activity;
+
     }
 
     @Override
@@ -128,6 +130,8 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
     public static final String MESSAGE_CHANNEL_ID="123";
     public static final String REQUEST_CHANNEL_ID="234";
     private void createNotificationMessage(Message m, User u, MessageSession messageSession){
+        boolean mute = PreferenceManager.getDefaultSharedPreferences(currentActivity).getBoolean("mute", false) ||
+                PreferenceManager.getDefaultSharedPreferences(currentActivity).getBoolean(u.getUserId(), false);
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(currentActivity, ChatActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -144,6 +148,8 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
                 .setAutoCancel(true)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setSilent(mute);
+
         // Issue the notification.
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(currentActivity);
 
@@ -166,6 +172,7 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
                 .setAutoCancel(true)
                 .setCategory(NotificationCompat.CATEGORY_EVENT)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setSilent(PreferenceManager.getDefaultSharedPreferences(currentActivity).getBoolean("mute", false));
         // Issue the notification.
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(currentActivity);
 
@@ -173,6 +180,8 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
         notificationManager.notify(0, builder.build());
     }
     private void createNotificationMessageSession(User u, MessageSession messageSession){
+        boolean mute = PreferenceManager.getDefaultSharedPreferences(currentActivity).getBoolean("mute", false) ||
+                        PreferenceManager.getDefaultSharedPreferences(currentActivity).getBoolean(u.getUserId(), false);
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(currentActivity, ChatActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -189,6 +198,7 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
                 .setAutoCancel(true)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setSilent(mute);
         // Issue the notification.
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(currentActivity);
 
@@ -215,20 +225,17 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
                             for (String p:participants){
                                 if (!FirebaseAuth.getInstance().getUid().equals(p)){
                                     MessageSession messageSession = snapshot.getValue(MessageSession.class);
-                                    if (PreferenceManager.getDefaultSharedPreferences(currentActivity)
-                                            .getLong(messageSession.getMessageSessionId(),0L) != 0L){
-                                        return;
-                                    }
-                                    PreferenceManager.getDefaultSharedPreferences(currentActivity).edit()
-                                            .putLong(messageSession.getMessageSessionId(), messageSession.getCreationTimestamp()).apply();
+                                    if (messageSession.isSeen()) return;
+
                                     createNotificationChannel(currentActivity,"messageSession","messageInfo",MESSAGE_SESSION_CHANNEL_ID);
                                     User.loadUser(p, messageSessionCreator -> {
-                                        createNotificationMessageSession(messageSessionCreator, snapshot.getValue(MessageSession.class));
+                                        createNotificationMessageSession(messageSessionCreator, messageSession);
                                     });
                                     return;
                                 }
                             }
                         }catch (Exception e){
+                            e.printStackTrace();
                             stopMessageSessionIdListener();
                         }
                     }
@@ -247,6 +254,7 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
                                 MessageSession messageSession = snapshot.getValue(MessageSession.class);
                                 getLastMessage(snapshot.getKey(), m -> {
                                     if (m.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())) return;
+                                    if (m.isSeen()) return;
                                     PreferenceManager.getDefaultSharedPreferences(currentActivity).edit()
                                             .putLong(FirebaseAuth.getInstance().getUid(), m.getTimestamp()).apply();
                                     createNotificationChannel(currentActivity,"message","messageInfo",MESSAGE_CHANNEL_ID);
@@ -299,6 +307,7 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
             return;
         }
         driver.loadDriversRouteId(ids -> {
+            if (ids == null) return;
             childEventListenerRequest = FirebaseDatabase.getInstance().getReference()
                     .child(Request.class.getSimpleName())
                     .addValueEventListener(new ValueEventListener() {
@@ -309,13 +318,15 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
                                 for (DataSnapshot requests : snapshot.child(id).getChildren()) {
                                     Request request = requests.getValue(Request.class);
                                     if (!request.isSeen()){
-                                        createNotificationChannel(currentActivity,"request","requestInfo",REQUEST_CHANNEL_ID);
                                         User.loadUser(request.getRiderId(),u -> {
+                                            System.out.println("User: "+u.getFullName());
                                             Route.loadRoute(request.getRouteId(),route -> {
+                                                System.out.println("Route: "+route.getRouteId());
+                                                createNotificationChannel(currentActivity,"request","requestInfo",REQUEST_CHANNEL_ID);
                                                 createNotificationRequest(u,route);
+                                                request.makeSeen();
                                             });
                                         });
-                                        request.makeSeen();
                                     }
                                 }
                             }

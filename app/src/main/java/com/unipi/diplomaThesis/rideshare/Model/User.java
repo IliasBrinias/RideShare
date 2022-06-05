@@ -1,5 +1,6 @@
 package com.unipi.diplomaThesis.rideshare.Model;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -33,6 +34,7 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnMessageSessionLoad;
 import com.unipi.diplomaThesis.rideshare.Interface.OnPreviousRouteResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnReturnedIds;
 import com.unipi.diplomaThesis.rideshare.Interface.OnReviewResponse;
+import com.unipi.diplomaThesis.rideshare.Interface.OnReviewTotalScoreResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnRouteResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.R;
@@ -58,6 +60,7 @@ public class User {
     private Map<String,UserRating> userRating;
     private ArrayList<String> lastRoutes = new ArrayList<>();
     private ArrayList<String> messageSessionId = new ArrayList<>();
+    private ChildEventListener loadMessages;
 
     public User() {
     }
@@ -161,6 +164,46 @@ public class User {
         return isNull;
     }
 
+    public void saveUserPersonalData(ImageView profile, String newName, String newEmail, long newBirthday,OnCompleteListener<Void> onDataUpdate, OnCompleteListener<UploadTask.TaskSnapshot> onUploadComplete){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName())
+                .child(this.getUserId());
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User u;
+                        if (snapshot.child(User.REQ_TYPE_TAG).getValue(String.class).equals(Driver.class.getSimpleName())) {
+                            u = snapshot.getValue(Driver.class);
+                        }else {
+                            u = snapshot.getValue(Rider.class);
+                        }
+                        u.setFullName(newName);
+                        u.setEmail(newEmail);
+                        u.setBirthDay(newBirthday);
+                        if (u.getType().equals(Driver.class.getSimpleName())) {
+                            ref.setValue((Driver) u).addOnCompleteListener(onDataUpdate);
+                        }else {
+                            ref.setValue((Rider) u).addOnCompleteListener(onDataUpdate);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                });
+        saveUserImage(getByteArray(profile), onUploadComplete);
+    }
+    @Nullable
+    public static User loadUserInstance(Context c){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(c);
+        String type = preferences.getString(REQ_TYPE_TAG,null);
+        if (type == null) return null;
+        Gson gson = new Gson();
+        String json = preferences.getString(User.class.getSimpleName(), null);
+        if (type.equals(Driver.class.getSimpleName())){
+            return gson.fromJson(json, Driver.class);
+        }else {
+            return gson.fromJson(json, Rider.class);
+        }
+    }
     public static void loadSignInUser(OnUserLoadComplete onUserLoadComplete){
         String userId = FirebaseAuth.getInstance().getUid();
         //load the user
@@ -184,54 +227,26 @@ public class User {
                 });
 
     }
+    public void saveUserInstance(Activity a){
+        PreferenceManager.getDefaultSharedPreferences(a).edit()
+                .putString(User.REQ_TYPE_TAG,this.getType()).apply();
+        Gson gson = new Gson();
+        String json = gson.toJson(this);
+        PreferenceManager.getDefaultSharedPreferences(a).edit()
+                .putString(User.class.getSimpleName(),json).apply();
+    }
     public static void saveUser(@NonNull User u, OnCompleteUserSave onCompleteUserSave){
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName());
         if (u.userId == null) u.userId = FirebaseAuth.getInstance().getUid();
         databaseReference.child(u.userId).setValue(u).addOnCompleteListener(onCompleteUserSave::onComplete);
     }
-    @Nullable
-    public static User loadUserInstance(Context c){
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(c);
-        String type = preferences.getString(REQ_TYPE_TAG,null);
-        if (type == null) return null;
-        Gson gson = new Gson();
-        String json = preferences.getString(User.class.getSimpleName(), null);
-        if (type.equals(Driver.class.getSimpleName())){
-            return gson.fromJson(json, Driver.class);
-        }else {
-            return gson.fromJson(json, Rider.class);
-        }
-    }
-
     public void loadUserImage(OnImageLoad onImageLoad) {
         try {
             File f = File.createTempFile("ProfileImage", ".jpg");
             StorageReference imageRef = FirebaseStorage.getInstance().getReference()
                     .child(User.class.getSimpleName())
-                    .child(this.getUserId())
-                    .child("ProfileImage.jpg");
-            imageRef.getFile(f).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
-                    if (task.isSuccessful()){
-                        onImageLoad.loadImageSuccess(BitmapFactory.decodeFile(f.getAbsolutePath()));
-                    }else {
-                        onImageLoad.loadImageSuccess(null);
-                    }
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void loadUserImageBackGround(OnImageLoad onImageLoad) {
-        try {
-            File f = File.createTempFile("ProfileImageBackground", ".jpg");
-            StorageReference imageRef = FirebaseStorage.getInstance().getReference()
-                    .child(User.class.getSimpleName())
-                    .child(this.getUserId())
-                    .child("ProfileImageBackground.jpg");
+                    .child(this.getUserId());
             imageRef.getFile(f).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
@@ -257,9 +272,7 @@ public class User {
         FirebaseAuth.getInstance().signOut();
 //        clear the user from the preferences
         PreferenceManager.getDefaultSharedPreferences(c)
-                .edit()
-                .remove(User.class.getSimpleName())
-                .apply();
+                .edit().clear().apply();
     }
     public static void loadUser(String userId, OnUserLoadComplete onUserLoadComplete){
         FirebaseDatabase.getInstance().getReference()
@@ -324,16 +337,30 @@ public class User {
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
+    public static void mutualRoutes(Driver driver, Rider rider, OnRouteResponse onRouteResponse){
+        for (String routeId:driver.getLastRoutes()){
+            Route.loadRoute(routeId, route->{
+                for (String p:route.getPassengersId()){
+                    if (p.equals(rider.getUserId())){
+                        onRouteResponse.returnedRoute(route);
+                    }
+                }
+            });
+        }
+    }
+
     public void getMessageSessionId(OnReturnedIds onReturnedIds){
         FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName())
                 .child(this.getUserId())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.hasChild("messageSessionId")){
                             ArrayList<String> ids = (ArrayList<String>) snapshot.child("messageSessionId").getValue();
                             onReturnedIds.returnIds(ids);
+                        }else {
+                            onReturnedIds.returnIds(null);
                         }
                     }
 
@@ -343,8 +370,19 @@ public class User {
                     }
                 });
     }
+    private void makeMessageSessionSeen(MessageSession messageSession){
+        FirebaseDatabase.getInstance().getReference()
+                .child(MessageSession.class.getSimpleName())
+                .child(messageSession.getMessageSessionId())
+                .child("seen").setValue(true);
+
+    }
     public void loadUserMessageSession(OnMessageSessionLoad onMessageSessionLoad){
         getMessageSessionId(sessionIds -> {
+            if (sessionIds == null) {
+                onMessageSessionLoad.returnedSession(null);
+                return;
+            }
             for (String id:sessionIds) {
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
                         .child(MessageSession.class.getSimpleName())
@@ -354,6 +392,8 @@ public class User {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         MessageSession messageSession = new MessageSession();
                         messageSession.setMessageSessionId(snapshot.getKey());
+                        if (!messageSession.isSeen()) makeMessageSessionSeen(messageSession);
+                        if (!snapshot.hasChild("participants")) return;
                         messageSession.setParticipants((ArrayList<String>) snapshot.child("participants").getValue());
                         messageSession.setCreationTimestamp(snapshot.child("creationTimestamp").getValue(Long.class));
                         if (snapshot.child("messages").getChildrenCount() == 0) {
@@ -387,7 +427,51 @@ public class User {
                     }
                 });
             }
+            onMessageSessionLoad.returnedSession(null);
         });
+    }
+
+    public void loadMessages(MessageSession messageSession, OnMessageReturn onMessageReturn){
+        loadMessages = FirebaseDatabase.getInstance().getReference()
+                .child(MessageSession.class.getSimpleName())
+                .child(messageSession.getMessageSessionId())
+                .child("messages").orderByChild("timestamp")
+                .limitToLast(100)
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        if (!snapshot.exists()) return;
+                        Message m = snapshot.getValue(Message.class);
+                        if (m.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())){
+                            onMessageReturn.returnedMessage(m);
+                            return;
+                        }
+                        if (!m.isSeen()){
+                            m.setSeen(true);
+                            messageSeen(messageSession,m);
+                        }
+                        onMessageReturn.returnedMessage(m);
+                    }
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        onMessageReturn.returnedMessage(snapshot.getValue(Message.class));
+
+                    }
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                });
+    }
+    public void stopLoadingMessages(MessageSession messageSession) {
+        FirebaseDatabase.getInstance().getReference()
+                .child(MessageSession.class.getSimpleName())
+                .child(messageSession.getMessageSessionId())
+                .child("messages").orderByChild("timestamp")
+                .limitToLast(100)
+                .removeEventListener(loadMessages);
     }
     private void messageSeen(MessageSession messageSession,Message m){
         FirebaseDatabase.getInstance().getReference()
@@ -397,62 +481,7 @@ public class User {
                 .child(m.getMessageId())
                 .child("seen").setValue(true);
     }
-    ChildEventListener loadMessages;
-    public void loadMessages(MessageSession messageSession, OnMessageReturn onMessageReturn){
-        loadMessages = FirebaseDatabase.getInstance().getReference()
-                .child(MessageSession.class.getSimpleName())
-                .child(messageSession.getMessageSessionId())
-                .child("messages").orderByChild("timestamp")
-                .limitToLast(100)
-            .addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                    if (!snapshot.exists()) return;
-                    Message m = snapshot.getValue(Message.class);
-                    if (m.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())){
-                        onMessageReturn.returnedMessage(m);
-                        return;
-                    }
-                    if (!m.isSeen()){
-                        m.setSeen(true);
-                        messageSeen(messageSession,m);
-                    }
-                    onMessageReturn.returnedMessage(m);
-                }
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                    onMessageReturn.returnedMessage(snapshot.getValue(Message.class));
 
-                }
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {}
-            });
-    }
-
-    public static void mutualRoutes(Driver driver, Rider rider, OnRouteResponse onRouteResponse){
-        for (String routeId:driver.getLastRoutes()){
-            Route.loadRoute(routeId, route->{
-                for (String p:route.getPassengersId()){
-                    if (p.equals(rider.getUserId())){
-                        onRouteResponse.returnedRoute(route);
-                    }
-                }
-            });
-        }
-    }
-
-    public void stopLoadingMessages(MessageSession messageSession) {
-        FirebaseDatabase.getInstance().getReference()
-                .child(MessageSession.class.getSimpleName())
-                .child(messageSession.getMessageSessionId())
-                .child("messages").orderByChild("timestamp")
-                .limitToLast(100)
-                .removeEventListener(loadMessages);
-    }
     public static void loadReviews(String driverId,OnReviewResponse onReviewResponse){
         FirebaseDatabase.getInstance().getReference()
                 .child(Review.class.getSimpleName())
@@ -471,5 +500,34 @@ public class User {
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
+    public void loadReviewTotalScore(String targetUserId, OnReviewTotalScoreResponse onReviewTotalScoreResponse){
+        FirebaseDatabase.getInstance().getReference()
+                .child(Review.class.getSimpleName())
+                .child(targetUserId)
+                .orderByChild("timestamp")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        float totalScore = 0;
+                        for (DataSnapshot review: snapshot.getChildren()){
+                            totalScore = review.child("review").getValue(Float.class);
+                        }
+                        onReviewTotalScoreResponse.returnData(totalScore, (int) snapshot.getChildrenCount());
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
+    public static String reformatLengthString(String s, int bounds){
+        StringBuilder stringBuilder = new StringBuilder(s);
+        if (stringBuilder.length()>=bounds-4){
+            return stringBuilder.substring(0,bounds-4) +"...";
+        }else {
+            return s;
+        }
+    }
 }

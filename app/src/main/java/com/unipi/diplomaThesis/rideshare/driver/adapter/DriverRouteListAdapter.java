@@ -7,7 +7,12 @@ import android.location.Geocoder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +23,7 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnClickDriverRoute;
 import com.unipi.diplomaThesis.rideshare.Model.CustomCardView;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.Route;
+import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 
 import java.io.IOException;
@@ -48,24 +54,25 @@ public class DriverRouteListAdapter extends RecyclerView.Adapter<DriverRouteList
     @Override
     public void onBindViewHolder(@NonNull DriverRouteListAdapter.ViewHolder holder, int position) {
         holder.onClickDriverRoute = this.onClickDriverRoute;
+        holder.makeRouteOptionsUnvisible();
 //      Current Route Object
         Route currentRoute = routeList.get(position);
 //        Start and End Points
 //            load addresses from the LatLng for the textViews
         Geocoder g = new Geocoder(c);
-        String startingAddress = null;
-        String endAddress = null;
+        String startingAddress;
+        String endAddress;
         try {
             Address a = g.getFromLocation(currentRoute.getRouteLatLng().getStartLat(), currentRoute.getRouteLatLng().getStartLng(), 1).get(0);
             startingAddress =c.getString(R.string.from)+" " + a.getThoroughfare() +" "+a.getFeatureName()+", "+a.getLocality()+", "+a.getCountryName();
             a = g.getFromLocation(currentRoute.getRouteLatLng().getEndLat(),currentRoute.getRouteLatLng().getEndLng(),1).get(0);
             endAddress =c.getString(R.string.to)+" " + a.getThoroughfare() +" "+a.getFeatureName()+", "+a.getLocality()+", "+a.getCountryName();
-            holder.startingRoute.setText(startingAddress);
-            holder.endRoute.setText(endAddress);
+            holder.startingRoute.setText(User.reformatLengthString(startingAddress,40));
+            holder.endRoute.setText(User.reformatLengthString(endAddress,40));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        holder.routeName.setText(currentRoute.getName());
+        holder.routeName.setText(User.reformatLengthString(currentRoute.getName(),25));
         holder.costPerPassenger.setText(currentRoute.getCostPerRider()+" €");
 
         List<String> passengersId = currentRoute.getPassengersId();
@@ -96,11 +103,6 @@ public class DriverRouteListAdapter extends RecyclerView.Adapter<DriverRouteList
     public int getItemViewType(int position) {
         return position;
     }
-    public void removeAt(int position) {
-        routeList.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, routeList.size());
-    }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView startingRoute;
@@ -109,10 +111,10 @@ public class DriverRouteListAdapter extends RecyclerView.Adapter<DriverRouteList
         private TextView routeName;
         private FrameLayout frameLayoutPassengersIcon;
         private View division;
-
+        private ImageView showRoute ,deleteRoute, editRoute;
         private OnClickDriverRoute onClickDriverRoute;
-
-
+        private LinearLayout linearLayoutRouteOptions;
+        TableRow tableRowRouteInfo;
         @SuppressLint("ClickableViewAccessibility")
         public ViewHolder(@NonNull View v) {
             super(v);
@@ -122,12 +124,39 @@ public class DriverRouteListAdapter extends RecyclerView.Adapter<DriverRouteList
             costPerPassenger = v.findViewById(R.id.textViewRouteCost);
             frameLayoutPassengersIcon = (FrameLayout) v.findViewById(R.id.frameLayoutRidersImages);
             routeName = v.findViewById(R.id.textViewRouteName);
-            v.setOnClickListener(this);
+            linearLayoutRouteOptions = v.findViewById(R.id.linearLayoutRouteOptions);
+            deleteRoute = v.findViewById(R.id.routeDelete);
+            linearLayoutRouteOptions.setVisibility(View.INVISIBLE);
+            tableRowRouteInfo = v.findViewById(R.id.test);
+            editRoute = v.findViewById(R.id.routeEdit);
+            showRoute = v.findViewById(R.id.routeShow);
+            makeRouteOptionsUnvisible();
         }
+        void makeRouteOptionsUnvisible(){
+            showRoute.setVisibility(View.INVISIBLE);
+            deleteRoute.setVisibility(View.INVISIBLE);
+            editRoute.setVisibility(View.INVISIBLE);
+            tableRowRouteInfo.setOnClickListener(this);
+            linearLayoutRouteOptions.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    linearLayoutRouteOptions.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    TranslateAnimation animate2 = new TranslateAnimation(
+                            0,
+                            linearLayoutRouteOptions.getWidth(),
+                            0,
+                            0
+                    );
+                    animate2.setDuration(500);
+                    animate2.setFillAfter(true);
+                    linearLayoutRouteOptions.startAnimation(animate2);
+                }
+            });
 
+        }
         @Override
         public void onClick(View view) {
-            onClickDriverRoute.itemClick(view,getAdapterPosition());
+            onClickDriverRoute.itemClick(view,linearLayoutRouteOptions,showRoute,editRoute,deleteRoute, getAdapterPosition());
         }
     }
 }

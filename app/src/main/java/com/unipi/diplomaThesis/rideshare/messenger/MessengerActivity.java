@@ -1,7 +1,6 @@
 package com.unipi.diplomaThesis.rideshare.messenger;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -56,18 +55,15 @@ public class MessengerActivity extends AppCompatActivity {
         recyclerViewMessageSession.setAdapter(messengerAdapter);
         routeSearch();
         mMyApp = (MyApplication) this.getApplicationContext();
-        mMyApp.setCurrentActivity(this);
 
     }
     @Override
     protected void onStart() {
-        mMyApp.setCurrentActivity(this);
         super.onStart();
     }
 
     @Override
     protected void onStop() {
-        mMyApp.setCurrentActivity(this);
         super.onStop();
     }
 
@@ -111,23 +107,15 @@ public class MessengerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mMyApp.setCurrentActivity(this);
     }
     @Override
     public void onPause() {
-        mMyApp.setCurrentActivity(this);
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        clearReferences();
         super.onDestroy();
-    }
-    private void clearReferences(){
-        Activity currActivity = mMyApp.getCurrentActivity();
-        if (this.equals(currActivity))
-            mMyApp.setCurrentActivity(null);
     }
 
 }

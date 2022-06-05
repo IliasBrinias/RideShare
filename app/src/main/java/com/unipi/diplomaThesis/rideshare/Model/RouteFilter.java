@@ -228,8 +228,9 @@ public class RouteFilter implements Serializable {
     }
 
     public void filterCheck(Context c, Route r, OnFilterResult onFilterResult){
-//        onFilterResult.result(true,0);
-//
+        onFilterResult.result(true,0);
+        if (true) return;
+        //
         ApiCalls.getDistanceWithWaypoints(c,
                 r.getRouteLatLng().getStartPlaceId(),
                 r.getRouteLatLng().getEndPlaceId(),

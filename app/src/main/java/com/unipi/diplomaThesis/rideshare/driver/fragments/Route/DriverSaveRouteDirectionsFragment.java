@@ -8,12 +8,15 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,7 +48,8 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
     // the mapFragmentView initialization parameters, e.g. ARG_ITEM_NUMBER
     private String apiKey;
     LatLng startingPoint, destinationPoint;
-    private Button nextStep;
+    private Button submitStep,buttonSubmitEditedRoute;
+    private ImageButton nextStep;
     DriverSaveRouteActivity parentActivity;
     ListView listViewLocationSearch;
     EditText originTextView, destinationTextView;
@@ -55,7 +59,7 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
     MapDrawer m;
     GoogleMap googleMap;
     ConstraintLayout constraintLayout;
-
+    TableRow tableRowEditRoute;
     public DriverSaveRouteDirectionsFragment() {}
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,17 +73,24 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
         View v = inflater.inflate(R.layout.driver_route_directions_fragment, container, false);
         listViewLocationSearch = v.findViewById(R.id.listViewLocationSearch);
         originTextView = v.findViewById(R.id.autoCompleteOrigin);
+        buttonSubmitEditedRoute = v.findViewById(R.id.buttonSubmitEditedRoute);
         destinationTextView = v.findViewById(R.id.autoCompleteDestination);
         mapView = v.findViewById(R.id.mapView);
-        nextStep = v.findViewById(R.id.buttonNextStepDirections);
+        submitStep = v.findViewById(R.id.buttonSubmitStepDirections);
+        nextStep = v.findViewById(R.id.imageViewNextStep);
+        tableRowEditRoute = v.findViewById(R.id.tableRowEditRoute);
+        tableRowEditRoute.setVisibility(View.GONE);
         apiKey = getActivity().getString(R.string.android_api_key);
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(apiKey);
         }
         mapView.onCreate(mapViewBundle);
+        buttonSubmitEditedRoute.setOnClickListener(view -> parentActivity.saveRoute());
+        submitStep.setOnClickListener(view -> parentActivity.nextStep());
         nextStep.setOnClickListener(view -> parentActivity.nextStep());
         nextStep.setVisibility(View.GONE);
+        submitStep.setVisibility(View.GONE);
         parentActivity = (DriverSaveRouteActivity) getActivity();
         constraintLayout = v.findViewById(R.id.constraintLayout);
 
@@ -91,18 +102,60 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
         originTextView.setOnFocusChangeListener(this);
         destinationTextView.setOnFocusChangeListener(this);
         mapView.getMapAsync(this);
-
         return v;
     }
-    public RouteLatLng getPoints(){
-        return new RouteLatLng(
-                jsonToPlaceId(originLocation),
-                startingPoint.latitude,
-                startingPoint.longitude,
-                jsonToPlaceId(destinationLocation),
-                destinationPoint.latitude,
-                destinationPoint.longitude,
-                m.getDistance());
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        m = new MapDrawer(getActivity(),googleMap);
+        m.setEdgesOffsetFromTheMap(0.2);
+        if (originLocation==null & destinationLocation==null) {
+            loadRoute();
+            loadPlaceId();
+        }
+    }
+    private void loadRoute(){
+        if (routeLatLng!=null){
+            mapView.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            m.directions(apiKey,startingPoint,destinationPoint,mapView);
+                            m.zoomToDirection(mapView,startingPoint,destinationPoint);
+                        }
+                    });
+            submitStep.setVisibility(View.GONE);
+            tableRowEditRoute.setVisibility(View.VISIBLE);
+            nextStep.setVisibility(View.VISIBLE);
+        }
+    }
+    private void loadPlaceId(){
+        ApiCalls.getLocationPlaceId(getActivity(), new LatLng(routeLatLng.getStartLat(),routeLatLng.getStartLng()) , new OnPlacesApiResponse() {
+            @Override
+            public void results(JSONArray locations) {
+                try {
+                    originLocation = locations.getJSONObject(0);
+                    originTextView.setText(originLocation.getString("formatted_address"));
+                    listViewLocationSearch.setVisibility(View.GONE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        ApiCalls.getLocationPlaceId(getActivity(), new LatLng(routeLatLng.getEndLat(),routeLatLng.getEndLng()) , new OnPlacesApiResponse() {
+            @Override
+            public void results(JSONArray locations) {
+                try {
+                    destinationLocation = locations.getJSONObject(0);
+                    destinationTextView.setText(destinationLocation.getString("formatted_address"));
+                    listViewLocationSearch.setVisibility(View.GONE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
     Toast t;
     @Override
@@ -130,9 +183,9 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
             }
 
             if (originLocation!=null && destinationLocation!=null){
-                nextStep.setVisibility(View.VISIBLE);
+                submitStep.setVisibility(View.VISIBLE);
             }else {
-                nextStep.setVisibility(View.GONE);
+                submitStep.setVisibility(View.GONE);
             }
             drawMap();
         } catch (JSONException e) {
@@ -199,12 +252,6 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
             return null;
         }
     }
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        this.googleMap = googleMap;
-        m = new MapDrawer(getActivity(),googleMap);
-        m.setEdgesOffsetFromTheMap(0.1);
-    }
 
     private void drawMap(){
         if (m == null) return;
@@ -218,13 +265,16 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
             closeKeyboard(getActivity(),destinationTextView.getWindowToken());
         }
         if (originLocation==null||destinationLocation==null) return;
-        m.directions(apiKey,startingPoint,destinationPoint,mapView);
-        m.zoomToDirection(mapView);
+        m.directions(apiKey,jsonToLatLng(originLocation),jsonToLatLng(destinationLocation),mapView);
+        m.zoomToDirection(mapView,startingPoint,destinationPoint);
     }
     @Override
     public void onResume() {
         mapView.onResume();
         super.onResume();
+        if (routeLatLng!=null & originLocation!=null & destinationLocation!=null){
+            loadRoute();
+        }
     }
 
     @Override
@@ -256,4 +306,22 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
             constraintSet.applyTo(constraintLayout);
         }
     }
+    public RouteLatLng getPoints(){
+        return new RouteLatLng(
+                jsonToPlaceId(originLocation),
+                startingPoint.latitude,
+                startingPoint.longitude,
+                jsonToPlaceId(destinationLocation),
+                destinationPoint.latitude,
+                destinationPoint.longitude,
+                m.getDistance());
+    }
+    RouteLatLng routeLatLng;
+    public void setPoints(RouteLatLng routeLatLng){
+        this.routeLatLng = routeLatLng;
+        startingPoint = new LatLng(routeLatLng.getStartLat(),routeLatLng.getStartLng());
+        destinationPoint = new LatLng(routeLatLng.getEndLat(),routeLatLng.getEndLng());
+
+    }
+
 }

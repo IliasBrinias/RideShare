@@ -3,7 +3,6 @@ package com.unipi.diplomaThesis.rideshare;
 import static com.unipi.diplomaThesis.rideshare.StartActivity.REQ_DRIVER_ACTIVITY;
 import static com.unipi.diplomaThesis.rideshare.StartActivity.REQ_RIDER_ACTIVITY;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,47 +12,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.IntentSenderRequest;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
-import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.driver.DriverActivity;
 import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
@@ -72,14 +44,8 @@ public class LoginFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private String WEB_CLIENT_TOKEN = "719991187082-6o6stl5ugq4u52jkja0vulajud89sjun.apps.googleusercontent.com";
     private int REQ_USER_ACTIVITY = 719;
-    private AccessTokenTracker accessTokenTracker;
     private TextView registerTitle;
     private Button login, register;
-    private TableRow tableRowGoogleLogin, tableRowFacebookLogin;
-    GoogleSignInClient mGoogleApiClient;
-    private CallbackManager mCallbackManager;
-    private LoginButton facebookLoginButton;
-    private ActivityResultLauncher<IntentSenderRequest> loginResultHandler;
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -87,7 +53,6 @@ public class LoginFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,75 +64,10 @@ public class LoginFragment extends Fragment {
         email = v.findViewById(R.id.autoCompleteEmail);
         password = v.findViewById(R.id.textInputRegisterPassword);
         login = v.findViewById(R.id.buttonLogin);
-        tableRowGoogleLogin = v.findViewById(R.id.tableRowGoogleLogin);
-        tableRowFacebookLogin = v.findViewById(R.id.tableRowFacebookLogin);
-        facebookLoginButton = v.findViewById(R.id.facebookLogin);
-        tableRowFacebookLogin.setOnClickListener(view -> facebookLoginButton.performClick());
-        tableRowGoogleLogin.setOnClickListener(this::loginWithGoogle);
         login.setOnClickListener(this::login);
         mAuth = FirebaseAuth.getInstance();
-
-        facebookLoginButton.setReadPermissions("email","public_profile");
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        loginResultHandler =
-        registerForActivityResult(new ActivityResultContracts
-                        .StartIntentSenderForResult(),
-                result -> {
-                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
-                    System.out.println(task.getResult().getEmail());
-                });
-
-        mCallbackManager = CallbackManager.Factory.create();
-        facebookLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {handleFacebookToken(loginResult.getAccessToken());}
-            @Override
-            public void onCancel() {}
-            @Override
-            public void onError(@NonNull FacebookException e) {
-                e.printStackTrace();
-            }
-        });
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(@Nullable AccessToken accessToken, @Nullable AccessToken currentAccessToken) {
-                if (currentAccessToken==null){
-                    mAuth.signOut();
-                }
-            }
-        };
         return v;
-    }
-
-    private void handleFacebookToken(AccessToken token){
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    updateUiFacebook(user);
-                }else{
-                    task.getException().printStackTrace();
-                }
-            }
-        });
-    }
-
-    private void updateUiFacebook(FirebaseUser user) {
-        if (user!= null){
-            Toast.makeText(getActivity(), user.getDisplayName(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void loginWithGoogle(View view){
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(WEB_CLIENT_TOKEN)
-                .requestEmail()
-                .build();
-        mGoogleApiClient = GoogleSignIn.getClient(getActivity(),gso);
-        Intent signInIntent = mGoogleApiClient.getSignInIntent();
-        startActivityForResult(signInIntent, REQ_GOOGLE_SIGN_IN);
     }
 
     public void login(View view){
@@ -191,21 +91,12 @@ public class LoginFragment extends Fragment {
                                 errorMessage();
                                 return;
                             }
-                            PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-                                    .putString(User.REQ_TYPE_TAG,u.getType()).apply();
-                            Gson gson = new Gson();
-                            String json = gson.toJson(u);
-                            PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-                                    .putString(User.class.getSimpleName(),json).apply();
-                            if (u.getType().equals(Driver.class.getSimpleName())){
-                                getActivity().startActivityForResult(new Intent(getActivity(), DriverActivity.class), REQ_DRIVER_ACTIVITY);
-                            }else {
-                                getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class), REQ_RIDER_ACTIVITY);
-                            }
+                            saveUserAndOpenActivity(u);
                             ((StartActivity) getActivity()).stopProgressBarAnimation();
                         }
                     });
                 }else{
+                    ((StartActivity) getActivity()).stopProgressBarAnimation();
                     switch (((FirebaseAuthException) task.getException()).getErrorCode()){
                         case "ERROR_WRONG_PASSWORD":
                             password.setError(getString(R.string.wrongPassword));
@@ -222,88 +113,17 @@ public class LoginFragment extends Fragment {
             }
         });
     }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_GOOGLE_SIGN_IN) {
-            if (data == null) return;
-            Task<GoogleSignInAccount> result = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = result.getResult(ApiException.class);
-                handleSignInResult(account);
-            } catch (ApiException e) {
-                e.printStackTrace();
-            }
-        }else if(requestCode == REQ_RIDER_ACTIVITY || requestCode == REQ_DRIVER_ACTIVITY){
-            if (resultCode == Activity.RESULT_OK){
-                if (data == null) return;
-                switch (data.getStringExtra("LogOut")){
-                    case "Google":
-                        mGoogleApiClient.signOut();
-                    case "Facebook":
-
-                }
-                try {
-                    mGoogleApiClient.signOut();
-                }catch (Exception ignored){
-                }
-            }
-        }
-        // Pass the activity result back to the Facebook SDK
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void handleSignInResult(GoogleSignInAccount acc) {
-        ((StartActivity) getActivity()).startProgressBarAnimation();
-        AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(acc.getIdToken(), null);
-        mAuth.signInWithCredential(firebaseCredential)
-                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Rider r = new Rider(mAuth.getUid(),acc.getEmail(),acc.getDisplayName());
-                            FirebaseDatabase.getInstance()
-                                    .getReference()
-                                    .child(User.class.getSimpleName())
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            if (!snapshot.hasChild(mAuth.getUid())){
-                                                User.saveUser(r, task1 -> saveUserAndOpenActivity(r));
-                                            }else {
-                                                User u;
-                                                if (snapshot.child(mAuth.getUid()).child("type").getValue(String.class).equals(Driver.class.getSimpleName())){
-                                                    u = (Driver) snapshot.child(mAuth.getUid()).getValue(Driver.class);
-                                                }else{
-                                                    u = (Rider) snapshot.child(mAuth.getUid()).getValue(Rider.class);
-                                                }
-                                                saveUserAndOpenActivity(u);
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
-                        }
-                    }
-                });
-    }
-
     private void saveUserAndOpenActivity(User u){
         PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-                .putString("type",u.getType()).apply();
+                .putString(User.REQ_TYPE_TAG,u.getType()).apply();
         Gson gson = new Gson();
         String json = gson.toJson(u);
         PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
                 .putString(User.class.getSimpleName(),json).apply();
         if (u.getType().equals(Driver.class.getSimpleName())){
-            startActivityForResult(new Intent(getActivity(), DriverActivity.class), REQ_DRIVER_ACTIVITY);
+            getActivity().startActivityForResult(new Intent(getActivity(), DriverActivity.class), REQ_DRIVER_ACTIVITY);
         }else {
-            startActivityForResult(new Intent(getActivity(), RiderActivity.class), REQ_RIDER_ACTIVITY);
+            getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class), REQ_RIDER_ACTIVITY);
         }
         ((StartActivity) getActivity()).stopProgressBarAnimation();
     }

@@ -1,12 +1,15 @@
 package com.unipi.diplomaThesis.rideshare.driver;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,11 +21,11 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.unipi.diplomaThesis.rideshare.CarFragment;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.Message;
 import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
@@ -32,12 +35,8 @@ import com.unipi.diplomaThesis.rideshare.PersonalDataFragment;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.RiderLastRoutesFragment;
 import com.unipi.diplomaThesis.rideshare.messenger.MessengerActivity;
-import com.unipi.diplomaThesis.rideshare.rider.CarFragment;
-import com.unipi.diplomaThesis.rideshare.rider.RouteSearchFragment;
 
 import java.util.ArrayList;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, NavigationView.OnNavigationItemSelectedListener {
     protected MyApplication mMyApp;
@@ -45,7 +44,6 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
     private MaterialToolbar topAppBar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private RouteSearchFragment routeSearchFragment;
     private PersonalDataFragment personalDataFragment;
     RiderLastRoutesFragment riderLastRoutesFragment;
     CarFragment carFragment;
@@ -53,7 +51,7 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
     DriverRouteListFragment driverRouteListFragment;
     private Driver userDriver;
     private TextView userNameNavigationHeader,emailNavigationHeader;
-    private CircleImageView imageNavigationHeader;
+    private ImageView imageNavigationHeader;
     ArrayList<String> newRequests = new ArrayList<>();
     ArrayList<String> newMessages = new ArrayList<>();
     BadgeDrawable badgeDrawableRequests;
@@ -73,7 +71,6 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
             classCastException.printStackTrace();
             finish();
         }
-
         topAppBar = findViewById(R.id.topAppBar);
         drawerLayout = findViewById(R.id.drawerLayout);
         navigationView = findViewById(R.id.NavigationViewUser);
@@ -91,21 +88,22 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
         getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,driverRouteListFragment).commit();
 
 //        load User data
-        loadUserData();
+        loadUserData(userDriver);
 //        ToolBar Items
         topAppBar.setOnMenuItemClickListener(this);
 //        Navigation Items
         navigationView.setNavigationItemSelectedListener(this);
         mMyApp = (MyApplication) this.getApplicationContext();
-        mMyApp.setCurrentActivity(this);
         badgeDrawableRequests = BadgeDrawable.create(this);
         badgeDrawableMessages = BadgeDrawable.create(this);
         startChecking();
     }
-    private void loadUserData(){
-        userNameNavigationHeader.setText(userDriver.getFullName());
-        emailNavigationHeader.setText(userDriver.getEmail());
-        userDriver.loadUserImage(image -> {
+    public void loadUserData(User u){
+        userNameNavigationHeader.setText(User.reformatLengthString(u.getFullName(),20));
+        emailNavigationHeader.setText(User.reformatLengthString(u.getEmail(),30));
+        u.loadUserImage(image -> {
+            imageNavigationHeader.setImageBitmap(null);
+            imageNavigationHeader.setBackgroundResource(0);
             if (image!=null){
                 imageNavigationHeader.setImageBitmap(image);
             }else{
@@ -148,22 +146,33 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
                 getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,carFragment).commit();
                 break;
             case R.id.logOut:
-                Intent i = new Intent();
-                i.putExtra("LogOut", FirebaseAuth.getInstance().getCurrentUser().getProviderId());
                 DriverActivity.this.userDriver.logOut(DriverActivity.this);
-                setResult(Activity.RESULT_OK, i);
                 finish();
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+    boolean doubleBackToExitPressedOnce = false;
+
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finishAffinity();
-    }
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
 
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, getString(R.string.msg_back_again_exit), Toast.LENGTH_SHORT).show();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
+    }
     @Override
     public void onPause() {
         super.onPause();
@@ -178,13 +187,7 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
 
     @Override
     protected void onDestroy() {
-        clearReferences();
         super.onDestroy();
-    }
-    private void clearReferences(){
-        Activity currActivity = mMyApp.getCurrentActivity();
-        if (this.equals(currActivity))
-            mMyApp.setCurrentActivity(null);
     }
 
     @SuppressLint("UnsafeOptInUsageError")
@@ -217,6 +220,15 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
                 });
         });
         userDriver.loadUserMessageSession(messageSession -> {
+            if (messageSession == null) return;
+            if (messageSession.getMessages().isEmpty()){
+                if (!newMessages.contains(messageSession.getMessageSessionId())) {
+                    newMessages.add(messageSession.getMessageSessionId());
+                }
+                badgeDrawableMessages.setNumber(newMessages.size());
+                BadgeUtils.attachBadgeDrawable(badgeDrawableMessages, topAppBar, R.id.messages);
+                return;
+            }
             Message m = messageSession.getMessages().entrySet().iterator().next().getValue();
 
             if (m.getUserSenderId().equals(userDriver.getUserId())){

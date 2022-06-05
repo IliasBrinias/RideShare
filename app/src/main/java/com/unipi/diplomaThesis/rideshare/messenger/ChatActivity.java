@@ -1,7 +1,6 @@
 package com.unipi.diplomaThesis.rideshare.messenger;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -86,6 +85,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
             i.putExtra(User.class.getSimpleName(),participantId);
+            i.putExtra(MessageSession.class.getSimpleName(),messageSession.getMessageSessionId());
             startActivity(i);
         }else if (view.getId() == buttonSend.getId()){
             Message m = new Message(null,senderUser.getUserId(),userMessage.getText().toString(),new Date().getTime(),false);
@@ -142,7 +142,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             public void returnedUser(User u) {
                 u.loadUserImage(image ->
                 {
-                    ChatActivity.this.userImageBitmap = image;
+                    imageViewUser.setImageBitmap(null);
+                    imageViewUser.setBackgroundResource(0);
                     if (image!=null){
                         imageViewUser.setImageBitmap(image);
                     }else{
@@ -150,7 +151,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     chatAdapter.notifyDataSetChanged();
                 });
-                userName.setText(u.getFullName());
+                userName.setText(User.reformatLengthString(u.getFullName(),16));
 
             }
         });
@@ -159,24 +160,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onPause() {
         senderUser.stopLoadingMessages(messageSession);
-        mMyApp.setCurrentActivity(this);
         super.onPause();
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mMyApp.setCurrentActivity(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        clearReferences();
-        super.onDestroy();
-    }
-    private void clearReferences(){
-        Activity currActivity = mMyApp.getCurrentActivity();
-        if (this.equals(currActivity))
-            mMyApp.setCurrentActivity(null);
-    }
-
 }

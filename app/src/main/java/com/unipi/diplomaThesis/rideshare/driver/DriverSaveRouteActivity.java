@@ -3,7 +3,9 @@ package com.unipi.diplomaThesis.rideshare.driver;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -22,27 +24,41 @@ import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteA
 import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteDirectionsFragment;
 import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteTimeTableFragment;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class DriverSaveRouteActivity extends AppCompatActivity{
     int progress = 0;
     public int COUNT_STEPS=3;
-    ProgressBar progressBar;
+    ProgressBar progressBar, progressBarSave;
+    ImageButton buttonBack;
     DriverSaveRouteDirectionsFragment driverSaveRouteDirectionsFragment;
     DriverSaveRouteTimeTableFragment driverSaveRouteTimeTableFragment;
     DriverSaveRouteAdditionalInfoFragment driverSaveRouteAdditionalInfoFragment;
+    Route route;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_save_route);
         progressBar = findViewById(R.id.progressBar);
+        driverSaveRouteDirectionsFragment = new DriverSaveRouteDirectionsFragment();
+        driverSaveRouteTimeTableFragment = new DriverSaveRouteTimeTableFragment();
+        driverSaveRouteAdditionalInfoFragment = new DriverSaveRouteAdditionalInfoFragment();
+        buttonBack = findViewById(R.id.buttonBack);
+        progressBarSave = findViewById(R.id.progressBarSave);
+        buttonBack.setOnClickListener(v->finish());
+        if (getIntent().hasExtra(Route.class.getSimpleName())){
+            route =(Route) getIntent().getSerializableExtra(Route.class.getSimpleName());
+            loadRoute(route);
+        }
+
         handleStep(0);
     }
     public void nextStep(){
         progress++;
         handleStep(progress);
     }
-    public void stepBack(){
+    public void previousStep(){
         progress--;
         handleStep(progress);
     }
@@ -50,15 +66,12 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
         changeProgressBar(progress+1);
         switch (progress){
             case 0: // Directions
-                driverSaveRouteDirectionsFragment = new DriverSaveRouteDirectionsFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView,driverSaveRouteDirectionsFragment).commit();
                 break;
             case 1: //timeTable
-                driverSaveRouteTimeTableFragment = new DriverSaveRouteTimeTableFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, driverSaveRouteTimeTableFragment).commit();
                 break;
             case 2:
-                driverSaveRouteAdditionalInfoFragment = new DriverSaveRouteAdditionalInfoFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView,driverSaveRouteAdditionalInfoFragment).commit();
                 break;
             case 4:
@@ -108,24 +121,51 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
         RouteDateTime routeDateTime = driverSaveRouteTimeTableFragment.getRouteDateTime();
         Map<String,Object> additionalInfo = driverSaveRouteAdditionalInfoFragment.getAdditionalInfo();
         points.setMaximumDeviation((double) additionalInfo.get("maximumDeviation"));
-        Route r = new Route(
-                additionalInfo.get("name").toString(),
-                null,
-                driver.getUserId(),
-                points,
-                null,
-                routeDateTime,
-                additionalInfo.get("costPreRider").toString(),
-                (int) additionalInfo.get("rideCapacity")
-        );
-        driver.saveRoute(r, new OnCompleteListener<Void>() {
+
+        if (route!=null){
+            ArrayList<String> deletedPassengers = (ArrayList<String>) additionalInfo.get("deletedPassengers");
+            route.setName(additionalInfo.get("name").toString());
+            route.setRouteLatLng(points);
+            route.setRouteDateTime(routeDateTime);
+            route.setCostPerRider(additionalInfo.get("costPreRider").toString());
+            route.setRideCapacity((int) additionalInfo.get("rideCapacity"));
+            route.setPassengersId((ArrayList<String>) additionalInfo.get("passengersId"));
+            for (String id:deletedPassengers){
+                driver.deletePassenger(route.getRouteId(),id, null);
+            }
+        }else {
+            route = new Route(
+                    additionalInfo.get("name").toString(),
+                    null,
+                    driver.getUserId(),
+                    points,
+                    null,
+                    routeDateTime,
+                    additionalInfo.get("costPreRider").toString(),
+                    (int) additionalInfo.get("rideCapacity")
+            );
+        }
+        progressBarSave.setIndeterminate(true);
+        progressBarSave.setVisibility(View.VISIBLE);
+        driver.saveRoute(route, new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                progressBarSave.setIndeterminate(false);
+                progressBarSave.setVisibility(View.GONE);
                 if (task.isSuccessful()){
                     setResult(Activity.RESULT_OK);
                     finish();
                 }
             }
         });
+    }
+    public void loadRoute(Route route){
+        driverSaveRouteDirectionsFragment.setPoints(route.getRouteLatLng());
+        driverSaveRouteTimeTableFragment.setRouteDateTime(route.getRouteDateTime());
+        driverSaveRouteAdditionalInfoFragment.setAdditionalInfo(route.getRouteLatLng().getMaximumDeviation(),
+                route.getRideCapacity(),
+                route.getCostPerRider(),
+                route.getName(),
+                route.getPassengersId());
     }
 }

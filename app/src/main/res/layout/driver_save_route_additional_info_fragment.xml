@@ -12,16 +12,18 @@
         android:gravity="center">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputRouteNameLayout"
+            android:id="@+id/textInputUserNameLayout"
             style="@style/TextInputEditTextLoginStyle"
             android:layout_height="wrap_content"
             android:hint="@string/route_name"
+            android:textColorHint="@color/shadow"
             app:startIconDrawable="@drawable/ic_tag_name">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textInputRouteName"
+                android:id="@+id/textInputUserName"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:textColorHint="@color/shadow"
                 tools:ignore="TouchTargetSizeCheck"/>
         </com.google.android.material.textfield.TextInputLayout>
         <View
@@ -32,6 +34,7 @@
             style="@style/TextInputEditTextLoginStyle"
             android:layout_height="wrap_content"
             android:hint="@string/cost_per_passenger"
+            android:textColorHint="@color/shadow"
             app:placeholderText="15.5"
             app:startIconDrawable="@drawable/ic_euro">
 
@@ -39,6 +42,7 @@
                 android:id="@+id/textInputPassengersCost"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:textColorHint="@color/shadow"
                 android:inputType="numberDecimal"
                 tools:ignore="TouchTargetSizeCheck" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -50,15 +54,17 @@
             style="@style/TextInputEditTextLoginStyle"
             android:layout_height="wrap_content"
             android:hint="@string/ride_capacity"
+            android:textColorHint="@color/shadow"
             app:placeholderText="4"
             app:startIconDrawable="@drawable/ic_passengers_capacity"
             >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textInputCapacityDeviation"
+                android:id="@+id/textInputRideCapacity"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="numberSigned"
+                android:textColorHint="@color/shadow"
                 tools:ignore="TouchTargetSizeCheck" />
         </com.google.android.material.textfield.TextInputLayout>
         <View
@@ -71,6 +77,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/maximum_deviation"
             app:placeholderText="5"
+            android:textColorHint="@color/shadow"
             app:startIconDrawable="@drawable/ic_kilometer">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -78,6 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="numberDecimal"
+                android:textColorHint="@color/shadow"
                 tools:ignore="TouchTargetSizeCheck" />
         </com.google.android.material.textfield.TextInputLayout>
         <View
@@ -91,9 +99,78 @@
             android:textSize="14sp"
             android:textColor="@color/shadow"
             android:text="@string/maximum_deviation_info"/>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="20dp"/>
+        <TableRow
+            android:id="@+id/tableRowEditRoute"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/titleDeletePassengers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/passengers"
+                    android:layout_gravity="start"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:textColor="?colorPrimaryVariant"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/trebuc"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewPassengers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="20dp"/>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:id="@+id/buttonSubmitEditedRoute"
+                        style="@style/SubmitButtons"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:elevation="2dp"
+                        android:stateListAnimator="@null"
+                        android:text="@string/save"
+                        android:translationZ="2dp"
+                        android:visibility="visible"
+                        app:cornerRadius="90dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="1.0" />
+                    <ImageButton
+                        android:id="@+id/imageViewPreviousStep"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:background="@drawable/ic_circle"
+                        android:backgroundTint="?colorPrimary"
+                        android:src="@drawable/ic_previous"
+                        app:tint="?colorOnPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </TableRow>
+
         <Button
             android:id="@+id/buttonSaveRoute"
             style="@style/SubmitButtons"

@@ -11,9 +11,11 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -30,24 +32,27 @@ import java.time.Duration;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DriverSaveRouteTimeTableFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
     LinearLayout linearLayoutChooseDays, linearLayoutRepeatTypeSelection;
-    private Button nextStep;
+    private Button nextStep, buttonSubmitEditedRoute;
     //startDate Objects
     private final int MAX_YEAR_PICKER = 2;
     private final int MIN_DAY_PICKER = 1;
     private TextView startDate, endDate,infoMessage;
     private TextInputLayout startDateLayout, endDateLayout;
     private Spinner repeatField;
+    ImageButton imageViewNextStep,imageViewPreviousStep;
+    TableRow tableRowEditRoute;
 //  Our user data for the route from this fragments
     private long startDateUnixTime = 0;
     private long endDateUnixTime = 0;
     private Integer timetable = null;
-    Map<String,String> days= new HashMap<>();
+    private static Map<String,String> days= new HashMap<>();
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     Switch switchRepeat,switchSunday,switchMonday,
             switchTuesday,switchWednesday,switchThursday,
@@ -71,6 +76,10 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
         // Inflate the layout for this fragment
         View v = in.inflate(R.layout.driver_save_route_date_time_fragment, container, false);
 //        rest elements
+        tableRowEditRoute = v.findViewById(R.id.tableRowEditRoute);
+        imageViewPreviousStep = v.findViewById(R.id.imageViewPreviousStep);
+        imageViewNextStep = v.findViewById(R.id.imageViewNextStep);
+        buttonSubmitEditedRoute = v.findViewById(R.id.buttonSubmitEditedRoute);
         startDate = v.findViewById(R.id.textInputStartDate);
         startDateLayout = v.findViewById(R.id.textInputStartDateLayout);
         endDate = v.findViewById(R.id.textInputEndDate);
@@ -80,12 +89,6 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
         linearLayoutChooseDays = v.findViewById(R.id.linearLayoutChooseDays);
         linearLayoutRepeatTypeSelection = v.findViewById(R.id.linearLayoutRepeatTypeSelection);
         infoMessage = v.findViewById(R.id.infoMessage);
-//        initialize the elements visibility
-        nextStep.setVisibility(View.GONE);
-        endDateLayout.setVisibility(View.GONE);
-        linearLayoutRepeatTypeSelection.setVisibility(View.GONE);
-        linearLayoutChooseDays.setVisibility(View.GONE);
-        infoMessage.setVisibility(View.GONE);
 
         // load switches
         switchRepeat = v.findViewById(R.id.switchRepeat);
@@ -97,6 +100,13 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
         switchFriday = v.findViewById(R.id.switchRepeatFriday);
         switchSaturday = v.findViewById(R.id.switchRepeatSaturday);
 
+        //        initialize the elements visibility
+        nextStep.setVisibility(View.GONE);
+        endDateLayout.setVisibility(View.GONE);
+        linearLayoutRepeatTypeSelection.setVisibility(View.GONE);
+        linearLayoutChooseDays.setVisibility(View.GONE);
+        infoMessage.setVisibility(View.GONE);
+
         switchRepeat.setOnCheckedChangeListener(this);
         switchSunday.setOnCheckedChangeListener(this);
         switchMonday.setOnCheckedChangeListener(this);
@@ -106,6 +116,8 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
         switchFriday.setOnCheckedChangeListener(this);
         switchSaturday.setOnCheckedChangeListener(this);
 
+        imageViewNextStep.setOnClickListener(view->((DriverSaveRouteActivity) getActivity()).nextStep());
+        imageViewPreviousStep.setOnClickListener(view->((DriverSaveRouteActivity) getActivity()).previousStep());
         repeatField.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int item, long id) {
@@ -128,25 +140,27 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
         nextStep.setOnClickListener(view -> {
             ((DriverSaveRouteActivity) getActivity()).nextStep();
         });
-        return v;
-    }
-    public RouteDateTime getRouteDateTime(){
-        if (!days.isEmpty() & repeatField.getSelectedItemPosition()==1){
-            Map<String, String> sortedDays = days.entrySet()
-                    .stream()
-                    .sorted(Map.Entry.comparingByValue())
-                    .collect(
-                            Collectors.toMap(
-                                    Map.Entry::getKey,
-                                    Map.Entry::getValue,
-                                    (e1, e2) -> e1, LinkedHashMap::new)
-                    );
-            Calendar c = new GregorianCalendar();
-            c.setTimeInMillis(startDateUnixTime);
-            c.set(Calendar.DAY_OF_WEEK,Integer.parseInt(sortedDays.values().stream().findFirst().get()));
-            return new RouteDateTime(null,startDateUnixTime,switchRepeat.isChecked(),repeatField.getSelectedItemPosition(),days,endDateUnixTime);
+        buttonSubmitEditedRoute.setOnClickListener(view -> {
+            ((DriverSaveRouteActivity) getActivity()).saveRoute();
+        });
+        if (routeDateTime!=null){
+            nextStage(View.GONE);
+            startDateUnixTime = routeDateTime.getStartDateUnix();
+            endDateUnixTime = routeDateTime.getEndDateUnix();
+            switchRepeat.setChecked(routeDateTime.isRepeat());
+            repeatField.setSelection(routeDateTime.getTimetable());
+            timetable = routeDateTime.getTimetable();
+            startDate.setText(startDateFormat.format(startDateUnixTime));
+            if (switchRepeat.isChecked()) endDate.setText(endDateFormat.format(endDateUnixTime));
+            if (repeatField.getSelectedItemPosition()==1){
+
+                HashSet<String> hset = new HashSet<>(routeDateTime.getSelectedDays().values());
+                for (String d:hset){
+                    days.put(String.valueOf(setCheckDays(Integer.parseInt(d))),d);
+                }
+            }
         }
-        return new RouteDateTime(null,startDateUnixTime,switchRepeat.isChecked(),repeatField.getSelectedItemPosition(),null,endDateUnixTime);
+        return v;
     }
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -166,10 +180,10 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
         }
         if (b){
             days.put(String.valueOf(compoundButton.getId()),getDayOfWeek(compoundButton.getId()).toString());
-            if (nextStep.getVisibility()==View.GONE) nextStep.setVisibility(View.VISIBLE);
+            nextStage(View.VISIBLE);
         }else {
-            days.remove(String.valueOf(compoundButton.getId()),getDayOfWeek(compoundButton.getId()));
-            if (days.isEmpty()) nextStep.setVisibility(View.GONE);
+            days.remove(String.valueOf(compoundButton.getId()));
+            if (days.isEmpty()) nextStage(View.GONE);
         }
         validateFields();
     }
@@ -188,6 +202,33 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
             return 6;
         }else if (id == switchSaturday.getId()){
             return 7;
+        }
+        return -1;
+    }
+    private int setCheckDays(int day){
+        switch (day) {
+            case 1:
+                switchSunday.setChecked(true);
+                return switchSunday.getId();
+            case 2:
+                switchMonday.setChecked(true);
+                return switchMonday.getId();
+            case 3:
+                switchTuesday.setChecked(true);
+                return switchTuesday.getId();
+            case 4:
+                switchWednesday.setChecked(true);
+                return switchWednesday.getId();
+            case 5:
+                switchThursday.setChecked(true);
+                return switchThursday.getId();
+            case 6:
+                switchFriday.setChecked(true);
+                return switchFriday.getId();
+            case 7:
+                switchSaturday.setChecked(true);
+                return switchSaturday.getId();
+
         }
         return -1;
     }
@@ -250,12 +291,12 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
                     Duration duration = Duration.between(start.toInstant(),end.toInstant());
 
                     if (repeatField.getSelectedItemPosition() == 0) {
-                        nextStep.setVisibility(View.VISIBLE);
+                        nextStage(View.VISIBLE);
                         if (Math.abs(duration.toDays())<=1){
                             endDateUnixTime=0;
                             endDate.setText("");
                             Toast.makeText(getActivity(), getActivity().getString(R.string.end_date_error_daily),Toast.LENGTH_SHORT).show();
-                            nextStep.setVisibility(View.GONE);
+                            nextStage(View.GONE);
 
                         }
                     }
@@ -264,27 +305,56 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
                             endDateUnixTime=0;
                             endDate.setText("");
                             Toast.makeText(getActivity(), getActivity().getString(R.string.end_date_error_week),Toast.LENGTH_SHORT).show();
-                            nextStep.setVisibility(View.GONE);
+                            nextStage(View.GONE);
                             return;
                         }
-                        if (!days.isEmpty()){
-                            nextStep.setVisibility(View.VISIBLE);
+                        if (days.isEmpty()){
+                            nextStage(View.GONE);
                         }else {
-                            nextStep.setVisibility(View.GONE);
+                            nextStage(View.VISIBLE);
                         }
                     }
                     else {
-                        nextStep.setVisibility(View.GONE);
+                        nextStage(View.GONE);
                     }
 
                 }else {
-                    nextStep.setVisibility(View.GONE);
+                    nextStage(View.GONE);
                 }
             }else{
-                nextStep.setVisibility(View.VISIBLE);
+                nextStage(View.VISIBLE);
             }
         }else {
-            nextStep.setVisibility(View.GONE);
+            nextStage(View.GONE);
+        }
+    }
+    public RouteDateTime getRouteDateTime(){
+        if (!days.isEmpty() & repeatField.getSelectedItemPosition()==1){
+            Map<String, String> sortedDays = days.entrySet()
+                    .stream()
+                    .sorted(Map.Entry.comparingByValue())
+                    .collect(
+                            Collectors.toMap(
+                                    Map.Entry::getKey,
+                                    Map.Entry::getValue,
+                                    (e1, e2) -> e1, LinkedHashMap::new)
+                    );
+            Calendar c = new GregorianCalendar();
+            c.setTimeInMillis(startDateUnixTime);
+            c.set(Calendar.DAY_OF_WEEK,Integer.parseInt(sortedDays.values().stream().findFirst().get()));
+            return new RouteDateTime(null,startDateUnixTime,switchRepeat.isChecked(),repeatField.getSelectedItemPosition(),days,endDateUnixTime);
+        }
+        return new RouteDateTime(null,startDateUnixTime,switchRepeat.isChecked(),repeatField.getSelectedItemPosition(),null,endDateUnixTime);
+    }
+    RouteDateTime routeDateTime;
+    public void setRouteDateTime(RouteDateTime routeDateTime){
+        this.routeDateTime = routeDateTime;
+    }
+    private void nextStage(int vision){
+        if (routeDateTime==null){
+            nextStep.setVisibility(vision);
+        }else {
+            tableRowEditRoute.setVisibility(vision);
         }
     }
 }

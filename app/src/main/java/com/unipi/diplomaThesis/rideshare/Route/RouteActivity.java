@@ -106,6 +106,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     ConstraintLayout constraintLayoutRouteActivity;
     Double distanceDeviation=0.;
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route);
@@ -116,8 +117,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             finish();
         }
         if (!getIntent().hasExtra(Route.class.getSimpleName()) ||
-                !getIntent().hasExtra(Driver.class.getSimpleName())||
-                !getIntent().hasExtra("distanceDeviation")){
+                !getIntent().hasExtra(Driver.class.getSimpleName())){
             finish();
         }
 
@@ -276,7 +276,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         contactDriver = v.findViewById(R.id.buttonContactDriver);
         tableRowShowRepeat.setOnClickListener(this::showRepeat);
         if (user instanceof Driver){
-            contactDriver.setVisibility(View.INVISIBLE);
+            contactDriver.setVisibility(View.GONE);
         }
         contactDriver.setOnClickListener(this::routeRequest);
     }
@@ -287,6 +287,8 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                 driverUser = (Driver) u;
                 if (driverUser == null) finish();
                 driverUser.loadUserImage(image -> {
+                    circleImageDriver.setImageBitmap(null);
+                    circleImageDriver.setBackgroundResource(0);
                     if (image!=null){
                         circleImageDriver.setImageBitmap(image);
                     }else{
@@ -294,11 +296,13 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                     }
                     circleImageDriver.setVisibility(View.VISIBLE);
                 });
-                driverName.setText(driverUser.getFullName());
-                carName.setText(driverUser.getOwnedCar().getCarName());
+                driverName.setText(User.reformatLengthString(driverUser.getFullName(),20));
+                carName.setText(User.reformatLengthString(driverUser.getOwnedCar().getCarName(),25));
                 carPlate.setText(driverUser.getOwnedCar().getCarPlates());
                 carYear.setText(driverUser.getOwnedCar().getYear());
                 driverUser.loadCarImage(image -> {
+                    imageViewCarImage.setImageBitmap(null);
+                    imageViewCarImage.setBackgroundResource(0);
                     if (image!=null){
                         imageViewCarImage.setImageBitmap(image);
                     }else{
@@ -306,6 +310,11 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                     }
                     imageViewCarImage.setVisibility(View.VISIBLE);
                 });
+                driverUser.loadReviewTotalScore(driverUser.getUserId(),((totalScore, reviewCount) -> {
+                    ratingBar.setRating(totalScore);
+                    ratingAverage.setText(String.valueOf(totalScore));
+                    ratingCount.setText(" ("+reviewCount+")");
+                }));
             }
         });
     }
@@ -376,7 +385,6 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         alertDialog.show();
         alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
     }
-
 
     private void weeklyRepeat(MaterialCalendarView materialCalendarView, @NonNull Calendar c) {
         while (r.getRouteDateTime().getEndDateUnix() > c.getTimeInMillis()) {

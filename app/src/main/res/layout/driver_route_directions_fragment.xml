@@ -75,10 +75,11 @@
     </androidx.cardview.widget.CardView>
 
     <Button
-        android:id="@+id/buttonNextStepDirections"
+        android:id="@+id/buttonSubmitStepDirections"
         style="@style/SubmitButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:elevation="2dp"
         android:stateListAnimator="@null"
         android:text="@string/next_step"
@@ -89,19 +90,71 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.977" />
+        app:layout_constraintVertical_bias="1.0" />
+
     <ListView
         android:id="@+id/listViewLocationSearch"
         android:layout_width="0dp"
-        android:layout_height="300dp"
+        android:layout_height="0dp"
         android:background="?colorOnPrimary"
         android:backgroundTint="?colorOnPrimary"
-        android:visibility="gone"
         android:translationZ="90dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView2"
         app:layout_constraintEnd_toEndOf="@+id/textInputDestinationLayout"
         app:layout_constraintStart_toStartOf="@+id/textInputDestinationLayout"
         app:layout_constraintTop_toBottomOf="@+id/textInputOriginLayout"
-        app:layout_constraintVertical_bias="0.0"/>
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TableRow
+        android:id="@+id/tableRowEditRoute"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/buttonSubmitEditedRoute"
+                style="@style/SubmitButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:elevation="2dp"
+                android:stateListAnimator="@null"
+                android:text="@string/save"
+                android:translationZ="2dp"
+                android:visibility="visible"
+                app:cornerRadius="90dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <ImageButton
+                android:id="@+id/imageViewNextStep"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/ic_circle"
+                android:backgroundTint="?colorPrimary"
+                android:src="@drawable/ic_next"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/buttonSubmitEditedRoute"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?colorOnPrimary" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </TableRow>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

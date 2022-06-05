@@ -54,7 +54,7 @@ public class RiderLastRoutesFragment extends Fragment {
         LinearLayoutManager linearLayoutManagerPrevious = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         recyclerViewActiveRoutes.setLayoutManager(linearLayoutManagerActive);
         recyclerViewPreviousRoutes.setLayoutManager(linearLayoutManagerPrevious);
-        riderActiveRouteAdapter = new RiderRouteAdapter(getActivity(),activeRoutes, routeDrivers, 0, new OnRiderRouteClickListener() {
+        riderActiveRouteAdapter = new RiderRouteAdapter(getActivity(),activeRoutes, routeDrivers, 0,null, new OnRiderRouteClickListener() {
             @Override
             public void onRouteClick(View view, int position) {
                 Intent i =new Intent(getActivity(), RouteActivity.class);
@@ -63,7 +63,7 @@ public class RiderLastRoutesFragment extends Fragment {
                 startActivity(i);
             }
         });
-        riderPreviousRouteAdapter = new RiderRouteAdapter(getActivity(), previousRoutes, routeDrivers, 0, (view, position) -> {});
+        riderPreviousRouteAdapter = new RiderRouteAdapter(getActivity(), previousRoutes, routeDrivers, 0,null, (view, position) -> {});
         recyclerViewActiveRoutes.setAdapter(riderActiveRouteAdapter);
         recyclerViewPreviousRoutes.setAdapter(riderPreviousRouteAdapter);
         routeSearch();

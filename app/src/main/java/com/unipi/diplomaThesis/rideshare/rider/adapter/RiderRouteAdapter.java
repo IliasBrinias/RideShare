@@ -27,23 +27,30 @@ import com.unipi.diplomaThesis.rideshare.R;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.ViewHolder>{
     private List<Route> routeList;
     private List<User> driverList;
+    private Map<String,Object> driverReview;
     private long userDateTime;
     private OnRiderRouteClickListener onRiderRouteClickListener;
     private ViewGroup parent;
     private Context c;
 
-    public RiderRouteAdapter(Context c, List<Route> routeList, List<User> driverList,long userDateTime, OnRiderRouteClickListener onRiderRouteClickListener) {
+    public RiderRouteAdapter(Context c, List<Route> routeList,
+                             List<User> driverList,
+                             long userDateTime,
+                             Map<String,Object> driverReview,
+                             OnRiderRouteClickListener onRiderRouteClickListener) {
         this.onRiderRouteClickListener = onRiderRouteClickListener;
         this.routeList = routeList;
         this.driverList = driverList;
         this.c=c;
         this.userDateTime = userDateTime;
+        this.driverReview = driverReview;
     }
 
     @NonNull
@@ -63,16 +70,22 @@ public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.Vi
         holder.cost.setText( currentRoute.getCostPerRider()+"$");
 //        Addresses Names
         Geocoder g = new Geocoder(parent.getContext());
-        String startingAddress;
-        String endAddress;
         try {
             Address a = g.getFromLocation(currentRoute.getRouteLatLng().getStartLat(), currentRoute.getRouteLatLng().getStartLng(), 1).get(0);
+            StringBuilder startingAddress = new StringBuilder();
+            if (a.getThoroughfare()!=null) startingAddress.append(a.getThoroughfare()+" ");
+            if (a.getFeatureName()!=null) startingAddress.append(a.getFeatureName()+" ");
+            if (a.getLocality()!=null) startingAddress.append(a.getLocality()+" ");
+            if (a.getCountryName()!=null) startingAddress.append(a.getCountryName());
 
-            startingAddress = a.getThoroughfare() +" "+a.getFeatureName()+", "+a.getLocality()+", "+a.getCountryName();
             a = g.getFromLocation(currentRoute.getRouteLatLng().getEndLat(),currentRoute.getRouteLatLng().getEndLng(),1).get(0);
-            endAddress = a.getThoroughfare() +" "+a.getFeatureName()+", "+a.getLocality()+", "+a.getCountryName();
-            holder.startPointAddress.setText(c.getString(R.string.from)+" "+startingAddress);
-            holder.endPointAddress.setText(c.getString(R.string.to)+" "+endAddress);
+            StringBuilder endAddress = new StringBuilder();
+            if (a.getThoroughfare()!=null) endAddress.append(a.getThoroughfare()+" ");
+            if (a.getFeatureName()!=null) endAddress.append(a.getFeatureName()+" ");
+            if (a.getLocality()!=null) endAddress.append(a.getLocality()+" ");
+            if (a.getCountryName()!=null) endAddress.append(a.getCountryName());
+            holder.startPointAddress.setText(c.getString(R.string.from)+" "+startingAddress.toString());
+            holder.endPointAddress.setText(c.getString(R.string.to)+" "+endAddress.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -108,7 +121,16 @@ public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.Vi
         holder.tableRowTimeDiff.setVisibility(View.VISIBLE);
 //          Hour Difference
         holder.timeDifference.setText(currentRoute.getTextForTimeDif(c, userDateTime));
+        if (driverReview.size()==0){
+            holder.reviewCount.setVisibility(View.GONE);
+            holder.finalReviews.setVisibility(View.GONE);
+        }else {
+            holder.reviewCount.setVisibility(View.VISIBLE);
+            holder.finalReviews.setVisibility(View.VISIBLE);
+            holder.reviewCount.setText(" ("+((Map<String,Object>) driverReview.get(currentRoute.getRouteId())).get("count")+")");
+            holder.finalReviews.setText(String.valueOf(((Map<String,Object>) driverReview.get(currentRoute.getRouteId())).get("total")));
 
+        }
     }
     public void setDateTime(long dateTime){
         this.userDateTime = dateTime;
@@ -126,7 +148,7 @@ public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.Vi
                 }
             }
         });
-        holder.driverName.setText(driver.getFullName());
+        holder.driverName.setText(User.reformatLengthString(driver.getFullName(),25));
         try {
             holder.reviewCount.setText(driver.getUserRating().size());
             Double finalRate = 0.;
@@ -144,11 +166,6 @@ public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.Vi
     }
     public int getItemViewType(int position) {
         return position;
-    }
-    public void removeAt(int position) {
-        routeList.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, routeList.size());
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{

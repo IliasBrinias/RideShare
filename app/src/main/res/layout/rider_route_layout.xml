@@ -12,8 +12,8 @@
         android:layout_height="70dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.05"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/view3"
         app:layout_constraintTop_toTopOf="parent">
 
     </de.hdodenhof.circleimageview.CircleImageView>
@@ -111,11 +111,11 @@
                 android:text="(1234)"
                 android:textColor="?colorPrimaryVariant"
                 android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textViewDriverRating"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/textViewDriverRating"
-                app:layout_constraintTop_toTopOf="@+id/textViewDriverRating" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -125,12 +125,12 @@
         android:id="@+id/textViewRouteCost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="5,00€"
         android:fontFamily="@font/tcm"
+        android:text="5,00€"
         android:textColor="?colorPrimaryVariant"
         app:layout_constraintBottom_toBottomOf="@+id/tableRow9"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.955"
+        app:layout_constraintEnd_toEndOf="@+id/view3"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
@@ -173,9 +173,11 @@
 
     <View
         android:id="@+id/view3"
-        android:layout_width="360dp"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_gravity="center"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:background="@color/shadow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,33 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="600dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
     tools:context=".RegisterFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
+
         <View
             android:layout_width="match_parent"
-            android:layout_height="40dp"/>
+            android:layout_height="40dp" />
+
         <TextView
             android:id="@+id/textViewRegisterTitle"
             style="@style/TitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sign_up"
-            android:textStyle="bold"
-            android:textSize="20sp"
             android:layout_gravity="start"
             android:layout_marginStart="20dp"
-            android:textColor="?colorPrimaryVariant" />
+            android:text="@string/sign_up"
+            android:textColor="?colorPrimaryVariant"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
         <View
             android:layout_width="match_parent"
-            android:layout_height="30dp"/>
+            android:layout_height="20dp" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputEmailLayout"
             style="@style/TextInputEditTextLoginStyle"
@@ -39,9 +43,11 @@
                 android:layout_height="wrap_content"
                 tools:ignore="TouchTargetSizeCheck" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <View
             android:layout_width="wrap_content"
-            android:layout_height="20dp"/>
+            android:layout_height="20dp" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputPasswordLayout"
             style="@style/TextInputEditTextLoginStyle"
@@ -53,13 +59,14 @@
                 android:id="@+id/textInputRegisterPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"
                 android:fontFamily="@font/trebuc"
+                android:inputType="textPassword"
                 tools:ignore="TouchTargetSizeCheck" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <View
             android:layout_width="wrap_content"
-            android:layout_height="20dp"/>
+            android:layout_height="20dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputPasswordAgainLayout"
@@ -75,9 +82,10 @@
                 android:inputType="textPassword"
                 tools:ignore="TouchTargetSizeCheck" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <View
             android:layout_width="wrap_content"
-            android:layout_height="20dp"/>
+            android:layout_height="20dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputPersonalDataFullNameLayout"
@@ -91,18 +99,21 @@
                 android:layout_height="wrap_content"
                 tools:ignore="TouchTargetSizeCheck" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <View
             android:layout_width="match_parent"
-            android:layout_height="40dp"/>
+            android:layout_height="30dp" />
+
         <Button
             android:id="@+id/buttonRegister"
             android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/trebuc"
-            android:textStyle="bold"
-            android:textAllCaps="false"
             android:onClick="register"
-            android:text="@string/sign_up" />
+            android:text="@string/sign_up"
+            android:textAllCaps="false"
+            android:textStyle="bold" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
@@ -114,17 +125,19 @@
                 android:fontFamily="@font/trebuc"
                 android:text="@string/already_have_an_account"
                 android:textSize="12sp" />
+
             <TextView
                 android:id="@+id/textViewOpenLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
                 android:text="@string/login"
                 android:textColor="?colorPrimary"
-                android:textSize="12sp"
-                android:layout_marginStart="5dp" />
+                android:textSize="12sp" />
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
-            android:layout_height="40dp"/>
+            android:layout_height="20dp" />
     </LinearLayout>
 </ScrollView>

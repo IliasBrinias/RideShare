@@ -9,6 +9,7 @@ public class MessageSession implements Serializable {
     private String messageSessionId;
     private ArrayList<String> participants = new ArrayList<>();
     private long creationTimestamp;
+    private boolean seen = false;
     private Map<String,Message> messages=new HashMap<>();
 
     public MessageSession(String messageSessionId, ArrayList<String> participants, long creationTimestamp, Map<String,Message> messages) {
@@ -16,6 +17,14 @@ public class MessageSession implements Serializable {
         this.participants = participants;
         this.creationTimestamp = creationTimestamp;
         this.messages = messages;
+    }
+
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void setSeen(boolean seen) {
+        this.seen = seen;
     }
 
     public MessageSession() {

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.unipi.diplomaThesis.rideshare.Interface.OnCompleteRouteLoad;
@@ -163,6 +164,7 @@ public class Route implements Serializable {
         }
         return "";
     }
+    @Exclude
     public int getColorForRideCapacitySlider(){
         if (passengersId == null) return 0;
         int halfRiders = (int) Math.ceil((double)this.rideCapacity / 2);

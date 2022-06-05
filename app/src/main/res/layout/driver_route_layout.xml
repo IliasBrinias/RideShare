@@ -5,91 +5,157 @@
     android:layout_width="match_parent"
     android:layout_height="80dp">
 
-    <TextView
-        android:id="@+id/textViewRouteName"
+    <TableRow
+        android:id="@+id/test"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/trebuc"
-        android:paddingBottom="5dp"
-        android:text="Work to home"
-        android:textColor="?colorPrimaryVariant"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/view3"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.20999998" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        android:id="@+id/textViewLastMessege"
+            <TextView
+                android:id="@+id/textViewRouteName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/trebuc"
+                android:paddingBottom="5dp"
+                android:text="Work to home"
+                android:textColor="?colorPrimaryVariant"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/view3"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.20999998" />
+
+            <TextView
+
+                android:id="@+id/textViewLastMessege"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/trebuc"
+                android:text="from Lykourgou 99, Kalithea, Athens "
+                android:textColor="?colorSecondaryVariant"
+                android:textSize="11sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/textViewRouteName"
+                app:layout_constraintTop_toBottomOf="@+id/textViewRouteName"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+
+                android:id="@+id/textViewDestinationRoutePoint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/trebuc"
+                android:text="to Rodopis 69, Peristeri, Athens"
+                android:textColor="?colorSecondaryVariant"
+                android:textSize="11sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/textViewLastMessege"
+                app:layout_constraintTop_toBottomOf="@+id/textViewLastMessege"
+                app:layout_constraintVertical_bias="0.00999999" />
+
+
+            <FrameLayout
+                android:id="@+id/frameLayoutRidersImages"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                app:layout_constraintBottom_toBottomOf="@+id/textViewRouteName"
+                app:layout_constraintEnd_toEndOf="@+id/textViewRouteCost"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textViewRouteName">
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/textViewRouteCost"
+                style="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/tcm"
+                android:text="5,00€"
+                android:textColor="?colorPrimaryVariant"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/view3"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textViewDestinationRoutePoint"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <View
+                android:id="@+id/view3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/shadow"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </TableRow>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutRouteOptions"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/trebuc"
-        android:text="from Lykourgou 99, Kalithea, Athens "
-        android:textColor="?colorSecondaryVariant"
-        android:textSize="11sp"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textViewRouteName"
-        app:layout_constraintTop_toBottomOf="@+id/textViewRouteName"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-
-        android:id="@+id/textViewDestinationRoutePoint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/trebuc"
-        android:text="to Rodopis 69, Peristeri, Athens"
-        android:textColor="?colorSecondaryVariant"
-        android:textSize="11sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textViewLastMessege"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLastMessege"
-        app:layout_constraintVertical_bias="0.00999999" />
-
-
-    <FrameLayout
-        android:id="@+id/frameLayoutRidersImages"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="@+id/textViewRouteName"
-        app:layout_constraintEnd_toEndOf="@+id/textViewRouteCost"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textViewRouteName">
+        app:layout_constraintTop_toTopOf="parent">
+        <View
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+        <ImageView
+            android:id="@+id/routeShow"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_show"
+            app:tint="?colorPrimaryVariant"
+            android:backgroundTint="?colorPrimaryVariant"/>
 
-    </FrameLayout>
+        <View
+            android:layout_width="15dp"
+            android:layout_height="match_parent"/>
 
-    <TextView
-        android:id="@+id/textViewRouteCost"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/tcm"
-        android:text="5,00€"
-        style="bold"
-        android:textColor="?colorPrimaryVariant"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/view3"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textViewDestinationRoutePoint"
-        app:layout_constraintVertical_bias="0.0" />
-    <View
-        android:id="@+id/view3"
-        android:layout_width="350dp"
-        android:layout_gravity="center"
-        android:layout_height="1dp"
-        android:background="@color/shadow"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        <ImageView
+            android:id="@+id/routeEdit"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_edit"
+            app:tint="?colorPrimaryVariant"/>
+        <View
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+        <ImageView
+            android:id="@+id/routeDelete"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_delete_account"
+            android:padding="5dp"
+            app:tint="@color/sliderRed"/>
+        <View
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

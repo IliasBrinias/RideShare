@@ -1,10 +1,12 @@
 package com.unipi.diplomaThesis.rideshare;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -80,28 +82,26 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_DRIVER_ACTIVITY){
-            if (resultCode == Driver.REQ_CREATE_DRIVER_ACCOUNT){
+        if (requestCode == REQ_RIDER_ACTIVITY) {
+            if (resultCode == Activity.RESULT_OK) {
                 User.loadSignInUser(new OnUserLoadComplete() {
                     @Override
                     public void returnedUser(User u) {
                         // if the user didn't found sign out
-                        if (u == null){
+                        if (u == null) {
                             FirebaseAuth.getInstance().signOut();
                             return;
                         }
                         PreferenceManager.getDefaultSharedPreferences(StartActivity.this).edit()
-                                .putString(User.REQ_TYPE_TAG,u.getType().toString()).apply();
+                                .putString(User.REQ_TYPE_TAG, u.getType()).apply();
                         Gson gson = new Gson();
                         String json = gson.toJson(u);
                         PreferenceManager.getDefaultSharedPreferences(StartActivity.this).edit()
-                                .putString(User.class.getSimpleName(),json).apply();
-                        StartActivity.this.startActivityForResult(new Intent(StartActivity.this, DriverActivity.class),
-                                REQ_DRIVER_ACTIVITY);
+                                .putString(User.class.getSimpleName(), json).apply();
+                        startActivity(new Intent(StartActivity.this, DriverActivity.class));
                     }
                 });
-            }else if (resultCode == Driver.REQ_DISABLE_DRIVER_ACCOUNT){
-
+                Toast.makeText(this, getString(R.string.you_are_driver_now), Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -199,6 +199,25 @@
     <string name="other_people_reviews">Other people Reviews</string>
     <string name="request">Request</string>
     <string name="is_instrested_for">is interested for</string>
+    <string name="mute_notifications">Mute Notifications</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="delete_driver_account">Delete Driver Account</string>
+    <string name="save">Save</string>
+    <string name="error_email_format">Email is not Acceptable\n(e.x. email@gmail.com)</string>
+    <string name="new_password">New Password</string>
+    <string name="error_change_email">You cant change your Email</string>
+    <string name="are_you_sure">Are you Sure?</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="msg_back_again_exit">Please click BACK again to exit</string>
+    <string name="error_invalid_email">The email address is badly formatted</string>
+    <string name="error_email_already_in_use">The email address is already in use by another account</string>
+    <string name="password_changed_success">Password Changed Successfully</string>
+    <string name="complete_review">Thanks for your Review</string>
+    <string name="edit_car">Edit Car</string>
+    <string name="the_route_will_be_automatically_rescheduled_for_every_day_at_the_time_you_specified">The route will be automatically rescheduled for every day at the time you specified.</string>
+    <string name="delete_passenger">Delete Passenger</string>
+    <string name="do_you_want_to_delete_this_passenger_from_your_route">Do you want to delete this Passenger from your Route?</string>
+    <string name="do_you_want_to_delete_this_route">Do you want to delete this route?</string>
     <string-array name="repeat_options">
         <item>@string/daily</item>
         <item>@string/weekly</item>

@@ -332,12 +332,73 @@
             android:fontFamily="@font/trebuc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="The route will be automatically rescheduled for every day at the time you specified."
+            android:text="@string/the_route_will_be_automatically_rescheduled_for_every_day_at_the_time_you_specified"
             android:textColor="@color/shadow"/>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="20dp"/>
+
+        <TableRow
+            android:id="@+id/tableRowEditRoute"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/buttonSubmitEditedRoute"
+                    style="@style/SubmitButtons"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:elevation="2dp"
+                    android:stateListAnimator="@null"
+                    android:text="@string/save"
+                    android:translationZ="2dp"
+                    android:visibility="visible"
+                    app:cornerRadius="90dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
+
+                <ImageButton
+                    android:id="@+id/imageViewNextStep"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/ic_circle"
+                    android:backgroundTint="?colorPrimary"
+                    android:src="@drawable/ic_next"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/buttonSubmitEditedRoute"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?colorOnPrimary" />
+
+                <ImageButton
+                    android:id="@+id/imageViewPreviousStep"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:background="@drawable/ic_circle"
+                    android:backgroundTint="?colorPrimary"
+                    android:src="@drawable/ic_previous"
+                    app:tint="?colorOnPrimary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </TableRow>
+
         <Button
             android:id="@+id/buttonNextStepDateTime"
             style="@style/SubmitButtons"

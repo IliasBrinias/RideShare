@@ -1,12 +1,15 @@
 package com.unipi.diplomaThesis.rideshare.driver;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -25,7 +28,9 @@ import com.unipi.diplomaThesis.rideshare.Route.RouteActivity;
 import com.unipi.diplomaThesis.rideshare.driver.adapter.DriverRouteListAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,6 +39,7 @@ import java.util.List;
 public class DriverRouteListFragment extends Fragment {
 
     private static final int REQ_NEW_ROUTE_ACTIVITY = 123;
+    private static final int REQ_EDIT_ROUTE_ACTIVITY = 798;
     private TextView welcomeTitle;
     private RecyclerView recyclerViewDriver;
     private Driver driver;
@@ -41,6 +47,8 @@ public class DriverRouteListFragment extends Fragment {
     private List<Route> routeList = new ArrayList<>();
     private DriverRouteListAdapter driverRouteListAdapter;
     TableRow tableRowAddRoute;
+    Map<Integer,Boolean> clicked = new HashMap<>();
+
     public DriverRouteListFragment() {
     }
 
@@ -63,27 +71,94 @@ public class DriverRouteListFragment extends Fragment {
         welcomeTitle = v.findViewById(R.id.textViewWelcomeDriverTitle);
         tableRowAddRoute = v.findViewById(R.id.tableRowAddRoute);
         recyclerViewDriver = v.findViewById(R.id.recyclerViewDriverRouteList);
-        progressBar = v.findViewById(R.id.progress_bar);
+        progressBar = v.findViewById(R.id.progressBar);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         recyclerViewDriver.setLayoutManager(linearLayoutManager);
         driverRouteListAdapter = new DriverRouteListAdapter(getActivity(), routeList, driver, new OnClickDriverRoute() {
-            @Override
-            public void editDriversRoute(View v, int position) {
-
-            }
-
-            @Override
-            public void deleteDriversRoute(View v, int position) {
-
-            }
-
-            @Override
-            public void itemClick(View v, int position) {
+            public void showRoute(int position) {
                 Intent i =new Intent(getActivity(), RouteActivity.class);
                 i.putExtra(Route.class.getSimpleName(),routeList.get(position).getRouteId());
                 i.putExtra(Driver.class.getSimpleName(),routeList.get(position).getDriverId());
                 startActivity(i);
+
             }
+            public void editRoute(int position) {
+                DriverRouteListFragment.this.startPostponedEnterTransition();
+                Intent i = new Intent(getActivity(), DriverSaveRouteActivity.class);
+                i.putExtra(Route.class.getSimpleName(),routeList.get(position));
+                startActivityForResult(i,REQ_EDIT_ROUTE_ACTIVITY);
+                DriverRouteListFragment.this.stopProgressBarAnimation();
+            }
+            @SuppressLint("NotifyDataSetChanged")
+            public void deleteRoute(int position) {
+                final View dialogView = View.inflate(getActivity(), R.layout.delete_route_alert_dialog, null);
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity(),android.R.style.Theme_Material_Dialog).setView(dialogView).create();
+                alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+                alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.alert_dialog_background));
+                dialogView.findViewById(R.id.deleteRoute).setOnClickListener(view -> {
+                    driver.deleteRoute(routeList.get(position));
+                    routeList.remove(position);
+                    driverRouteListAdapter.notifyDataSetChanged();
+                    alertDialog.dismiss();
+                });
+                dialogView.findViewById(R.id.textViewCancel).setOnClickListener(view -> alertDialog.dismiss());
+                alertDialog.setCancelable(true);
+                alertDialog.show();
+            }
+
+            @Override
+            public void itemClick(View v, View slide, ImageView show, ImageView edit, ImageView delete, int position) {
+
+                clicked.putIfAbsent(v.getId(), true);
+                if(clicked.get(v.getId())){
+                    TranslateAnimation animate0 = new TranslateAnimation(0, -slide.getWidth(), 0, 0);
+                    animate0.setDuration(500);
+                    animate0.setFillAfter(true);
+                    v.startAnimation(animate0);
+                    show.setOnClickListener(view -> {
+                        startProgressBarAnimation();
+                        showRoute(position);
+                        stopProgressBarAnimation();
+                    });
+                    edit.setOnClickListener(view -> {
+                        startProgressBarAnimation();
+                        editRoute(position);
+                        stopProgressBarAnimation();
+                    });
+                    delete.setOnClickListener(view -> deleteRoute(position));
+                    slide.setVisibility(View.VISIBLE);
+                    show.setVisibility(View.VISIBLE);
+                    edit.setVisibility(View.VISIBLE);
+                    delete.setVisibility(View.VISIBLE);
+                    TranslateAnimation animate1 = new TranslateAnimation(
+                            slide.getWidth(),
+                            0,
+                            0,
+                            0);
+                    animate1.setDuration(500);
+                    animate1.setFillAfter(true);
+                    slide.startAnimation(animate1);
+                } else {
+                    TranslateAnimation animate4 = new TranslateAnimation(-slide.getWidth(), 0, 0, 0);
+                    animate4.setDuration(500);
+                    animate4.setFillAfter(true);
+                    v.startAnimation(animate4);
+                    show.setOnClickListener(view -> itemClick(v, slide, show, edit, delete, position));
+                    edit.setOnClickListener(view -> itemClick(v, slide, show, edit, delete, position));
+                    delete.setOnClickListener(view ->itemClick(v, slide, show, edit, delete, position));
+                    slide.setVisibility(View.INVISIBLE);
+                    TranslateAnimation animate2 = new TranslateAnimation(
+                            0,
+                            slide.getWidth(),
+                            0,0
+                            );
+                    animate2.setDuration(500);
+                    animate2.setFillAfter(true);
+                    slide.startAnimation(animate2);
+                }
+                clicked.put(v.getId(),!clicked.get(v.getId()));
+            }
+
         });
         recyclerViewDriver.setAdapter(driverRouteListAdapter);
         tableRowAddRoute.setOnClickListener(view -> startActivityForResult(new Intent(getActivity(), DriverSaveRouteActivity.class),REQ_NEW_ROUTE_ACTIVITY));
@@ -95,6 +170,7 @@ public class DriverRouteListFragment extends Fragment {
     private void routeSearch() {
         startProgressBarAnimation();
         routeList.clear();
+        clicked.clear();
         driverRouteListAdapter.notifyDataSetChanged();
         driver.loadDriverRoutes(this::returnData);
     }
@@ -126,7 +202,7 @@ public class DriverRouteListFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == REQ_NEW_ROUTE_ACTIVITY && resultCode == Activity.RESULT_OK){
+        if ((requestCode == REQ_NEW_ROUTE_ACTIVITY || requestCode==REQ_EDIT_ROUTE_ACTIVITY)){
             routeSearch();
         }
     }

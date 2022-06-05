@@ -3,7 +3,9 @@ package com.unipi.diplomaThesis.rideshare.messenger;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -15,14 +17,20 @@ import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.unipi.diplomaThesis.rideshare.Interface.OnClickDriverRoute;
+import com.unipi.diplomaThesis.rideshare.Interface.OnImageLoad;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
+import com.unipi.diplomaThesis.rideshare.Model.MessageSession;
 import com.unipi.diplomaThesis.rideshare.Model.Review;
 import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.Route;
@@ -47,16 +55,23 @@ public class ChatInfoActivity extends AppCompatActivity {
     Switch muteMessage;
     RatingBar ratingBar;
     RecyclerView recyclerView;
-    TableRow tableRowCar;
+    TableRow tableRowCar, tableRowRating;
     DriverRouteListAdapter riderRouteAdapter;
     Rider rider=new Rider();
     Driver driver = new Driver();
-
+    ReviewAdapter reviewAdapter;
+    List<Review> reviewList = new ArrayList<>();
+    RatingBar reviewRatingBar;
+    EditText reviewDescription;
+    String messageSessionId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_info);
         if (!getIntent().hasExtra(User.class.getSimpleName())) finish();
+        messageSessionId = getIntent().getStringExtra(MessageSession.class.getSimpleName());
+        participantId = getIntent().getStringExtra(User.class.getSimpleName());
+
         userImage = findViewById(R.id.imageViewUser);
         imageCar = findViewById(R.id.imageViewCarImage);
         imageExit = findViewById(R.id.exitChatInfo);
@@ -71,10 +86,15 @@ public class ChatInfoActivity extends AppCompatActivity {
         muteMessage = findViewById(R.id.switchMute);
         recyclerView = findViewById(R.id.recyclerView);
         tableRowCar = findViewById(R.id.tableRowCar);
+        tableRowRating = findViewById(R.id.tableRowRating);
+        muteMessage.setChecked(PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(participantId,false));
+        muteMessage.setOnCheckedChangeListener((compoundButton, b) ->
+                PreferenceManager.getDefaultSharedPreferences(this).edit()
+                        .putBoolean(ChatInfoActivity.this.participantId,muteMessage.isChecked()).apply());
         imageExit.setOnClickListener(view -> finish());
         imageLeave.setOnClickListener(view -> finish());
         tableRowCar.setVisibility(View.GONE);
-        participantId = getIntent().getStringExtra(User.class.getSimpleName());
         loadParticipantData();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -82,15 +102,12 @@ public class ChatInfoActivity extends AppCompatActivity {
         drivers.add(driver);
         riderRouteAdapter = new DriverRouteListAdapter(this, routeList, driver, new OnClickDriverRoute() {
             @Override
-            public void editDriversRoute(View v, int position) {}
-            @Override
-            public void deleteDriversRoute(View v, int position) {}
-            @Override
-            public void itemClick(View v, int position) {
+            public void itemClick(View routeInfo, View layoutOptions, ImageView show, ImageView edit, ImageView delete, int position) {
                 Intent i =new Intent(ChatInfoActivity.this, RouteActivity.class);
                 i.putExtra(Route.class.getSimpleName(),routeList.get(position).getRouteId());
                 i.putExtra(Driver.class.getSimpleName(),routeList.get(position).getDriverId());
                 startActivity(i);
+
             }
         });
         recyclerView.setAdapter(riderRouteAdapter);
@@ -102,6 +119,7 @@ public class ChatInfoActivity extends AppCompatActivity {
         if (u.getType().equals(Rider.class.getSimpleName())){
             Driver.loadDriver(participantId,d->searchMutualRoutes((Driver) d, (Rider) u));
         }else {
+            tableRowRating.setVisibility(View.GONE);
             Rider.loadUser(participantId, r->searchMutualRoutes((Driver) u, (Rider) r));
         }
     }
@@ -122,12 +140,37 @@ public class ChatInfoActivity extends AppCompatActivity {
                 imageCar.setVisibility(View.VISIBLE);
                 tableRowCar.setVisibility(View.VISIBLE);
             });
+            driver.loadReviewTotalScore(driver.getUserId(),((totalScore, reviewCount) -> {
+                ratingBar.setRating(totalScore);
+                averageRating.setText(String.valueOf(totalScore));
+                countReviews.setText(" ("+reviewCount+")");
+            }));
         }else {
             userName.setText(rider.getFullName());
         }
         this.rider = rider;
         this.driver = driver;
         User.mutualRoutes(driver,rider,this::refreshData);
+        if (rider.getUserId().equals(participantId)){
+            loadParticipantImage(rider);
+        }else {
+            loadParticipantImage(driver);
+        }
+    }
+    private void loadParticipantImage(User u){
+        u.loadUserImage(new OnImageLoad() {
+            @Override
+            public void loadImageSuccess(Bitmap image) {
+                userImage.setImageBitmap(null);
+                userImage.setBackgroundResource(0);
+                if (image != null){
+                    userImage.setImageBitmap(image);
+                }else {
+                    userImage.setBackgroundResource(R.drawable.ic_default_profile);
+
+                }
+            }
+        });
     }
     List<Route> routeList = new ArrayList<>();
     @SuppressLint("NotifyDataSetChanged")
@@ -136,10 +179,6 @@ public class ChatInfoActivity extends AppCompatActivity {
 //        check if the driver exists
         riderRouteAdapter.notifyDataSetChanged();
     }
-    ReviewAdapter reviewAdapter;
-    List<Review> reviewList = new ArrayList<>();
-    RatingBar reviewRatingBar;
-    EditText reviewDescription;
     public void openReviews(View v){
         final View dialogView = View.inflate(this, R.layout.rating_alert_dialog, null);
         AlertDialog alertDialog = new AlertDialog.Builder(this,android.R.style.Theme_Material_Dialog).setView(dialogView).create();
@@ -149,7 +188,7 @@ public class ChatInfoActivity extends AppCompatActivity {
         reviewRatingBar = dialogView.findViewById(R.id.ratingBar);
         Button buttonSubmit = dialogView.findViewById(R.id.buttonSubmitReview);
         reviewDescription = dialogView.findViewById(R.id.editTextReviewDescription);
-        buttonSubmit.setOnClickListener(view->saveReview(reviewRatingBar.getRating(),reviewDescription.getText().toString()));
+        buttonSubmit.setOnClickListener(view->saveReview(reviewRatingBar.getRating(),reviewDescription.getText().toString(),alertDialog));
         buttonSubmit.setVisibility(View.GONE);
         reviewDescription.addTextChangedListener(new TextWatcher() {
             @Override
@@ -164,7 +203,7 @@ public class ChatInfoActivity extends AppCompatActivity {
                             throw new NullPointerException();
                         }
                     }catch (NullPointerException nullPointerException){
-                        buttonSubmit.setVisibility(View.GONE);
+                        buttonSubmit.setVisibility(View.VISIBLE);
                     }
                 }else {
                     buttonSubmit.setVisibility(View.GONE);
@@ -182,7 +221,7 @@ public class ChatInfoActivity extends AppCompatActivity {
                         throw new NullPointerException();
                     }
                 }catch (NullPointerException nullPointerException){
-                    buttonSubmit.setVisibility(View.GONE);
+                    buttonSubmit.setVisibility(View.VISIBLE);
                 }
             }else {
                 buttonSubmit.setVisibility(View.GONE);
@@ -200,11 +239,19 @@ public class ChatInfoActivity extends AppCompatActivity {
         alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
     }
 
-    private void saveReview(float rating, String description) {
+    private void saveReview(float rating, String description,AlertDialog alertDialog) {
         try {
             rider = (Rider) u;
             if (rider != null) {
-                rider.saveReview(participantId, rating, description);
+                rider.saveReview(participantId, rating, description, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        finish();
+                        startActivity(ChatInfoActivity.this.getIntent());
+                    }
+                });
+                Toast.makeText(this, getString(R.string.complete_review),Toast.LENGTH_SHORT).show();
+                alertDialog.dismiss();
             }
         }catch (ClassCastException classCastException){
             classCastException.printStackTrace();

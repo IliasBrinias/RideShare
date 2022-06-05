@@ -46,6 +46,7 @@ public class MapDrawer {
     public MapDrawer(Context c, GoogleMap map) {
         this.c=c;
         this.map =map;
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.9908372,23.7383394),5));
     }
 
     public double getEdgesOffsetFromTheMap() {
@@ -210,11 +211,13 @@ public class MapDrawer {
     private void updateCamera(LatLng point){
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 15));
     }
-    public void zoomToDirection(View mapView){
-        LatLngBounds bounds = new LatLngBounds.Builder().include(
-                startMarker.getPosition()).include(
-                destinationMarker.getPosition()).build();
+    public void zoomToDirection(View mapView,LatLng startPoint, LatLng destinationPoint){
+        LatLngBounds bounds = new LatLngBounds.Builder()
+                .include(startPoint)
+                .include(destinationPoint)
+                .build();
         int padding = (int) (mapView.getWidth() * this.getEdgesOffsetFromTheMap()); // offset from edges of the map - 20% of screen
+        System.out.println(mapView.getWidth()+","+mapView.getHeight());
         map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,mapView.getWidth(),mapView.getHeight(),padding));
     }
 }

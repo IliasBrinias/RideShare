@@ -38,7 +38,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         holder.reviewDescription.setText(reviewList.get(position).getDescription());
         holder.userReview.setText(String.valueOf(reviewList.get(position).getReview()));
         User.loadUser(reviewList.get(position).getUserId(),u->{
-            holder.username.setText(u.getFullName());
+            holder.username.setText(User.reformatLengthString(u.getFullName(),15));
             makeDataVisible(holder);
         });
     }

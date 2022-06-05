@@ -1,7 +1,11 @@
-package com.unipi.diplomaThesis.rideshare.rider;
+package com.unipi.diplomaThesis.rideshare;
+
+import static android.app.Activity.RESULT_OK;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -14,10 +18,12 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,13 +36,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
 import com.unipi.diplomaThesis.rideshare.Interface.OnImageLoad;
-import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.Model.Car;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
+import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.User;
-import com.unipi.diplomaThesis.rideshare.R;
+import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,14 +68,15 @@ public class CarFragment extends Fragment implements TextWatcher {
              carPlate;
     ImageView carImage;
     Button buttonSaveCar;
-    Driver driver;
+    User user;
     ProgressBar progressBar;
-
+    TextView title;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_car, container, false);
+        title = v.findViewById(R.id.textView6);
         carManufacturer = v.findViewById(R.id.editTextCarManufacturer);
         carModel = v.findViewById(R.id.editTextCarModel);
         carYear = v.findViewById(R.id.editTextCarYear);
@@ -90,11 +96,14 @@ public class CarFragment extends Fragment implements TextWatcher {
         carPlate.addTextChangedListener(this);
         carModel.addTextChangedListener(this);
         try {
-            driver = (Driver) User.loadUserInstance(getActivity());
-            loadDriverCarData();
+            user = User.loadUserInstance(getActivity());
+            if (user instanceof Driver) {
+                loadDriverCarData();
+            }else {
+                carImage.setVisibility(View.VISIBLE);
+            }
             return v;
         }catch (ClassCastException ignore){}
-        carImage.setVisibility(View.VISIBLE);
         return v;
     }
     private void saveCar(View view){
@@ -103,54 +112,56 @@ public class CarFragment extends Fragment implements TextWatcher {
         editTexts.add(carYear);editTexts.add(carPlate);
 //        check for empty fields
         if (!User.checkIfEditTextIsNull(getActivity(),editTexts)){
-            startProgressBarAnimation();
 //            create Driver and return the new User instance
-            if (driver != null) {
+            if (user instanceof Driver) {
                 saveEditedCar();
                 return;
             }
-            Driver.createDriver(FirebaseAuth.getInstance().getUid(), new OnUserLoadComplete() {
-                @Override
-                public void returnedUser(User u) {
-                    if (u == null) return;
-                    Driver newDriver = (Driver) u;
-//                    save the Drivers car
-                    saveNewCar(newDriver);
-                }
-            });
+            createDriverDialog();
         }
     }
-    private void saveNewCar(Driver newDriver) {
-        newDriver.saveCar(
-                new Car(
-                        carModel.getText().toString(),
-                        carManufacturer.getText().toString(),
-                        carYear.getText().toString(),
-                        carPlate.getText().toString()
-                ),
-                User.getByteArray(carImage),
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(getActivity(), getString(R.string.you_are_driver_now), Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent();
-                            getActivity().setResult(Driver.REQ_CREATE_DRIVER_ACCOUNT, i);
-                            getActivity().finish();
-                            stopProgressBarAnimation();
-                        }
-                    }
-                }, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getActivity(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                        stopProgressBarAnimation();
-                    }
-                });
+    RiderActivity riderActivity;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof Activity){
+            Activity activity = (Activity) context;
+            if (activity instanceof RiderActivity){
+                riderActivity =(RiderActivity) activity;
+            }
+        }
     }
+
+    private void createDriverDialog() {
+        final View dialogView = View.inflate(getActivity(), R.layout.become_driver_alert_dialog, null);
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity(),android.R.style.Theme_Material_Dialog).setView(dialogView).create();
+        alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+        alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.alert_dialog_background));
+        TextView cancel = dialogView.findViewById(R.id.textViewCancel);
+        Button submit = dialogView.findViewById(R.id.buttonSubmit);
+        cancel.setOnClickListener(v-> alertDialog.dismiss());
+        submit.setOnClickListener(v-> {
+            alertDialog.dismiss();
+            startProgressBarAnimation();
+            Car c = new Car(
+                    carModel.getText().toString(),
+                    carManufacturer.getText().toString(),
+                    carYear.getText().toString(),
+                    carPlate.getText().toString()
+            );
+            ((Rider) user).becomeDriver(c, User.getByteArray(carImage),driver -> {
+                riderActivity.setResult(RESULT_OK, new Intent());
+                riderActivity.finish();
+
+            });
+        });
+        alertDialog.setCancelable(true);
+        alertDialog.show();
+    }
+
     private void saveEditedCar(){
-        driver.saveCar(
+        startProgressBarAnimation();
+        ((Driver) user).saveCar(
                 new Car(
                         carModel.getText().toString(),
                         carManufacturer.getText().toString(),
@@ -206,7 +217,7 @@ public class CarFragment extends Fragment implements TextWatcher {
         super.onActivityResult(requestCode, resultCode, data);
         if (data == null) return;
         if (requestCode == LOAD_IMAGE_CODE) {
-            if (data.getData() != null && resultCode == Activity.RESULT_OK) {
+            if (data.getData() != null && resultCode == RESULT_OK) {
                 //Get image
                 Uri localImagePath = data.getData();
                 loadSelectedImageToImageView(localImagePath, carImage);
@@ -244,9 +255,9 @@ public class CarFragment extends Fragment implements TextWatcher {
     }
     @Override
     public void afterTextChanged(Editable editable) {}
-
     private void loadDriverCarData(){
-        driver.loadCarImage(new OnImageLoad() {
+        title.setText(getString(R.string.edit_car));
+        ((Driver) user).loadCarImage(new OnImageLoad() {
             @Override
             public void loadImageSuccess(Bitmap image) {
                 carImage.setImageBitmap(null);
@@ -259,10 +270,10 @@ public class CarFragment extends Fragment implements TextWatcher {
                 carImage.setVisibility(View.VISIBLE);
             }
         });
-        carManufacturer.setText(driver.getOwnedCar().getMake());
-        carModel.setText(driver.getOwnedCar().getModel());
-        carYear.setText(driver.getOwnedCar().getYear());
-        carPlate.setText(driver.getOwnedCar().getCarPlates());
+        carManufacturer.setText(((Driver) user).getOwnedCar().getMake());
+        carModel.setText(((Driver) user).getOwnedCar().getModel());
+        carYear.setText(((Driver) user).getOwnedCar().getYear());
+        carPlate.setText(((Driver) user).getOwnedCar().getCarPlates());
     }
     public void startProgressBarAnimation(){
         progressBar.setIndeterminate(true);

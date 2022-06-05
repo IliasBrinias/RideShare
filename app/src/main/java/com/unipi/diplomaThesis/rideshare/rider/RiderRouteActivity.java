@@ -58,6 +58,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
     private TextView  routeCountTitle;
     private static List<Route> routeList = new ArrayList<>();
     private static List<User> routeDrivers = new ArrayList<>();
+    private static Map<String,Object> driverReview = new HashMap<>();
     private RiderRouteAdapter riderRouteAdapter;
     private Rider r;
     private JSONArray locations;
@@ -130,7 +131,8 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         routeFilter.setOriginRiderPlaceId(originPlaceId);
         routeFilter.setDestinationRiderPlaceId(destinationPlaceId);
         routeFilter.setTimeUnix(dateTimeUnix);
-        riderRouteAdapter = new RiderRouteAdapter(this,routeList, routeDrivers, dateTimeUnix, new OnRiderRouteClickListener() {
+        riderRouteAdapter = new RiderRouteAdapter(this,routeList, routeDrivers, dateTimeUnix,
+                driverReview, new OnRiderRouteClickListener() {
             @Override
             public void onRouteClick(View view, int position) {
                 Intent i =new Intent(RiderRouteActivity.this, RouteActivity.class);
@@ -148,9 +150,13 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
     }
     Map<String,Double> distanceDeviationMap = new HashMap<>();
     @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
-    private void refreshData(Route r, User driver, double distanceDeviation){
+    private void refreshData(Route r, User driver, double distanceDeviation, float reviewTotalScore, int reviewCount){
         stopProgressBarAnimation();
         if (r==null) return;
+        Map<String,Object> reviewData = new HashMap<>();
+        reviewData.put("total",reviewTotalScore);
+        reviewData.put("count",reviewCount);
+        driverReview.put(r.getRouteId(),reviewData);
         routeList.add(r);
         distanceDeviationMap.put(r.getRouteId(),distanceDeviation);
         if (routeFilter.getClassification()!=routeFilter.getDefaultClassification()){
@@ -203,6 +209,14 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
                 });
                 break;
             case 3: // Based on Reviews
+                routeList.sort(new Comparator<Route>() {
+                    @Override
+                    public int compare(Route route, Route route1) {
+                        double routeTotalReview = (float) ((Map<String,Object>) driverReview.get(routeList.get(routeList.indexOf(route)).getRouteId())).get("total");
+                        double routeTotalReview1 = (float) ((Map<String,Object>) driverReview.get(routeList.get(routeList.indexOf(route1)).getRouteId())).get("total");
+                        return Double.compare(routeTotalReview1,routeTotalReview);
+                    }
+                });
                 break;
 
         }
