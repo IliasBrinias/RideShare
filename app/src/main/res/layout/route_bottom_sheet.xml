@@ -8,7 +8,8 @@
     android:orientation="vertical"
     android:layout_gravity="center|top"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-    android:background="@drawable/login_register_shape">
+    android:background="@drawable/login_register_shape"
+    android:backgroundTint="?bottomSheet">
 
     <ImageView
         android:id="@+id/imageView5"
@@ -67,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/trebuc"
                 android:text="from Lykourgou 99, Kalithea, Athens "
-                android:textColor="?colorSecondaryVariant"
+                android:textColor="@color/shadow"
                 android:textSize="11sp"
                 app:layout_constraintBottom_toBottomOf="@+id/circleImageDriver"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -83,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/trebuc"
                 android:text="to Rodopis 69, Peristeri, Athens"
-                android:textColor="?colorSecondaryVariant"
+                android:textColor="@color/shadow"
                 android:textSize="11sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -163,7 +164,7 @@
                         android:text="1 hour later"
                         android:paddingEnd="10dp"
                         android:textSize="11dp"
-                        android:textColor="?colorSecondaryVariant"
+                        android:textColor="@color/shadow"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -425,7 +426,7 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"/>
     <TableRow
-        android:id="@+id/tableRow14"
+        android:id="@+id/tableRowRating"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:paddingStart="10dp"
@@ -475,7 +476,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/tcm"
                 android:text="0"
-                android:textColor="?colorSecondaryVariant"
+                android:textColor="@color/shadow"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -490,7 +491,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/tcm"
                 android:text=" (0)"
-                android:textColor="?colorSecondaryVariant"
+                android:textColor="@color/shadow"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

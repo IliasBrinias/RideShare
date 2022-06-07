@@ -313,13 +313,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <EditText
                         android:id="@+id/autoCompleteFromPrice"
                         style="@style/fieldFilterRoute"
                         android:layout_width="174dp"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/tablerow_background"
                         android:focusable="false"
                         android:text="0.0$"
+                        android:inputType="textNoSuggestions"
+                        android:textColor="?colorPrimaryVariant"
                         app:layout_constraintBottom_toTopOf="@+id/sliderPrice"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -327,7 +330,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintVertical_bias="0.25" />
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <EditText
                         android:id="@+id/autoCompleteToPrice"
                         style="@style/fieldFilterRoute"
                         android:layout_width="174dp"
@@ -335,6 +338,9 @@
                         android:focusable="false"
                         android:fontFamily="@font/tcm"
                         android:text="100.0$"
+                        android:textColor="?colorPrimaryVariant"
+                        android:background="@drawable/tablerow_background"
+                        android:inputType="textNoSuggestions"
                         app:layout_constraintBottom_toTopOf="@+id/sliderPrice"
                         app:layout_constraintEnd_toEndOf="@+id/sliderPrice"
                         app:layout_constraintHorizontal_bias="1.0"
@@ -413,21 +419,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <EditText
                         android:id="@+id/autoCompleteFromTime"
                         style="@style/fieldFilterRoute"
                         android:layout_width="174dp"
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:text="12.0 hours earlier"
+                        android:background="@drawable/tablerow_background"
+                        android:textColor="?colorPrimaryVariant"
                         app:layout_constraintBottom_toTopOf="@+id/sliderTime"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="@+id/sliderTime"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.25" />
+                        app:layout_constraintVertical_bias="0.25"
+                        android:inputType="textNoSuggestions"/>
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <EditText
                         android:id="@+id/autoCompleteToTime"
                         style="@style/fieldFilterRoute"
                         android:layout_width="174dp"
@@ -435,6 +444,9 @@
                         android:focusable="false"
                         android:fontFamily="@font/tcm"
                         android:text="12.0 hours after"
+                        android:inputType="textNoSuggestions"
+                        android:background="@drawable/tablerow_background"
+                        android:textColor="?colorPrimaryVariant"
                         app:layout_constraintBottom_toTopOf="@+id/sliderTime"
                         app:layout_constraintEnd_toEndOf="@+id/sliderTime"
                         app:layout_constraintHorizontal_bias="1.0"
@@ -513,7 +525,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <EditText
                         android:id="@+id/autoCompleteFromRating"
                         style="@style/fieldFilterRoute"
                         android:layout_width="174dp"
@@ -522,6 +534,10 @@
                         android:drawablePadding="10dp"
                         android:focusable="false"
                         android:text="0.0"
+
+                        android:inputType="textNoSuggestions"
+                        android:textColor="?colorPrimaryVariant"
+                        android:background="@drawable/tablerow_background"
                         app:layout_constraintBottom_toTopOf="@+id/sliderRating"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -530,7 +546,7 @@
                         app:layout_constraintVertical_bias="0.25" />
 
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <EditText
                         android:id="@+id/autoCompleteToRating"
                         style="@style/fieldFilterRoute"
                         android:layout_width="174dp"
@@ -538,9 +554,12 @@
                         android:drawableStart="@drawable/ic_star_full"
                         android:drawablePadding="10dp"
                         android:focusable="false"
-
+                        android:background="@drawable/tablerow_background"
                         android:fontFamily="@font/tcm"
                         android:text="5.0"
+
+                        android:inputType="textNoSuggestions"
+                        android:textColor="?colorPrimaryVariant"
                         app:layout_constraintBottom_toTopOf="@+id/sliderRating"
                         app:layout_constraintEnd_toEndOf="@+id/sliderRating"
                         app:layout_constraintHorizontal_bias="1.0"

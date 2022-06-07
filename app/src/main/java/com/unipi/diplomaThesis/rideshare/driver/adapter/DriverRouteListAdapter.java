@@ -67,12 +67,12 @@ public class DriverRouteListAdapter extends RecyclerView.Adapter<DriverRouteList
             startingAddress =c.getString(R.string.from)+" " + a.getThoroughfare() +" "+a.getFeatureName()+", "+a.getLocality()+", "+a.getCountryName();
             a = g.getFromLocation(currentRoute.getRouteLatLng().getEndLat(),currentRoute.getRouteLatLng().getEndLng(),1).get(0);
             endAddress =c.getString(R.string.to)+" " + a.getThoroughfare() +" "+a.getFeatureName()+", "+a.getLocality()+", "+a.getCountryName();
-            holder.startingRoute.setText(User.reformatLengthString(startingAddress,40));
-            holder.endRoute.setText(User.reformatLengthString(endAddress,40));
+            holder.startingRoute.setText(User.reformatLengthString(startingAddress,50));
+            holder.endRoute.setText(User.reformatLengthString(endAddress,50));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        holder.routeName.setText(User.reformatLengthString(currentRoute.getName(),25));
+        holder.routeName.setText(User.reformatLengthString(currentRoute.getName(),35));
         holder.costPerPassenger.setText(currentRoute.getCostPerRider()+" €");
 
         List<String> passengersId = currentRoute.getPassengersId();

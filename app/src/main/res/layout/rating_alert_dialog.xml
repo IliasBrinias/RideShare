@@ -74,17 +74,19 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="20dp"/>
+
         <TextView
+            android:id="@+id/textViewOtherPeopleReview"
+            style="@style/TitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/TitleTextView"
+            android:layout_gravity="start"
+            android:layout_marginStart="15dp"
             android:fontFamily="@font/trebuc"
             android:text="@string/other_people_reviews"
-            android:textSize="20sp"
-            android:layout_marginStart="15dp"
-            android:textStyle="bold"
             android:textColor="?colorPrimaryVariant"
-            android:layout_gravity="start"/>
+            android:textSize="20sp"
+            android:textStyle="bold" />
         <View
             android:layout_width="match_parent"
             android:layout_height="5dp"/>

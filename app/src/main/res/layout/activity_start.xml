@@ -60,7 +60,7 @@
         android:name="com.unipi.diplomaThesis.rideshare.LoginFragment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/login_register_shape"
+        android:background="@drawable/tablerow_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

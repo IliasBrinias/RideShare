@@ -1,5 +1,6 @@
 package com.unipi.diplomaThesis.rideshare.Model;
 
+import android.app.Activity;
 import android.graphics.BitmapFactory;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,7 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnReturnedIds;
 import com.unipi.diplomaThesis.rideshare.Interface.OnRouteResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.Interface.hasAllreadyMessageSession;
+import com.unipi.diplomaThesis.rideshare.R;
 
 import java.io.File;
 import java.io.IOException;
@@ -195,7 +197,7 @@ public class Driver extends User{
             e.printStackTrace();
         }
     }
-    private void createMessageSession(String riderId){
+    private void createMessageSession(Activity activity, Driver d, String riderId){
         ArrayList<String> participants = new ArrayList<>();
         participants.add(this.getUserId());
         participants.add(riderId);
@@ -209,6 +211,17 @@ public class Driver extends User{
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         makeMessageSessionVisibleToParticipants(participants,messageSessionId);
+                        User.loadUser(riderId,u -> {
+                            FcmNotificationsSender fcmNotificationsSender = new FcmNotificationsSender(
+                                    u.getToken_FCM(),
+                                    Request.class.getSimpleName(),
+                                    messageSessionId,
+                                    d.getFullName(),
+                                    activity.getString(R.string.first_message_chat),
+                                    activity
+                                    );
+                            fcmNotificationsSender.SendNotifications();
+                        });
                     }
                 });
     }
@@ -311,7 +324,7 @@ public class Driver extends User{
                 });
 
     }
-    public void acceptRequest(Request request){
+    public void acceptRequest(Activity activity,Request request){
 //        create Messages Session
         FirebaseDatabase.getInstance().getReference()
                 .child(Request.class.getSimpleName())
@@ -323,11 +336,10 @@ public class Driver extends User{
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()){
 //                            check if the messageSessionExists
-                            System.out.println(request.getRiderId()+" "+Driver.this.getUserId());
                             checkIfRiderHasMessageSessionWithDriver(request.getRiderId(),Driver.this.getUserId(),exists->{
 //                                if is not exist create a new one
                                 if (!exists){
-                                    createMessageSession(request.getRiderId());
+                                    createMessageSession(activity,Driver.this,request.getRiderId());
                                 }
 //                                add the rider to the Route and Route to riders lastRoutes
                                 addRiderToRoute(request.getRouteId(),request.getRiderId());

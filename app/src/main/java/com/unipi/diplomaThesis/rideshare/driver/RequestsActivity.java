@@ -47,9 +47,10 @@ public class RequestsActivity extends AppCompatActivity {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void accept(View view, int position) {
-                driver.acceptRequest(requestList.get(position));
+                driver.acceptRequest(RequestsActivity.this,requestList.get(position));
                 requestList.remove(position);
                 requestAdapter.notifyDataSetChanged();
+                if (requestList.isEmpty()) finish();
             }
 
             @SuppressLint("NotifyDataSetChanged")

@@ -45,7 +45,7 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
         });
 
         User.loadUser(requestList.get(position).getRiderId(),u -> {
-            holder.userName.setText(User.reformatLengthString(u.getFullName(),24));
+            holder.userName.setText(User.reformatLengthString(u.getFullName(),20));
             holder.userName.setVisibility(View.VISIBLE);
             holder.userDescription.setText(requestList.get(position).getDescription());
             holder.userDescription.setVisibility(View.VISIBLE);

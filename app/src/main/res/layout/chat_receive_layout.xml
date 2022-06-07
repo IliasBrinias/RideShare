@@ -17,14 +17,6 @@
     <LinearLayout
         android:layout_width="300dp"
         android:layout_height="wrap_content">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/userImage"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_default_profile"
-            android:layout_gravity="bottom"
-            />
         <View
             android:layout_width="5dp"
             android:layout_height="match_parent"/>
@@ -34,8 +26,9 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/trebuc"
             android:padding="10dp"
-            android:background="@drawable/chat_message_background_single"
+            android:background="@drawable/tablerow_background"
             android:text="Hi...How are y?"
+            android:textColor="?colorPrimaryVariant"
             />
     </LinearLayout>
 </LinearLayout>

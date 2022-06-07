@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".PersonalDataFragment">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -179,16 +181,59 @@
             android:background="@drawable/background_button_decline"
             android:backgroundTint="?colorPrimary"
             android:textColor="?colorOnPrimary"/>
+
         <View
             android:layout_width="match_parent"
-            android:layout_height="20dp" />
+            android:layout_height="20dp"
+            />
+        <View
+            android:id="@+id/viewDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:visibility="gone"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:background="@color/shadow" />
+        <TextView
+            android:id="@+id/textViewReviewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TitleTextView"
+            android:fontFamily="@font/trebuc"
+            android:text="@string/reviews"
+            android:textSize="20sp"
+            android:visibility="gone"
+            android:layout_marginStart="25dp"
+            android:textStyle="bold"
+            android:textColor="?colorPrimaryVariant"
+            android:layout_gravity="start"/>
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:focusable="true"/>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewReviews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:visibility="gone"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/tablerow_background"
+            android:padding="10dp"/>
         <View
             android:layout_width="match_parent"
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:background="@color/shadow"
             android:layout_height="1dp"/>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="15dp"/>
@@ -236,7 +281,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|end"
                 android:layout_weight="1"
-                android:checked="false"
+                android:checked="true"
+                android:theme="@style/Switch"
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
         </LinearLayout>
 
@@ -284,4 +330,4 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"/>
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

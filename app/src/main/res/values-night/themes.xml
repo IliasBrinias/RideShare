@@ -2,18 +2,29 @@
     <!-- Base application theme. -->
     <style name="Theme.RideShare" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryVariant">@color/blue</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">@color/darkBlue</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/lightGray</item>
-        <item name="colorSecondaryVariant">@color/orange</item>
-        <item name="colorOnSecondary">@color/gray</item>
+        <item name="colorSecondary">@color/white</item>
+        <item name="colorSecondaryVariant">@color/black</item>
+        <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorOnSecondary</item>
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
         <item name="android:actionMenuTextColor">?colorPrimary</item>
         <item name="android:itemBackground">?colorOnPrimary</item>
-<!--        <color name="mtrl_textinput_default_box_stroke_color">?colorPrimaryVariant</color>-->
+        <item name="bottomSheet">@color/grayToBlack</item>
+
+        <!--        <color name="mtrl_textinput_default_box_stroke_color">?colorPrimaryVariant</color>-->
     </style>
+    <style name="Theme.RideShare.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.RideShare.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.RideShare.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>

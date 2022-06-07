@@ -82,7 +82,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
         return stringBuilder.toString();
     }
     private void loadUserData(User u, ViewHolder holder){
-        holder.userName.setText(User.reformatLengthString(u.getFullName(),25));
+        holder.userName.setText(User.reformatLengthString(u.getFullName(),20));
         holder.userName.setVisibility(View.VISIBLE);
         u.loadUserImage(image ->
         {

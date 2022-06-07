@@ -259,8 +259,8 @@ public class ChatInfoActivity extends AppCompatActivity {
         }
     }
     private void reviewSearch() {
-        routeList.clear();
-        User.loadReviews(participantId,this::refreshData);
+        reviewList.clear();
+        User.loadReviews(participantId,50,this::refreshData);
     }
     Review userReview;
     @SuppressLint("NotifyDataSetChanged")

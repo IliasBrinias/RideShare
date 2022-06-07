@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -57,7 +57,7 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
     private Toast t;
     private TextView welcomeTitle;
-    private AutoCompleteTextView autoCompleteStartPoint,autoCompleteFinishPoint, autoCompleteDate;
+    private EditText autoCompleteStartPoint,autoCompleteFinishPoint, autoCompleteDate;
     private TableRow tableRowRideHistory,tableRowStartPoint,tableRowFinishPoint,tableRowDate;
     private JSONArray locations;
     private static JSONObject startLocation,finishLocation;

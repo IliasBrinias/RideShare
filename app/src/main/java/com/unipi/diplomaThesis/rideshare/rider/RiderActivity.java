@@ -1,7 +1,6 @@
 package com.unipi.diplomaThesis.rideshare.rider;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -110,7 +109,6 @@ public class RiderActivity extends AppCompatActivity {
                         Intent i = new Intent();
                         i.putExtra("LogOut", FirebaseAuth.getInstance().getCurrentUser().getProviderId());
                         RiderActivity.this.u.logOut(RiderActivity.this);
-                        setResult(Activity.RESULT_OK, i);
                         finish();
                         break;
                 }
@@ -121,10 +119,11 @@ public class RiderActivity extends AppCompatActivity {
         mMyApp = (MyApplication) this.getApplicationContext();
         badgeDrawableMessages = BadgeDrawable.create(this);
         startChecking();
+        u.loadTokenFCM();
     }
     public void loadUserData(User u){
-        userNameNavigationHeader.setText(User.reformatLengthString(u.getFullName(),15));
-        emailNavigationHeader.setText(User.reformatLengthString(u.getEmail(),20));
+        userNameNavigationHeader.setText(u.getFullName());
+        emailNavigationHeader.setText(u.getEmail());
         u.loadUserImage(image -> {
             imageNavigationHeader.setImageBitmap(null);
             imageNavigationHeader.setBackgroundResource(0);
@@ -136,7 +135,6 @@ public class RiderActivity extends AppCompatActivity {
             }
         });
     }
-
     boolean doubleBackToExitPressedOnce = false;
 
     @Override

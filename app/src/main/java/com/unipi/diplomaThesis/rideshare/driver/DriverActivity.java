@@ -97,6 +97,7 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
         badgeDrawableRequests = BadgeDrawable.create(this);
         badgeDrawableMessages = BadgeDrawable.create(this);
         startChecking();
+        userDriver.loadTokenFCM();
     }
     public void loadUserData(User u){
         userNameNavigationHeader.setText(User.reformatLengthString(u.getFullName(),20));
@@ -256,4 +257,5 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
             BadgeUtils.attachBadgeDrawable(badgeDrawableMessages,topAppBar,R.id.messages);
         });
     }
+
 }

@@ -121,14 +121,15 @@
             android:layout_height="wrap_content"
             android:background="?colorOnPrimary"
             android:scaleType="fitXY"
-            android:src="@drawable/ic_smiley_blue" />
+            android:src="@drawable/ic_smiley_blue"
+            android:backgroundTint="?colorOnSecondary"/>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentContainerView"
             android:name="com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteDirectionsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?colorOnPrimary" />
+            android:background="?colorOnSecondary" />
     </LinearLayout>
     <ProgressBar
         android:id="@+id/progressBarSave"

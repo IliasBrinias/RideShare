@@ -7,7 +7,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -120,12 +119,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }else {holder.time.setVisibility(View.GONE);}
         holder.message.setText(messageList.get(position).getMessage());
         holder.linearLayout.setPadding(10, setPadding(position),10,10);
-        if (participantProfileBitmap == null) {
-            holder.receiverImage.setVisibility(View.GONE);
-            return;
-        }
-        holder.receiverImage.setVisibility(View.VISIBLE);
-        holder.receiverImage.setImageBitmap(participantProfileBitmap);
     }
     private int setPadding(int position){
         if (position==0) return 10;
@@ -163,14 +156,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
     public static class ViewHolderReceiver extends RecyclerView.ViewHolder{
         TextView time, message;
-        ImageView receiverImage;
         LinearLayout linearLayout;
 
         public ViewHolderReceiver(@NonNull View v) {
             super(v);
             time = v.findViewById(R.id.textViewTimeReceiver);
             message = v.findViewById(R.id.textViewMessageReceive);
-            receiverImage = v.findViewById(R.id.userImage);
             linearLayout = v.findViewById(R.id.linearLayoutReceive);
         }
     }

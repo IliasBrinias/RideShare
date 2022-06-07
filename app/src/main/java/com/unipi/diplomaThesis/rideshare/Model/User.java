@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -55,6 +56,7 @@ public class User {
     private String email;
     private String fullName;
     private String description;
+    private String token_FCM;
     private String type = Rider.class.getSimpleName();
     private long birthDay = 0;
     private Map<String,UserRating> userRating;
@@ -70,6 +72,14 @@ public class User {
         this.email = email;
         this.fullName = fullName;
         this.type =type;
+    }
+
+    public String getToken_FCM() {
+        return token_FCM;
+    }
+
+    public void setToken_FCM(String token_FCM) {
+        this.token_FCM = token_FCM;
     }
 
     public ArrayList<String> getMessageSessionId() {
@@ -164,7 +174,17 @@ public class User {
         return isNull;
     }
 
-    public void saveUserPersonalData(ImageView profile, String newName, String newEmail, long newBirthday,OnCompleteListener<Void> onDataUpdate, OnCompleteListener<UploadTask.TaskSnapshot> onUploadComplete){
+    /**
+     * This method is used from personal Data for the update user data
+     * @param c
+     * @param profile
+     * @param newName
+     * @param newEmail
+     * @param newBirthday
+     * @param onDataUpdate
+     * @param onUploadComplete
+     */
+    public void saveUserPersonalData(Context c,ImageView profile, String newName, String newEmail, long newBirthday,OnCompleteListener<Void> onDataUpdate, OnCompleteListener<UploadTask.TaskSnapshot> onUploadComplete){
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName())
                 .child(this.getUserId());
@@ -189,43 +209,14 @@ public class User {
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
+        if (profile.getBackground() == c.getDrawable(R.drawable.ic_default_profile)) profile =null;
         saveUserImage(getByteArray(profile), onUploadComplete);
     }
-    @Nullable
-    public static User loadUserInstance(Context c){
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(c);
-        String type = preferences.getString(REQ_TYPE_TAG,null);
-        if (type == null) return null;
-        Gson gson = new Gson();
-        String json = preferences.getString(User.class.getSimpleName(), null);
-        if (type.equals(Driver.class.getSimpleName())){
-            return gson.fromJson(json, Driver.class);
-        }else {
-            return gson.fromJson(json, Rider.class);
-        }
-    }
-    public static void loadSignInUser(OnUserLoadComplete onUserLoadComplete){
-        String userId = FirebaseAuth.getInstance().getUid();
-        //load the user
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        database.child(User.class.getSimpleName())
-                .child(userId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.child(User.REQ_TYPE_TAG).getValue(String.class).equals(Driver.class.getSimpleName())){
-                            onUserLoadComplete.returnedUser(snapshot.getValue(Driver.class));
-                        }else {
-                            onUserLoadComplete.returnedUser(snapshot.getValue(Rider.class));
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-
+    public void saveUserImage(byte[] userImage, OnCompleteListener<UploadTask.TaskSnapshot> onCompleteListener){
+        FirebaseStorage.getInstance().getReference()
+                .child(User.class.getSimpleName())
+                .child(this.userId)
+                .putBytes(userImage).addOnCompleteListener(onCompleteListener);
     }
     public void saveUserInstance(Activity a){
         PreferenceManager.getDefaultSharedPreferences(a).edit()
@@ -235,12 +226,11 @@ public class User {
         PreferenceManager.getDefaultSharedPreferences(a).edit()
                 .putString(User.class.getSimpleName(),json).apply();
     }
-    public static void saveUser(@NonNull User u, OnCompleteUserSave onCompleteUserSave){
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
-                .child(User.class.getSimpleName());
-        if (u.userId == null) u.userId = FirebaseAuth.getInstance().getUid();
-        databaseReference.child(u.userId).setValue(u).addOnCompleteListener(onCompleteUserSave::onComplete);
-    }
+
+    /**
+     * Load Authenticated signIn user from the Firebase
+     * @param onImageLoad
+     */
     public void loadUserImage(OnImageLoad onImageLoad) {
         try {
             File f = File.createTempFile("ProfileImage", ".jpg");
@@ -261,46 +251,23 @@ public class User {
             e.printStackTrace();
         }
     }
-    public void saveUserImage(byte[] userImage, OnCompleteListener<UploadTask.TaskSnapshot> onCompleteListener){
-        FirebaseStorage.getInstance().getReference()
-                .child(User.class.getSimpleName())
-                .child(this.userId)
-        .putBytes(userImage).addOnCompleteListener(onCompleteListener);
-    }
-    public void logOut(Context c){
-//        log Out from FirebaseAuth
-        FirebaseAuth.getInstance().signOut();
-//        clear the user from the preferences
-        PreferenceManager.getDefaultSharedPreferences(c)
-                .edit().clear().apply();
-    }
-    public static void loadUser(String userId, OnUserLoadComplete onUserLoadComplete){
+
+    public void stopLoadingMessages(MessageSession messageSession) {
         FirebaseDatabase.getInstance().getReference()
-                .child(User.class.getSimpleName())
-                .child(userId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        onUserLoadComplete.returnedUser(snapshot.getValue(User.class));
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+                .child(MessageSession.class.getSimpleName())
+                .child(messageSession.getMessageSessionId())
+                .child("messages").orderByChild("timestamp")
+                .limitToLast(100)
+                .removeEventListener(loadMessages);
     }
-    public static byte[] getByteArray(ImageView imageView){
-        // Get the data from an ImageView as bytes
-        imageView.setDrawingCacheEnabled(true);
-        imageView.buildDrawingCache();
-        Bitmap bitmap = imageView.getDrawingCache();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-        return data;
-    }
-    public void sendMessageTo(MessageSession messageSession, Message m, OnCompleteListener<Void> onCompleteListener){
+
+    /**
+     * This method is used From the ChatActivity. Saves the new message on database
+     * @param messageSession
+     * @param m
+     * @param onCompleteListener
+     */
+    public void sendMessageTo(Activity activity,User participant,MessageSession messageSession, Message m, OnCompleteListener<Void> onCompleteListener){
         if (m.getMessage().endsWith("\n")){
             m.setMessage(m.getMessage().substring(0,m.getMessage().length()-1));
         }
@@ -312,43 +279,30 @@ public class User {
         m.setMessageId(ref.push().getKey());
         ref.child(m.getMessageId())
                 .setValue(m).addOnCompleteListener(onCompleteListener);
+        sendNotification(activity,participant,messageSession,m);
     }
-    public void loadLastRoutes(OnActiveRouteResponse onActiveRouteResponse, OnPreviousRouteResponse onPreviousRouteResponse){
+    private void messageSeen(MessageSession messageSession,Message m){
         FirebaseDatabase.getInstance().getReference()
-                .child(User.class.getSimpleName())
-                .child(FirebaseAuth.getInstance().getUid())
-                .child("lastRoutes")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        ArrayList<String> lastRoutes = (ArrayList<String>) snapshot.getValue();
-                        if (lastRoutes == null) return;
-                        for (String routeId:lastRoutes){
-                            Route.loadRoute(routeId, route -> {
-                                if (route.getRouteDateTime().getEndDateUnix()<=new Date().getTime()){
-                                    User.loadUser(route.getDriverId(), u -> onPreviousRouteResponse.returnRoute(route,u));
-                                }else {
-                                    User.loadUser(route.getDriverId(), u -> onActiveRouteResponse.returnRoute(route,u));
-                                }
-                            });
-                        }
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {}
-                });
+                .child(MessageSession.class.getSimpleName())
+                .child(messageSession.getMessageSessionId())
+                .child("messages")
+                .child(m.getMessageId())
+                .child("seen").setValue(true);
     }
-    public static void mutualRoutes(Driver driver, Rider rider, OnRouteResponse onRouteResponse){
-        for (String routeId:driver.getLastRoutes()){
-            Route.loadRoute(routeId, route->{
-                for (String p:route.getPassengersId()){
-                    if (p.equals(rider.getUserId())){
-                        onRouteResponse.returnedRoute(route);
-                    }
-                }
-            });
-        }
+    FcmNotificationsSender fcmNotificationsSender;
+    private void sendNotification(Activity a,User sender,MessageSession messageSession,Message message){
+        fcmNotificationsSender = new FcmNotificationsSender(sender.token_FCM,
+                Message.class.getSimpleName(),
+                messageSession.getMessageSessionId(),
+                sender.getFullName(),
+                message.getMessage(),
+                a);
+        fcmNotificationsSender.SendNotifications();
     }
-
+    /**
+     * Returns Users MessageSession
+     * @param onReturnedIds
+     */
     public void getMessageSessionId(OnReturnedIds onReturnedIds){
         FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName())
@@ -370,10 +324,10 @@ public class User {
                     }
                 });
     }
-    private void makeMessageSessionSeen(MessageSession messageSession){
+    private void makeMessageSessionSeen(String messageSessionId){
         FirebaseDatabase.getInstance().getReference()
                 .child(MessageSession.class.getSimpleName())
-                .child(messageSession.getMessageSessionId())
+                .child(messageSessionId)
                 .child("seen").setValue(true);
 
     }
@@ -392,7 +346,7 @@ public class User {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         MessageSession messageSession = new MessageSession();
                         messageSession.setMessageSessionId(snapshot.getKey());
-                        if (!messageSession.isSeen()) makeMessageSessionSeen(messageSession);
+                        if (!messageSession.isSeen()) makeMessageSessionSeen(id);
                         if (!snapshot.hasChild("participants")) return;
                         messageSession.setParticipants((ArrayList<String>) snapshot.child("participants").getValue());
                         messageSession.setCreationTimestamp(snapshot.child("creationTimestamp").getValue(Long.class));
@@ -465,29 +419,48 @@ public class User {
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
-    public void stopLoadingMessages(MessageSession messageSession) {
-        FirebaseDatabase.getInstance().getReference()
-                .child(MessageSession.class.getSimpleName())
-                .child(messageSession.getMessageSessionId())
-                .child("messages").orderByChild("timestamp")
-                .limitToLast(100)
-                .removeEventListener(loadMessages);
+    public static void mutualRoutes(Driver driver, Rider rider, OnRouteResponse onRouteResponse){
+        for (String routeId:driver.getLastRoutes()){
+            Route.loadRoute(routeId, route->{
+                for (String p:route.getPassengersId()){
+                    if (p.equals(rider.getUserId())){
+                        onRouteResponse.returnedRoute(route);
+                    }
+                }
+            });
+        }
     }
-    private void messageSeen(MessageSession messageSession,Message m){
+    public void loadLastRoutes(OnActiveRouteResponse onActiveRouteResponse, OnPreviousRouteResponse onPreviousRouteResponse){
         FirebaseDatabase.getInstance().getReference()
-                .child(MessageSession.class.getSimpleName())
-                .child(messageSession.getMessageSessionId())
-                .child("messages")
-                .child(m.getMessageId())
-                .child("seen").setValue(true);
+                .child(User.class.getSimpleName())
+                .child(FirebaseAuth.getInstance().getUid())
+                .child("lastRoutes")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        ArrayList<String> lastRoutes = (ArrayList<String>) snapshot.getValue();
+                        if (lastRoutes == null) return;
+                        for (String routeId:lastRoutes){
+                            Route.loadRoute(routeId, route -> {
+                                if (route.getRouteDateTime().getEndDateUnix()<=new Date().getTime()){
+                                    User.loadUser(route.getDriverId(), u -> onPreviousRouteResponse.returnRoute(route,u));
+                                }else {
+                                    User.loadUser(route.getDriverId(), u -> onActiveRouteResponse.returnRoute(route,u));
+                                }
+                            });
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                });
     }
 
-    public static void loadReviews(String driverId,OnReviewResponse onReviewResponse){
+    public static void loadReviews(String driverId,int limit,OnReviewResponse onReviewResponse){
         FirebaseDatabase.getInstance().getReference()
                 .child(Review.class.getSimpleName())
                 .child(driverId)
                 .orderByChild("timestamp")
-                .limitToLast(100)
+                .limitToLast(limit)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -522,12 +495,105 @@ public class User {
                 });
     }
 
+    public void logOut(Context c){
+//        log Out from FirebaseAuth
+        FirebaseAuth.getInstance().signOut();
+//        clear the user from the preferences
+        PreferenceManager.getDefaultSharedPreferences(c)
+                .edit().clear().apply();
+    }
+
     public static String reformatLengthString(String s, int bounds){
         StringBuilder stringBuilder = new StringBuilder(s);
-        if (stringBuilder.length()>=bounds-4){
-            return stringBuilder.substring(0,bounds-4) +"...";
+        if (stringBuilder.length()>=bounds-3){
+            return stringBuilder.substring(0,bounds-3) +"...";
         }else {
             return s;
         }
     }
+    @Nullable
+    public static User loadUserInstance(Context c){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(c);
+        String type = preferences.getString(REQ_TYPE_TAG,null);
+        if (type == null) return null;
+        Gson gson = new Gson();
+        String json = preferences.getString(User.class.getSimpleName(), null);
+        if (type.equals(Driver.class.getSimpleName())){
+            return gson.fromJson(json, Driver.class);
+        }else {
+            return gson.fromJson(json, Rider.class);
+        }
+    }
+    public static void loadSignInUser(OnUserLoadComplete onUserLoadComplete){
+        String userId = FirebaseAuth.getInstance().getUid();
+        //load the user
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child(User.class.getSimpleName())
+                .child(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.child(User.REQ_TYPE_TAG).getValue(String.class).equals(Driver.class.getSimpleName())){
+                            onUserLoadComplete.returnedUser(snapshot.getValue(Driver.class));
+                        }else {
+                            onUserLoadComplete.returnedUser(snapshot.getValue(Rider.class));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+    }
+    public static void saveUser(@NonNull User u, OnCompleteUserSave onCompleteUserSave){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName());
+        if (u.userId == null) u.userId = FirebaseAuth.getInstance().getUid();
+        databaseReference.child(u.userId).setValue(u).addOnCompleteListener(onCompleteUserSave::onComplete);
+    }
+    public static void loadUser(String userId, OnUserLoadComplete onUserLoadComplete){
+        FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName())
+                .child(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        onUserLoadComplete.returnedUser(snapshot.getValue(User.class));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+    public static byte[] getByteArray(ImageView imageView){
+        // Get the data from an ImageView as bytes
+        imageView.setDrawingCacheEnabled(true);
+        imageView.buildDrawingCache();
+        Bitmap bitmap = imageView.getDrawingCache();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+        return data;
+    }
+    public void loadTokenFCM(){
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                if (task.isSuccessful()){
+                    FirebaseDatabase.getInstance().getReference()
+                            .child(User.class.getSimpleName())
+                            .child(FirebaseAuth.getInstance().getUid())
+                            .child("token_FCM")
+                            .setValue(task.getResult());
+                    FirebaseMessaging.getInstance().subscribeToTopic("all");
+                }
+            }
+        });
+
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.unipi.diplomaThesis.rideshare.Model;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,7 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnDataReturn;
 import com.unipi.diplomaThesis.rideshare.Interface.OnProcedureComplete;
 import com.unipi.diplomaThesis.rideshare.Interface.OnRouteSearchResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
+import com.unipi.diplomaThesis.rideshare.R;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -153,13 +155,24 @@ public class Rider extends User{
             return false;
         }
     }
-    public void makeRequest(Request request, OnCompleteListener<Void> onCompleteListener){
+    public void makeRequest(Activity activity, User driver, Route route, Request request, OnCompleteListener<Void> onCompleteListener){
         request.setSeen(false);
         FirebaseDatabase.getInstance().getReference()
                 .child(Request.class.getSimpleName())
                 .child(request.getRouteId())
                 .child(request.getRiderId())
-                .setValue(request).addOnCompleteListener(onCompleteListener);
+                .setValue(request).addOnCompleteListener( task -> {
+                    FcmNotificationsSender fcmNotificationsSender = new FcmNotificationsSender(
+                        driver.getToken_FCM(),
+                        Request.class.getSimpleName(),
+                        null,
+                        driver.getFullName(),
+                        Rider.this.getFullName()+" "+activity.getString(R.string.is_instrested_for)+" "+route.getName(),
+                        activity
+                    );
+                    fcmNotificationsSender.SendNotifications();
+                    onCompleteListener.onComplete(task);
+                });
     }
     public static void loadUser(String userId, OnUserLoadComplete onUserLoadComplete){
         FirebaseDatabase.getInstance().getReference()
@@ -201,7 +214,8 @@ public class Rider extends User{
                         if (task.isSuccessful()){
                             deleteAccountDataDatabase(complete ->{
                                 if (complete){
-                                    user.delete().addOnCompleteListener(onCompleteListener);
+//                                    user.delete().addOnCompleteListener(onCompleteListener);
+                                    onCompleteListener.onComplete(task);
                                 }
                             });
                         }else {

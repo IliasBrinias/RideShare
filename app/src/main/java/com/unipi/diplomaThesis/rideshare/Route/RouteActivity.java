@@ -79,7 +79,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     private PolylineOptions directions;
     ImageView circleImageDriver, imageViewCarImage;
     ImageButton imageViewClose;
-    TableRow tableRowShowRepeat;
+    TableRow tableRowShowRepeat,tableRowRating;
     TextView driverName,
             originRoute,
             destinationRoute,
@@ -254,6 +254,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void loadBottomSheetElements(View v){
+        tableRowRating = v.findViewById(R.id.tableRowRating);
         circleImageDriver = v.findViewById(R.id.circleImageDriver);
         circleImageDriver.setVisibility(View.INVISIBLE);
         imageViewCarImage = v.findViewById(R.id.imageViewCarImage);
@@ -274,6 +275,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         sliderRiderCapacityFrom = v.findViewById(R.id.sliderRideCapacityFrom);
         sliderRiderCapacityTo = v.findViewById(R.id.sliderRideCapacityTo);
         contactDriver = v.findViewById(R.id.buttonContactDriver);
+        tableRowRating.setVisibility(View.GONE);
         tableRowShowRepeat.setOnClickListener(this::showRepeat);
         if (user instanceof Driver){
             contactDriver.setVisibility(View.GONE);
@@ -297,7 +299,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                     circleImageDriver.setVisibility(View.VISIBLE);
                 });
                 driverName.setText(User.reformatLengthString(driverUser.getFullName(),20));
-                carName.setText(User.reformatLengthString(driverUser.getOwnedCar().getCarName(),25));
+                carName.setText(User.reformatLengthString(driverUser.getOwnedCar().getCarName(),18));
                 carPlate.setText(driverUser.getOwnedCar().getCarPlates());
                 carYear.setText(driverUser.getOwnedCar().getYear());
                 driverUser.loadCarImage(image -> {
@@ -311,6 +313,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                     imageViewCarImage.setVisibility(View.VISIBLE);
                 });
                 driverUser.loadReviewTotalScore(driverUser.getUserId(),((totalScore, reviewCount) -> {
+                    if (reviewCount == 0) return;
                     ratingBar.setRating(totalScore);
                     ratingAverage.setText(String.valueOf(totalScore));
                     ratingCount.setText(" ("+reviewCount+")");
@@ -324,7 +327,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         final View dialogView = View.inflate(this, R.layout.request_route_alert_dialog, null);
         AlertDialog alertDialog = new AlertDialog.Builder(this,android.R.style.Theme_Material_Dialog).setView(dialogView).create();
         alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-        alertDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.alert_dialog_background));
+        alertDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.tablerow_background));
         EditText description= dialogView.findViewById(R.id.editTextDesription);
         dialogView.findViewById(R.id.buttonSendRequest).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -336,7 +339,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                         description.getText().toString(),
                         new Date().getTime(),
                         distanceDeviation,false);
-                ((Rider) user).makeRequest(request, new OnCompleteListener<Void>() {
+                ((Rider) user).makeRequest(RouteActivity.this ,driverUser, r,request, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()){

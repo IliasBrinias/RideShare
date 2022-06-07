@@ -16,7 +16,7 @@
         android:bottom="1dp">
 
         <shape android:shape="rectangle">
-            <solid android:color="?colorOnPrimary"/>
+            <solid android:color="?colorSecondaryVariant"/>
             <corners android:radius="200dp" />
         </shape>
     </item>

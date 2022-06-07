@@ -42,7 +42,7 @@
                 android:id="@+id/tableRowRideHistory"
                 android:layout_width="330dp"
                 android:layout_height="280dp"
-                android:background="@drawable/background_route_list_item"
+                android:background="@drawable/tablerow_background"
                 android:elevation="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -83,10 +83,12 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </TableRow>
+
             <ListView
                 android:id="@+id/listView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -159,14 +161,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:placeholderText="@string/route_search_from"
+                app:placeholderTextColor="@color/shadow"
                 app:startIconDrawable="@drawable/ic_location_point">
 
-                <AutoCompleteTextView
+                <EditText
                     android:id="@+id/autoCompleteEmail"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/search_shape_background"
                     android:focusable="true"
+                    android:textColor="@color/gray"
                     android:fontFamily="@font/trebuc"
                     tools:ignore="TouchTargetSizeCheck" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -207,15 +211,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:placeholderText="@string/where_to"
+                app:placeholderTextColor="@color/shadow"
                 app:startIconDrawable="@drawable/ic_finish_route"
                 app:startIconTint="@null">
 
-                <AutoCompleteTextView
+                <EditText
                     android:id="@+id/autoCompleteFinishPoint"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/search_shape_background"
                     android:focusable="true"
+                    android:textColor="@color/gray"
                     android:fontFamily="@font/trebuc"
                     tools:ignore="TouchTargetSizeCheck" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -253,15 +259,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:placeholderText="@string/at"
+                app:placeholderTextColor="@color/shadow"
                 app:startIconDrawable="@drawable/ic_date"
                 >
 
-                <AutoCompleteTextView
+                <EditText
                     android:id="@+id/autoCompleteDateRoute"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/search_shape_background"
                     android:focusable="true"
+                    android:textColor="@color/gray"
                     android:fontFamily="@font/trebuc"
                     tools:ignore="TouchTargetSizeCheck"/>
             </com.google.android.material.textfield.TextInputLayout>

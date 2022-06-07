@@ -64,7 +64,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setLayoutManager(linearLayoutManager);
         chatAdapter = new ChatAdapter(this,messageList, senderUser.getUserId(),userImageBitmap);
         recyclerView.setAdapter(chatAdapter);
-        RouteSearch();
+        messageSearch();
         loadParticipantData();
         mMyApp = (MyApplication) this.getApplicationContext();
     }
@@ -89,7 +89,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(i);
         }else if (view.getId() == buttonSend.getId()){
             Message m = new Message(null,senderUser.getUserId(),userMessage.getText().toString(),new Date().getTime(),false);
-            senderUser.sendMessageTo(messageSession,m,null);
+            senderUser.sendMessageTo(this,participant,messageSession,m,null);
             userMessage.setText("");
             closeKeyboard(this,userMessage.getWindowToken());
             recyclerView.smoothScrollToPosition(chatAdapter.getItemCount());
@@ -116,7 +116,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         }, 500);
     }
-    private void RouteSearch() {
+    private void messageSearch() {
         messageList.clear();
         senderUser.loadMessages(messageSession,this::refreshData);
     }
@@ -124,6 +124,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         InputMethodManager mgr = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(windowToken, 0);
     }
+    User participant;
     public void loadParticipantData(){
         ArrayList<String> participants = messageSession.getParticipants();
         String participantId="";
@@ -140,6 +141,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void returnedUser(User u) {
+                participant = u;
                 u.loadUserImage(image ->
                 {
                     imageViewUser.setImageBitmap(null);
@@ -151,10 +153,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     chatAdapter.notifyDataSetChanged();
                 });
-                userName.setText(User.reformatLengthString(u.getFullName(),16));
+                userName.setText(User.reformatLengthString(u.getFullName(),20));
 
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override

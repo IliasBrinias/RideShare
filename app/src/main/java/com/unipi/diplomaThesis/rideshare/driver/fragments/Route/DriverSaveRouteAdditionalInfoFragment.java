@@ -113,7 +113,7 @@ public class DriverSaveRouteAdditionalInfoFragment extends Fragment {
         final View dialogView = View.inflate(getActivity(), R.layout.delete_passenger_alert_dialog, null);
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity(),android.R.style.Theme_Material_Dialog).setView(dialogView).create();
         alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-        alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.alert_dialog_background));
+        alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.tablerow_background));
         View passengerInfo = dialogView.findViewById(R.id.passengerView);
         ImageView userImage = passengerInfo.findViewById(R.id.imageViewProfile);
         TextView userName = passengerInfo.findViewById(R.id.textViewUserName);

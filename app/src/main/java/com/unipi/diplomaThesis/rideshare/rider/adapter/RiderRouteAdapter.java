@@ -148,7 +148,7 @@ public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.Vi
                 }
             }
         });
-        holder.driverName.setText(User.reformatLengthString(driver.getFullName(),25));
+        holder.driverName.setText(User.reformatLengthString(driver.getFullName(),18));
         try {
             holder.reviewCount.setText(driver.getUserRating().size());
             Double finalRate = 0.;

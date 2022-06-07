@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -25,7 +26,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -33,6 +36,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -45,15 +50,19 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.UploadTask;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
+import com.unipi.diplomaThesis.rideshare.Model.Review;
 import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.driver.DriverActivity;
+import com.unipi.diplomaThesis.rideshare.messenger.adapter.ReviewAdapter;
 import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -72,6 +81,12 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
     long tempUserBirthday=0;
     Bitmap userImage=null;
     TextInputLayout textInputLayoutOnlyForColor;
+    ReviewAdapter reviewAdapter;
+    RecyclerView recyclerView;
+    RatingBar ratingBar;
+    List<Review> reviewList = new ArrayList<>();
+    TextView textViewReviewTitle;
+
     public PersonalDataFragment() {
         // Required empty public constructor
     }
@@ -81,7 +96,6 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
         super.onCreate(savedInstanceState);
 
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -95,6 +109,21 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
         }catch (ClassCastException classCastException){
             classCastException.fillInStackTrace();
             getActivity().finish();
+        }
+        if (u.getType().equals(Driver.class.getSimpleName())) {
+            textViewReviewTitle = v.findViewById(R.id.textViewReviewTitle);
+            ratingBar = v.findViewById(R.id.ratingBar);
+            recyclerView = v.findViewById(R.id.recyclerViewReviews);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            reviewAdapter = new ReviewAdapter(reviewList);
+            recyclerView.setAdapter(reviewAdapter);
+            recyclerView.setNestedScrollingEnabled(false);
+            reviewSearch();
+            ((Driver) u).loadReviewTotalScore(u.getUserId(), (totalScore, reviewCount) -> {
+                ratingBar.setRating(totalScore);
+                ratingBar.setIndeterminate(true);
+            });
         }
 //          images
         profile = v.findViewById(R.id.circleImageViewPersonalDateUserImage);
@@ -128,7 +157,22 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
         loadUserData();
         return v;
     }
+    private void loadReviewView(View reviews) {
+    }
 
+    private void reviewSearch() {
+        reviewList.clear();
+        User.loadReviews(u.getUserId(),5,this::refreshData);
+    }
+    @SuppressLint("NotifyDataSetChanged")
+    private void refreshData(Review review){
+        if (review==null) return;
+        reviewList.add(review);
+        reviewAdapter.notifyDataSetChanged();
+        ratingBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
+        textViewReviewTitle.setVisibility(View.VISIBLE);
+    }
 
     @SuppressLint("NonConstantResourceId")
     private void loadImageFromPhone(){
@@ -199,7 +243,7 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
         final View dialogView = View.inflate(getActivity(), R.layout.date_time_picker, null);
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity(),android.R.style.Theme_Material_Dialog).setView(dialogView).create();
         alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-        alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.alert_dialog_background));
+        alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.tablerow_background));
         TimePicker timePicker = dialogView.findViewById(R.id.time_picker);
         DatePicker datePicker = dialogView.findViewById(R.id.date_picker);
         DatePicker datePickerSpinner = dialogView.findViewById(R.id.date_pickerSpinner);
@@ -232,7 +276,7 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
         final View dialogView = View.inflate(getActivity(), R.layout.delete_account_alert_dialog, null);
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity(),android.R.style.Theme_Material_Dialog).setView(dialogView).create();
         alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-        alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.alert_dialog_background));
+        alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.tablerow_background));
         EditText password = dialogView.findViewById(R.id.textInputPassword);
         TextInputLayout passwordLayout = dialogView.findViewById(R.id.textInputPasswordLayout);
         ProgressBar progressBar = dialogView.findViewById(R.id.progressBar);
@@ -273,7 +317,7 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
         final View dialogView = View.inflate(getActivity(), R.layout.personal_data_save_alert_dialog, null);
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity(),android.R.style.Theme_Material_Dialog).setView(dialogView).create();
         alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-        alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.alert_dialog_background));
+        alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.tablerow_background));
         EditText password = dialogView.findViewById(R.id.textInputPassword);
         TextInputLayout passwordLayout = dialogView.findViewById(R.id.textInputPasswordLayout);
         ProgressBar progressBar = dialogView.findViewById(R.id.progressBar);
@@ -317,7 +361,7 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isComplete()) {
-                                        updateData(alertDialog, progressBar);
+                                        updateData(getActivity(),alertDialog, progressBar);
                                     } else {
                                         switch (((FirebaseAuthException) task.getException()).getErrorCode()) {
                                             case "ERROR_INVALID_EMAIL":
@@ -330,13 +374,13 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
                                 }
                             });
                         }else {
-                            updateData(alertDialog, progressBar);
+                            updateData(getActivity(),alertDialog, progressBar);
                         }
                     }
                 });
     }
-    private void updateData(AlertDialog alertDialog, ProgressBar progressBar){
-        u.saveUserPersonalData(profile, name.getText().toString(), email.getText().toString(), tempUserBirthday,
+    private void updateData(Context c, AlertDialog alertDialog, ProgressBar progressBar){
+        u.saveUserPersonalData(c,profile, name.getText().toString(), email.getText().toString(), tempUserBirthday,
                 new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -376,7 +420,7 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
         final View dialogView = View.inflate(getActivity(), R.layout.personal_data_save_alert_dialog, null);
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity(),android.R.style.Theme_Material_Dialog).setView(dialogView).create();
         alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-        alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.alert_dialog_background));
+        alertDialog.getWindow().setBackgroundDrawable(getActivity().getDrawable(R.drawable.tablerow_background));
         EditText password = dialogView.findViewById(R.id.textInputPassword);
         TextInputLayout passwordLayout = dialogView.findViewById(R.id.textInputPasswordLayout);
         EditText newPassword = dialogView.findViewById(R.id.textInputNewPassword);

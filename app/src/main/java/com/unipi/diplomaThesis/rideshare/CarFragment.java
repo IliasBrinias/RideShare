@@ -44,9 +44,11 @@ import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class CarFragment extends Fragment implements TextWatcher {
+    private static final int MAX_CAR_YEAR = 30;
     private final int LOAD_IMAGE_CODE = 13;
     private static final int PICK_FROM_GALLERY = 43;
 
@@ -94,7 +96,8 @@ public class CarFragment extends Fragment implements TextWatcher {
         buttonSaveCar.setOnClickListener(this::saveCar);
         carPlateLayout.setEndIconVisible(false);
         carPlate.addTextChangedListener(this);
-        carModel.addTextChangedListener(this);
+        carYear.addTextChangedListener(this);
+
         try {
             user = User.loadUserInstance(getActivity());
             if (user instanceof Driver) {
@@ -249,6 +252,28 @@ public class CarFragment extends Fragment implements TextWatcher {
                 carPlateLayout.setBoxStrokeColor(Color.RED);
                 carPlateLayout.setHintTextColor(ColorStateList.valueOf(Color.RED));
                 carPlateLayout.setStartIconTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }else if (charSequence.hashCode() == carYear.getText().hashCode()){
+            if (charSequence.toString().matches("[1-2][0-9]{3}")){
+                carYear.setError(null);
+                if (Calendar.getInstance().get(Calendar.YEAR) - Integer.parseInt(charSequence.toString())>MAX_CAR_YEAR){
+//                    TODO: ADD this strings to new xml
+                    carYear.setError(getString(R.string.too_old_car));
+                }
+            }else {
+                carYear.setError(getString(R.string.wrong_date));
+            }
+            if (carYear.getError() == null && carYear.getText() != null){
+                carYearLayout.setEndIconVisible(true);
+                carYearLayout.setBoxStrokeColor(Color.GREEN);
+                carYearLayout.setHintTextColor(ColorStateList.valueOf(Color.GREEN));
+                carYearLayout.setEndIconTintList(ColorStateList.valueOf(Color.GREEN));
+                carYearLayout.setStartIconTintList(ColorStateList.valueOf(Color.GREEN));
+            }else{
+                carYearLayout.setEndIconVisible(false);
+                carYearLayout.setBoxStrokeColor(Color.RED);
+                carYearLayout.setHintTextColor(ColorStateList.valueOf(Color.RED));
+                carYearLayout.setStartIconTintList(ColorStateList.valueOf(Color.RED));
             }
         }
 

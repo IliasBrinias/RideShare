@@ -47,7 +47,7 @@ public class DriverRouteListFragment extends Fragment {
     private List<Route> routeList = new ArrayList<>();
     private DriverRouteListAdapter driverRouteListAdapter;
     TableRow tableRowAddRoute;
-    Map<Integer,Boolean> clicked = new HashMap<>();
+    Map<String,Boolean> clicked = new HashMap<>();
 
     public DriverRouteListFragment() {
     }
@@ -108,9 +108,8 @@ public class DriverRouteListFragment extends Fragment {
 
             @Override
             public void itemClick(View v, View slide, ImageView show, ImageView edit, ImageView delete, int position) {
-
-                clicked.putIfAbsent(v.getId(), true);
-                if(clicked.get(v.getId())){
+                clicked.putIfAbsent(routeList.get(position).getRouteId(), true);
+                if(clicked.get(routeList.get(position).getRouteId())){
                     TranslateAnimation animate0 = new TranslateAnimation(0, -slide.getWidth(), 0, 0);
                     animate0.setDuration(500);
                     animate0.setFillAfter(true);
@@ -156,7 +155,7 @@ public class DriverRouteListFragment extends Fragment {
                     animate2.setFillAfter(true);
                     slide.startAnimation(animate2);
                 }
-                clicked.put(v.getId(),!clicked.get(v.getId()));
+                clicked.put(routeList.get(position).getRouteId(),!clicked.get(routeList.get(position).getRouteId()));
             }
 
         });

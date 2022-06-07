@@ -109,13 +109,17 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
         this.googleMap = googleMap;
         m = new MapDrawer(getActivity(),googleMap);
         m.setEdgesOffsetFromTheMap(0.2);
-        if (originLocation==null & destinationLocation==null) {
+        if (originLocation==null & destinationLocation==null & routeLatLng!=null) {
             loadRoute();
             loadPlaceId();
         }
     }
     private void loadRoute(){
         if (routeLatLng!=null){
+            submitStep.setVisibility(View.GONE);
+            tableRowEditRoute.setVisibility(View.VISIBLE);
+            nextStep.setVisibility(View.VISIBLE);
+            if (startingPoint==null || destinationPoint == null) return;
             mapView.getViewTreeObserver().addOnGlobalLayoutListener(
                     new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
@@ -125,9 +129,6 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
                             m.zoomToDirection(mapView,startingPoint,destinationPoint);
                         }
                     });
-            submitStep.setVisibility(View.GONE);
-            tableRowEditRoute.setVisibility(View.VISIBLE);
-            nextStep.setVisibility(View.VISIBLE);
         }
     }
     private void loadPlaceId(){
@@ -265,6 +266,7 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
             closeKeyboard(getActivity(),destinationTextView.getWindowToken());
         }
         if (originLocation==null||destinationLocation==null) return;
+        if (startingPoint==null || destinationPoint == null) return;
         m.directions(apiKey,jsonToLatLng(originLocation),jsonToLatLng(destinationLocation),mapView);
         m.zoomToDirection(mapView,startingPoint,destinationPoint);
     }

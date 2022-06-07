@@ -6,6 +6,7 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
+    <color name="grayToBlack">#55000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#3DDC84</color>
     <color name="orange">#d6670e</color>
@@ -16,6 +17,7 @@
     <color name="grayDust">#FFA8A8A8</color>
     <color name="red">#FF0000</color>
     <color name="blue">#31A7DF</color>
+    <color name="darkBlue">#0F3E50</color>
     <color name="lightBlue">#4F0892D3</color>
     <color name="shadow">#FFD5D5D5</color>
     <color name="navigationBackground">#FFF2F2F2</color>
@@ -24,6 +26,8 @@
     <color name="sliderOrange">#FFAA00</color>
     <color name="sliderRed">#FF0000</color>
     <color name="lastRoutesShadow">#82F1F1F1</color>
+    <color name="navItemBack">#FFF2F2F2</color>
+
     <color name="backgroundBlue">
         <gradient
             android:startColor = "#FF008ED1"

@@ -48,7 +48,7 @@
             android:paddingStart="10dp"
             android:text="Ilias Brinias"
             android:textColor="?colorOnPrimary"
-            android:textSize="28sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -62,6 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:layout_weight="1"
+            app:tint="?colorOnPrimary"
             android:src="@drawable/ic_dots" />
     </LinearLayout>
 
