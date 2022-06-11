@@ -126,7 +126,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentContainerView"
-            android:name="com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteDirectionsFragment"
+            android:name="com.unipi.diplomaThesis.rideshare.driver.fragments.DriverSaveRouteDirectionsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?colorOnSecondary" />

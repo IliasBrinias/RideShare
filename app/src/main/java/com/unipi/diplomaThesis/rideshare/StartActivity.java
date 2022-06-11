@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
@@ -23,12 +26,14 @@ public class StartActivity extends AppCompatActivity {
     private static String REQ_LAST_LOCATIONS = "lastLocation";
     public static final int REQ_DRIVER_ACTIVITY = 213;
     public static final int REQ_RIDER_ACTIVITY = 678;
+    View fragment;
     ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         progressBar = findViewById(R.id.progressBar);
+        fragment = findViewById(R.id.fragmentLoginRegister);
         stopProgressBarAnimation();
 //        check if the user is already sign in
         if (FirebaseAuth.getInstance().getCurrentUser()!=null){
@@ -66,18 +71,33 @@ public class StartActivity extends AppCompatActivity {
         }
     }
     public void register(View view){
-        RegisterFragment registerFragment = new RegisterFragment();
-        getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(R.anim.slide_in_top, R.anim.slide_out_top)
-                .replace(R.id.fragmentLoginRegister,registerFragment)
-                .commit();
+        transaction(new RegisterFragment());
     }
     public void login(View view){
-        LoginFragment loginFragment = new LoginFragment();
-        getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(R.anim.slide_in_top, R.anim.slide_out_top)
-                .replace(R.id.fragmentLoginRegister,loginFragment)
-                .commit();
+       transaction(new LoginFragment());
+    }
+    private void transaction(Fragment fragmentToShow){
+        TranslateAnimation animate0 = new TranslateAnimation(0, 0, 0, fragment.getHeight());
+        animate0.setDuration(500);
+        animate0.setFillAfter(true);
+        animate0.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentLoginRegister,fragmentToShow)
+                        .runOnCommit(() -> {
+                            TranslateAnimation animate01 = new TranslateAnimation(0, 0,fragment.getHeight(), 0);
+                            animate01.setDuration(500);
+                            animate01.setFillAfter(true);
+                            fragment.startAnimation(animate01);
+                        }).commit();
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+        fragment.startAnimation(animate0);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

@@ -20,11 +20,12 @@ import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.messenger.adapter.MessengerAdapter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class MessengerActivity extends AppCompatActivity {
     protected MyApplication mMyApp;
-
+    public static final int REQ_CHAT_ACTIVITY=123;
     RecyclerView recyclerViewMessageSession;
     User user;
     ProgressBar progressBar;
@@ -79,6 +80,19 @@ public class MessengerActivity extends AppCompatActivity {
             }
         }
         messageSessionList.add(messageSession);
+        messageSessionList.sort(new Comparator<MessageSession>() {
+            @Override
+            public int compare(MessageSession messageSession0, MessageSession messageSession1) {
+                try {
+                    Long messageSessionTimestamp0 = messageSession0.getMessages().entrySet().iterator().next().getValue().getTimestamp();
+                    Long messageSessionTimestamp1 = messageSession1.getMessages().entrySet().iterator().next().getValue().getTimestamp();
+                    return Long.compare(messageSessionTimestamp1,messageSessionTimestamp0);
+
+                }catch (Exception e){
+                    return 0;
+                }
+            }
+        });
         messengerAdapter.notifyDataSetChanged();
     }
     @SuppressLint("NotifyDataSetChanged")
@@ -96,7 +110,6 @@ public class MessengerActivity extends AppCompatActivity {
         progressBar.setIndeterminate(false);
         progressBar.setVisibility(View.GONE);
     }
-    public static final int REQ_CHAT_ACTIVITY=123;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

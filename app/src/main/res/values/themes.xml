@@ -8,8 +8,17 @@
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/blue</item>
         <item name="colorSecondaryVariant">@color/white</item>
-        <item name="colorOnSecondary">@color/navItemBack</item>
+        <item name="colorOnSecondary">@color/white</item>
+
         <item name="bottomSheet">@color/white</item>
+        <item name="navItem">@color/navItemBack</item>
+        <item name="listViewTextColor">@color/black</item>
+        <item name="textShadow">@color/gray</item>
+        <item name="navItemCheckedBack">@color/lightBlue</item>
+        <item name="navItemUncheckedBack">@color/lightShadow</item>
+        <item name="chatTextBack">@color/shadow</item>
+        <item name="tableRowShadow">@color/tableRowShadow</item>
+        <item name="lastRouteInactiveShadow">@color/lastRoutesShadow</item>
 
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>

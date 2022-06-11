@@ -2,12 +2,7 @@ package com.unipi.diplomaThesis.rideshare.Route;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -27,19 +22,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
 
-import com.akexorcist.googledirection.model.Direction;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -57,17 +44,12 @@ import com.unipi.diplomaThesis.rideshare.Model.Route;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 
-import org.gavaghan.geodesy.Ellipsoid;
-import org.gavaghan.geodesy.GeodeticCalculator;
-import org.gavaghan.geodesy.GlobalCoordinates;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.YearMonth;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Map;
 
 public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -139,6 +121,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         driverId = getIntent().getStringExtra(Driver.class.getSimpleName());
         userDateTime = getIntent().getLongExtra("userDateTime",0);
         distanceDeviation = getIntent().getDoubleExtra("distanceDeviation",0.);
+        if (distanceDeviation == 0.) contactDriver.setVisibility(View.GONE);
         imageViewClose.setOnClickListener(view->finish());
         mBottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -195,8 +178,8 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                 String start = a.getThoroughfare() +" "+a.getFeatureName()+", "+a.getLocality()+", "+a.getCountryName();
                 a = g.getFromLocation(r.getRouteLatLng().getEndLat(),r.getRouteLatLng().getEndLng(),1).get(0);
                 String end = a.getThoroughfare() +" "+a.getFeatureName()+", "+a.getLocality()+", "+a.getCountryName();
-                originRoute.setText(getString(R.string.from)+" "+start);
-                destinationRoute.setText(getString(R.string.to)+" "+end);
+                originRoute.setText(getString(R.string.from)+" "+User.reformatLengthString(start,45));
+                destinationRoute.setText(getString(R.string.to)+" "+User.reformatLengthString(end,45));
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat timeFormat = new SimpleDateFormat("hh.mm aa");
                 timeRoute.setText(timeFormat.format(r.getRouteDateTime().getStartDateUnix()));
 
@@ -212,7 +195,6 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         MapDrawer m = new MapDrawer(this,map);
         m.directions(apiKey,startingPoint,destinationPoint,boundsOfTheMap);
         m.moveCameraToTop(startingPoint,destinationPoint,boundsOfTheMap.getWidth(),boundsOfTheMap.getHeight(),bottomSheet);
-
     }
     private void initializeSliderRiderCapacity(Route r){
         sliderRiderCapacity.setValueFrom(0.f);
@@ -372,21 +354,27 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         date.setTime(r.getRouteDateTime().getStartDateUnix());
         Calendar c = new GregorianCalendar();
         c.setTime(date);
-        switch (r.getRouteDateTime().getTimetable()) {
-            case 0: // daily
-                dailyRepeat(materialCalendarView, c);
-                break;
-            case 1: //weekly
-                for (Map.Entry<String,String> entry: r.getRouteDateTime().getSelectedDays().entrySet()) {
-                    c.set(Calendar.DAY_OF_WEEK,Integer.parseInt(entry.getValue()));
-                    Calendar currentDayCalendar = new GregorianCalendar();
-                    currentDayCalendar.setTimeInMillis(c.getTimeInMillis());
-                    weeklyRepeat(materialCalendarView, currentDayCalendar);
-                }
-                break;
-        }
         alertDialog.show();
         alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        if (r.getRouteDateTime().isRepeat()){
+
+            switch (r.getRouteDateTime().getTimetable()) {
+                case 0: // daily
+                    dailyRepeat(materialCalendarView, c);
+                    break;
+                case 1: //weekly
+                    for (Map.Entry<String,String> entry: r.getRouteDateTime().getSelectedDays().entrySet()) {
+                        c.set(Calendar.DAY_OF_WEEK,Integer.parseInt(entry.getValue()));
+                        Calendar currentDayCalendar = new GregorianCalendar();
+                        currentDayCalendar.setTimeInMillis(c.getTimeInMillis());
+                        weeklyRepeat(materialCalendarView, currentDayCalendar);
+                    }
+                    break;
+            }
+        }else {
+
+            materialCalendarView.setDateSelected(CalendarDay.from(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)), true);
+        }
     }
 
     private void weeklyRepeat(MaterialCalendarView materialCalendarView, @NonNull Calendar c) {
@@ -425,70 +413,5 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                 c.add(Calendar.DAY_OF_MONTH, 1);
             }
         }
-    }
-    public void drawDirection(LatLng start, LatLng end,int width,int height,Direction direction){
-        if (directions!=null){
-            map.clear();
-            directions = null;
-        }
-//        origin point
-        startMarker = new MarkerOptions();
-        startMarker.position(start);
-        startMarker.icon(bitmapDescriptorFromVector(this,R.drawable.ic_origin_point));
-        map.addMarker(startMarker);
-
-//        destination point
-        destinationMarker = new MarkerOptions();
-        destinationMarker.position(end);
-        destinationMarker.icon(bitmapDescriptorFromVector(this,R.drawable.ic_finish_route));
-        map.addMarker(destinationMarker);
-//        draw the route
-        com.akexorcist.googledirection.model.Route r = direction.getRouteList().get(0);
-        List<LatLng> paths = r.getLegList().get(0).getDirectionPoint();
-        directions = new PolylineOptions();
-        for (LatLng path:paths) {
-            directions.add(path);
-        }
-        directions.color(Color.BLACK);
-        directions.width(5);
-        map.addPolyline(directions);
-
-        int padding = (int) (width * EDGES_OFFSET_FOR_MAP);
-
-//        // zoom to the directions
-        LatLngBounds bounds = new LatLngBounds.Builder()
-                .include(start)
-                .include(end)
-                .build();
-
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
-        map.animateCamera(cu, 1, new GoogleMap.CancelableCallback() {
-            @Override
-            public void onCancel() {
-
-            }
-            @Override
-            public void onFinish() {
-                CameraPosition cameraPosition = map.getCameraPosition();
-                GlobalCoordinates startCoordinates = new GlobalCoordinates(bounds.getCenter().latitude, bounds.getCenter().longitude);
-                GeodeticCalculator geoCalc = new GeodeticCalculator();
-                GlobalCoordinates target = geoCalc.calculateEndingGlobalCoordinates(
-                        Ellipsoid.WGS84, startCoordinates, cameraPosition.bearing, 150f);
-                LatLng mapTarget = new LatLng(target.getLatitude(), target.getLongitude());
-                CameraPosition cap = new CameraPosition(mapTarget,
-                        cameraPosition.zoom, cameraPosition.tilt, cameraPosition.bearing);
-                map.animateCamera(CameraUpdateFactory.newCameraPosition(cap));
-            }
-        });
-        map.setPadding(0,0,0,bottomSheet.getHeight());
-
-    }
-    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
-        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }

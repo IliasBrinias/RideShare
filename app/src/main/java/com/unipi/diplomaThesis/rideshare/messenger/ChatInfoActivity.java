@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TableRow;
@@ -30,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.unipi.diplomaThesis.rideshare.Interface.OnClickDriverRoute;
 import com.unipi.diplomaThesis.rideshare.Interface.OnImageLoad;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
+import com.unipi.diplomaThesis.rideshare.Model.Message;
 import com.unipi.diplomaThesis.rideshare.Model.MessageSession;
 import com.unipi.diplomaThesis.rideshare.Model.Review;
 import com.unipi.diplomaThesis.rideshare.Model.Rider;
@@ -88,12 +90,12 @@ public class ChatInfoActivity extends AppCompatActivity {
         tableRowCar = findViewById(R.id.tableRowCar);
         tableRowRating = findViewById(R.id.tableRowRating);
         muteMessage.setChecked(PreferenceManager.getDefaultSharedPreferences(this)
-                .getBoolean(participantId,false));
+                .getBoolean(messageSessionId,false));
         muteMessage.setOnCheckedChangeListener((compoundButton, b) ->
                 PreferenceManager.getDefaultSharedPreferences(this).edit()
-                        .putBoolean(ChatInfoActivity.this.participantId,muteMessage.isChecked()).apply());
+                        .putBoolean(ChatInfoActivity.this.messageSessionId,muteMessage.isChecked()).apply());
         imageExit.setOnClickListener(view -> finish());
-        imageLeave.setOnClickListener(view -> finish());
+        imageLeave.setOnClickListener(view -> leaveChat());
         tableRowCar.setVisibility(View.GONE);
         loadParticipantData();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
@@ -274,6 +276,47 @@ public class ChatInfoActivity extends AppCompatActivity {
         }
         reviewList.add(review);
         reviewAdapter.notifyDataSetChanged();
+    }
+
+    private void leaveChat(){
+        final View dialogView = View.inflate(this, R.layout.leave_chat_alert_dialog, null);
+        AlertDialog alertDialog = new AlertDialog.Builder(this,android.R.style.Theme_Material_Dialog).setView(dialogView).create();
+        alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+        alertDialog.getWindow().setBackgroundDrawable(this.getDrawable(R.drawable.tablerow_background));
+
+        ImageView userImage = dialogView.findViewById(R.id.imageViewProfile);
+        TextView userName = dialogView.findViewById(R.id.textViewUserName);
+        ProgressBar progressBar = dialogView.findViewById(R.id.progressBar);
+        User.loadUser(participantId,u->{
+            userName.setText(u.getFullName());
+            u.loadUserImage(image -> {
+                userImage.setImageBitmap(null);
+                userImage.setBackgroundResource(0);
+                if (image!=null){
+                    userImage.setImageBitmap(image);
+                }else {
+                    userImage.setBackgroundResource(R.drawable.ic_default_profile);
+                }
+            });
+        });
+        dialogView.findViewById(R.id.textViewCancel).setOnClickListener(view -> alertDialog.dismiss());
+        dialogView.findViewById(R.id.leaveChat).setOnClickListener(view -> {
+            progressBar.setIndeterminate(true);
+            progressBar.setVisibility(View.VISIBLE);
+            u.leaveChat(participantId,task -> {
+                progressBar.setVisibility(View.GONE);
+                progressBar.setIndeterminate(false);
+                alertDialog.dismiss();
+                if (task.isSuccessful()){
+                    setResult(Message.LEAVE_CHAT,new Intent());
+                }else {
+                    Toast.makeText(this, getString(R.string.something_happened), Toast.LENGTH_SHORT).show();
+                }
+                finish();
+            });
+        });
+        alertDialog.setCancelable(true);
+        alertDialog.show();
     }
 
 }

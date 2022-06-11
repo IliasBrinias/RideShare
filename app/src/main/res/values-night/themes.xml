@@ -14,7 +14,16 @@
         <!-- Customize your theme here. -->
         <item name="android:actionMenuTextColor">?colorPrimary</item>
         <item name="android:itemBackground">?colorOnPrimary</item>
-        <item name="bottomSheet">@color/grayToBlack</item>
+        <item name="bottomSheet">#1D1B1B</item>
+        <item name="navItem">@color/black</item>
+        <item name="listViewTextColor">@color/white</item>
+        <item name="textShadow">@color/textShadowOnTableRow</item>
+        <item name="navItemCheckedBack">?colorPrimary</item>
+        <item name="navItemUncheckedBack">@color/black</item>
+        <item name="chatTextBack">@color/gray</item>
+        <item name="tableRowShadow">@color/black</item>
+        <item name="lastRouteInactiveShadow">@color/gray</item>
+
 
         <!--        <color name="mtrl_textinput_default_box_stroke_color">?colorPrimaryVariant</color>-->
     </style>

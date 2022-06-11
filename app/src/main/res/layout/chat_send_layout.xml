@@ -10,6 +10,8 @@
         android:id="@+id/textViewTimeSender"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/tcm"
+        android:textColor="?textShadow"
         android:text="12:40"
         android:padding="10dp"
         android:layout_gravity="center"/>
@@ -37,10 +39,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingEnd="10dp"
+        android:backgroundTint="?textShadow"
         android:layout_gravity="end"
         android:textColor="@color/shadow"
         android:text="@string/send"
-        android:fontFamily="@font/trebuc"/>
+        android:fontFamily="@font/trebuc"
+        />
 
     </LinearLayout>
 </LinearLayout>

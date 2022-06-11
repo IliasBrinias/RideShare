@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:padding="10dp">
 
     <LinearLayout
-        android:id="@+id/linearLayout5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout6"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -17,58 +17,73 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <View
+            android:id="@+id/view6"
             android:layout_width="match_parent"
             android:layout_height="10dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:fontFamily="@font/trebuc"
-            android:text="@string/delete_account"
+            android:text="@string/leave_chat"
             android:textColor="?colorPrimaryVariant"
             android:textSize="25sp" />
 
         <View
+            android:id="@+id/view8"
             android:layout_width="match_parent"
             android:layout_height="10dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:fontFamily="@font/trebuc"
-            android:text="@string/enter_your_password"
+            android:text="@string/do_you_want_to_delete_all_of_your_activities_with"
             android:textColor="@color/shadow"
             android:textSize="15sp" />
 
-        <View
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="2dp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputPasswordLayout"
-            style="@style/TextInputEditTextLoginStyle"
-            android:layout_width="280dp"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/trebuc"
-            android:hint="@string/password"
-            app:startIconDrawable="@drawable/ic_lock">
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textInputPassword"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView5"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="260dp">
+
+                <ImageView
+                    android:id="@+id/imageViewProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_default_profile" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/textViewUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
                 android:fontFamily="@font/trebuc"
-                android:inputType="textPassword"
-                tools:ignore="TouchTargetSizeCheck" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:text="Ilias Brinias"
+                android:textColor="?colorPrimaryVariant"
+                android:textSize="15sp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="10dp" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:gravity="end">
 
             <TextView
@@ -82,11 +97,13 @@
                 android:textSize="20sp" />
 
             <android.widget.Button
-                android:id="@+id/deleteAccount"
+                android:id="@+id/leaveChat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/background_button_decline"
-                android:text="@string/delete"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/leave_chat"
                 android:textAllCaps="false"
                 android:textColor="@color/sliderRed"
                 android:textSize="18sp" />
@@ -95,9 +112,10 @@
 
     <ProgressBar
         android:id="@+id/progressBar"
+        android:indeterminate="false"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

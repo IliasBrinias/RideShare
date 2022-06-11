@@ -170,6 +170,8 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/search_shape_background"
                     android:focusable="true"
+                    android:maxLines="1"
+                    android:inputType="text"
                     android:textColor="@color/gray"
                     android:fontFamily="@font/trebuc"
                     tools:ignore="TouchTargetSizeCheck" />
@@ -221,6 +223,8 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/search_shape_background"
                     android:focusable="true"
+                    android:maxLines="1"
+                    android:inputType="text"
                     android:textColor="@color/gray"
                     android:fontFamily="@font/trebuc"
                     tools:ignore="TouchTargetSizeCheck" />

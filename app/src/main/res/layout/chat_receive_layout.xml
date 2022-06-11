@@ -11,6 +11,8 @@
         android:id="@+id/textViewTimeReceiver"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/tcm"
+        android:textColor="?textShadow"
         android:text="12:40"
         android:padding="10dp"
         android:layout_gravity="center"/>
@@ -27,6 +29,7 @@
             android:fontFamily="@font/trebuc"
             android:padding="10dp"
             android:background="@drawable/tablerow_background"
+            android:backgroundTint="@color/tableRowShadow"
             android:text="Hi...How are y?"
             android:textColor="?colorPrimaryVariant"
             />

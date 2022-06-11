@@ -9,7 +9,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 
 import com.akexorcist.googledirection.DirectionCallback;
 import com.akexorcist.googledirection.GoogleDirection;
@@ -105,6 +104,13 @@ public class MapDrawer {
         this.distance = distance;
     }
 
+    /**
+     * Draw directions for the route startingPoint and DestinationPoint.
+     * @param apiKey
+     * @param startingPoint
+     * @param destinationPoint
+     * @param mapViewBounds
+     */
     public void directions(String apiKey, LatLng startingPoint, LatLng destinationPoint, View mapViewBounds){
         GoogleDirection.withServerKey(apiKey)
                 .from(startingPoint)
@@ -121,6 +127,14 @@ public class MapDrawer {
                 });
     }
 
+    /**
+     * Draw lines based on direction Object
+     * @param start
+     * @param end
+     * @param width
+     * @param height
+     * @param direction
+     */
     private void drawDirection(LatLng start, LatLng end,int width,int height,Direction direction){
         if (directions!=null){
             map.clear();
@@ -150,13 +164,23 @@ public class MapDrawer {
         map.addPolyline(directions);
     }
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
-        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        Drawable vectorDrawable = context.getDrawable(vectorResId);
         vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
         Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
+
+    /**
+     * This method is created for RouteActivity. Moves the direction inside of bottomSheet bounds and
+     *  moves it to the top
+     * @param start
+     * @param end
+     * @param width
+     * @param height
+     * @param bottomSheet
+     */
     public void moveCameraToTop(LatLng start, LatLng end,int width,int height,View bottomSheet){
         int padding = (int) (width * edgesOffsetFromTheMap);
         // zoom to the directions
@@ -217,7 +241,6 @@ public class MapDrawer {
                 .include(destinationPoint)
                 .build();
         int padding = (int) (mapView.getWidth() * this.getEdgesOffsetFromTheMap()); // offset from edges of the map - 20% of screen
-        System.out.println(mapView.getWidth()+","+mapView.getHeight());
         map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,mapView.getWidth(),mapView.getHeight(),padding));
     }
 }

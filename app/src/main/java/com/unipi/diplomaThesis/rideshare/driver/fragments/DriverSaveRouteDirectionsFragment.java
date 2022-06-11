@@ -1,10 +1,12 @@
-package com.unipi.diplomaThesis.rideshare.driver.fragments.Route;
+package com.unipi.diplomaThesis.rideshare.driver.fragments;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +17,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -58,8 +62,8 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
     MapView mapView;
     MapDrawer m;
     GoogleMap googleMap;
-    ConstraintLayout constraintLayout;
     TableRow tableRowEditRoute;
+    LinearLayout linearLayout;
     public DriverSaveRouteDirectionsFragment() {}
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +75,7 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
                              Bundle savedInstanceState) {
         // Inflate the layout for this mapFragmentView
         View v = inflater.inflate(R.layout.driver_route_directions_fragment, container, false);
+        linearLayout = v.findViewById(R.id.linearLayout);
         listViewLocationSearch = v.findViewById(R.id.listViewLocationSearch);
         originTextView = v.findViewById(R.id.autoCompleteOrigin);
         buttonSubmitEditedRoute = v.findViewById(R.id.buttonSubmitEditedRoute);
@@ -86,13 +91,12 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
             mapViewBundle = savedInstanceState.getBundle(apiKey);
         }
         mapView.onCreate(mapViewBundle);
-        buttonSubmitEditedRoute.setOnClickListener(view -> parentActivity.saveRoute());
+        buttonSubmitEditedRoute.setOnClickListener(view -> parentActivity.editRoute());
         submitStep.setOnClickListener(view -> parentActivity.nextStep());
         nextStep.setOnClickListener(view -> parentActivity.nextStep());
         nextStep.setVisibility(View.GONE);
         submitStep.setVisibility(View.GONE);
         parentActivity = (DriverSaveRouteActivity) getActivity();
-        constraintLayout = v.findViewById(R.id.constraintLayout);
 
 
         originTextView.addTextChangedListener(this);
@@ -111,15 +115,17 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
         m.setEdgesOffsetFromTheMap(0.2);
         if (originLocation==null & destinationLocation==null & routeLatLng!=null) {
             loadRoute();
-            loadPlaceId();
         }
     }
+
     private void loadRoute(){
         if (routeLatLng!=null){
             submitStep.setVisibility(View.GONE);
             tableRowEditRoute.setVisibility(View.VISIBLE);
             nextStep.setVisibility(View.VISIBLE);
             if (startingPoint==null || destinationPoint == null) return;
+            loadPlaceId();
+
             mapView.getViewTreeObserver().addOnGlobalLayoutListener(
                     new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
@@ -182,18 +188,18 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
                 }
                 return;
             }
-
-            if (originLocation!=null && destinationLocation!=null){
-                submitStep.setVisibility(View.VISIBLE);
-            }else {
-                submitStep.setVisibility(View.GONE);
+            if (routeLatLng==null) {
+                if (originLocation != null && destinationLocation != null) {
+                    submitStep.setVisibility(View.VISIBLE);
+                } else {
+                    submitStep.setVisibility(View.GONE);
+                }
             }
             drawMap();
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-
     @Override
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
     @Override
@@ -214,25 +220,39 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
             return;
         }
         listViewLocationSearch.setVisibility(View.VISIBLE);
-
-        ApiCalls.getLocationPlaces(getActivity(), editable.toString(), new OnPlacesApiResponse() {
+        try {
+            ApiCalls.getLocationPlaces(getActivity(), editable.toString(), new OnPlacesApiResponse() {
                 @Override
-            public void results(JSONArray locations) {
-                DriverSaveRouteDirectionsFragment.this.locations = locations;
-                List<String> streetNames = new ArrayList<>();
-                for (int i=0; i<locations.length(); i++){
-                    try {
-                        streetNames.add(locations.getJSONObject(i).getString("formatted_address"));
+                public void results(JSONArray locations) {
+                    DriverSaveRouteDirectionsFragment.this.locations = locations;
+                    List<String> streetNames = new ArrayList<>();
+                    for (int i=0; i<locations.length(); i++){
+                        try {
+                            streetNames.add(locations.getJSONObject(i).getString("formatted_address"));
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
+                    listViewLocationSearch.setAdapter(new ArrayAdapter<String>(getActivity(),
+                            R.layout.list_item,
+                            streetNames.toArray(new String[streetNames.size()])){
+                        @NonNull
+                        @Override
+                        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                            View v = super.getView(position, convertView, parent);
+                            TextView text = v.findViewById(R.id.textView);
+                            TypedValue typedValue = new TypedValue();
+                            Resources.Theme theme = getActivity().getTheme();
+                            theme.resolveAttribute(R.attr.listViewTextColor, typedValue, true);
+                            @ColorInt int color = typedValue. data;
+                            text.setTextColor(color);
+                            return v;
+                        }
+                    });
                 }
-                listViewLocationSearch.setAdapter(new ArrayAdapter<>(getActivity().getApplicationContext(),
-                        R.layout.list_item,
-                        streetNames.toArray(new String[streetNames.size()])));
-            }
-        });
+            });
+        }catch (Exception ignore){}
 
     }
 
@@ -294,18 +314,15 @@ public class DriverSaveRouteDirectionsFragment extends Fragment implements Adapt
         InputMethodManager mgr = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(windowToken, 0);
     }
-
     @Override
     public void onFocusChange(View view, boolean b) {
         if (!b) return;
-        ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone(constraintLayout);
         if (view.getId()==originTextView.getId()){
-            constraintSet.connect(R.id.listViewLocationSearch,ConstraintSet.TOP,R.id.textInputOriginLayout,ConstraintSet.BOTTOM,0);
-            constraintSet.applyTo(constraintLayout);
+            linearLayout.removeView(listViewLocationSearch);
+            linearLayout.addView(listViewLocationSearch,1);
         }else if (view.getId()==destinationTextView.getId()){
-            constraintSet.connect(R.id.listViewLocationSearch, ConstraintSet.TOP, R.id.textInputDestinationLayout, ConstraintSet.BOTTOM, 0);
-            constraintSet.applyTo(constraintLayout);
+            linearLayout.removeView(listViewLocationSearch);
+            linearLayout.addView(listViewLocationSearch,2);
         }
     }
     public RouteLatLng getPoints(){

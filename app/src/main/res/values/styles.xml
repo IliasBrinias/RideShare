@@ -161,4 +161,9 @@
         <!-- inactive track color (30% transparency) -->
         <item name="android:colorForeground">@color/shadow</item>
     </style>
+
+    <style name="RatingBar" parent="Theme.RideShare">
+        <item name="colorAccent">?colorPrimary</item>
+        <item name="android:colorControlNormal">@color/lightBlue</item>
+    </style>
 </resources>

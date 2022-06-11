@@ -43,7 +43,7 @@ public class RequestsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
-        requestAdapter = new RequestAdapter(requestList, new RequestOnClickListener() {
+        requestAdapter = new RequestAdapter(requestList, this, new RequestOnClickListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void accept(View view, int position) {

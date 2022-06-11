@@ -130,28 +130,28 @@
                             style="@style/radioButtonStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Ascending Price" />
+                            android:text="@string/ascending_price" />
 
                         <RadioButton
                             android:id="@+id/radioClassification1"
                             style="@style/radioButtonStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Declining Price" />
+                            android:text="@string/declining_price" />
 
                         <RadioButton
                             android:id="@+id/radioClassification2"
                             style="@style/radioButtonStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Based on Time" />
+                            android:text="@string/based_on_time" />
 
                         <RadioButton
                             android:id="@+id/radioClassification3"
                             style="@style/radioButtonStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Based on Driver Reviews" />
+                            android:text="@string/based_on_driver_reviews" />
 
                     </RadioGroup>
 
@@ -242,19 +242,6 @@
                             android:layout_height="wrap_content"
                             android:text="@string/weekly" />
 
-                        <RadioButton
-                            android:id="@+id/radioTimetable3"
-                            style="@style/radioButtonStyle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/monthly" />
-
-                        <RadioButton
-                            android:id="@+id/radio4"
-                            style="@style/radioButtonStyle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/yearly" />
                     </RadioGroup>
 
 
@@ -616,6 +603,7 @@
                 android:fontFamily="@font/trebuc"
                 android:onClick="applyFilters"
                 android:text="@string/apply"
+                android:textAllCaps="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.947"

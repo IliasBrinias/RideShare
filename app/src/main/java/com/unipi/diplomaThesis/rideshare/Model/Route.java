@@ -26,10 +26,10 @@ public class Route implements Serializable {
     private RouteLatLng routeLatLng;
     private ArrayList<String> passengersId = new ArrayList<>();
     private RouteDateTime routeDateTime;
-    private String costPerRider;
+    private Double costPerRider;
     private int rideCapacity;
 
-    public Route(String name, String routeId, String driverId, RouteLatLng routeLatLng, ArrayList<String> passengersId, RouteDateTime routeDateTime, String costPerRider, int rideCapacity) {
+    public Route(String name, String routeId, String driverId, RouteLatLng routeLatLng, ArrayList<String> passengersId, RouteDateTime routeDateTime, double costPerRider, int rideCapacity) {
         this.name = name;
         this.routeId = routeId;
         this.driverId = driverId;
@@ -75,11 +75,11 @@ public class Route implements Serializable {
         this.routeDateTime = routeDateTime;
     }
 
-    public String getCostPerRider() {
+    public Double getCostPerRider() {
         return costPerRider;
     }
 
-    public void setCostPerRider(String costPerRider) {
+    public void setCostPerRider(Double costPerRider) {
         this.costPerRider = costPerRider;
     }
 
@@ -113,7 +113,9 @@ public class Route implements Serializable {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        onCompleteRoutesLoad.returnedRoute(snapshot.getValue(Route.class));
+                        Route r = snapshot.getValue(Route.class);
+                        if (r == null) return;
+                        onCompleteRoutesLoad.returnedRoute(r);
                     }
 
                     @Override

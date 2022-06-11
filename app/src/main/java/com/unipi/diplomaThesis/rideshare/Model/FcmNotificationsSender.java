@@ -31,8 +31,12 @@ public class FcmNotificationsSender  {
         this.mActivity = mActivity;
     }
 
+    /**
+     * Firebase Cloud Messaging makes a post call with Volley to the user token that you want
+     *  to receive the notification. Every user has a unique token and with that token can send
+     *  notification each other. This is a service so is working also when the app is on background
+     */
     public void SendNotifications() {
-
         requestQueue = Volley.newRequestQueue(mActivity);
         JSONObject mainObj = new JSONObject();
         try {

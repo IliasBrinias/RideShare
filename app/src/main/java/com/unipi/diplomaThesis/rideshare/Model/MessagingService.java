@@ -6,12 +6,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.unipi.diplomaThesis.rideshare.R;
@@ -26,24 +25,32 @@ import java.util.Random;
 public class MessagingService extends FirebaseMessagingService {
     static Map<String,Integer> messageUsers = new HashMap<>();
     static Map<String,Integer> requestAccepted = new HashMap<>();
+
+    /**
+     * Replace the User Token if generates a new one
+     * @param token
+     */
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
-        if (FirebaseAuth.getInstance().getUid() == null) return;
-        FirebaseDatabase.getInstance().getReference()
-                .child(User.class.getSimpleName())
-                .child(FirebaseAuth.getInstance().getUid())
-                .child("token_FCM").setValue(token);
     }
 
     NotificationManager mNotificationManager;
-       // Override onMessageReceived() method to extract the
-        // title and
-        // body from the message passed in FCM
+
+    /**
+     * On MessageReceive handle the notification that comes from the Firebase Cloud Messaging.
+     *  Based on data it shows a different style notification
+     * @param remoteMessage
+     */
     @Override
     public void
     onMessageReceived(RemoteMessage remoteMessage) {
         String channelId = remoteMessage.getData().get("title");
+        String messageSessionId = remoteMessage.getData().get("body");
+
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("mute",false) ||
+                PreferenceManager.getDefaultSharedPreferences(this).getBoolean(messageSessionId,false)) return;
+
         Activity activeActivity =((MyApplication) getApplication()).getActiveActivity();
         if (channelId.equals(Message.class.getSimpleName())){
             if (activeActivity instanceof ChatActivity||activeActivity instanceof MessengerActivity){
@@ -54,7 +61,6 @@ public class MessagingService extends FirebaseMessagingService {
                 return;
             }
         }
-        String messageSessionId = remoteMessage.getData().get("body");
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "CHANNEL_ID");
 

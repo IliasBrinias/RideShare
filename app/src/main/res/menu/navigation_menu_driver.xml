@@ -17,12 +17,6 @@
             android:title="@string/personal_data"
             android:checked="true"/>
         <item
-            android:id="@+id/yourRoutes"
-            android:fontFamily="@font/trebuc"
-            android:icon="@drawable/ic_route"
-            android:checked="true"
-            android:title="@string/your_routes"/>
-        <item
             android:id="@+id/carDriver"
             android:fontFamily="@font/trebuc"
             android:icon="@drawable/ic_car_driver"

@@ -1,5 +1,7 @@
 package com.unipi.diplomaThesis.rideshare.driver.adapter;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +23,12 @@ import java.util.List;
 public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHolder> {
     List<Request> requestList;
     RequestOnClickListener requestOnClickListener;
+    Context c;
 
-    public RequestAdapter(List<Request> requestList, RequestOnClickListener requestOnClickListener) {
+    public RequestAdapter(List<Request> requestList, Context c, RequestOnClickListener requestOnClickListener) {
         this.requestList = requestList;
         this.requestOnClickListener = requestOnClickListener;
+        this.c = c;
     }
 
     @NonNull
@@ -35,6 +39,7 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.requestOnClickListener = requestOnClickListener;
@@ -49,11 +54,11 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
             holder.userName.setVisibility(View.VISIBLE);
             holder.userDescription.setText(requestList.get(position).getDescription());
             holder.userDescription.setVisibility(View.VISIBLE);
-            double distanceDeviation = Math.abs(requestList.get(position).getDistanceDeviation());
+            double distanceDeviation = requestList.get(position).getDistanceDeviation();
             if (distanceDeviation>1000){
-                holder.distanceDeviation.setText(String.valueOf(Math.round(distanceDeviation/1000.))+" km");
+                holder.distanceDeviation.setText(Math.round(distanceDeviation / 1000.) +" km");
             }else {
-                holder.distanceDeviation.setText(String.valueOf(Math.round(distanceDeviation))+" m");
+                holder.distanceDeviation.setText(Math.round(distanceDeviation) +" m");
             }
             holder.distanceDeviation.setVisibility(View.VISIBLE);
 

@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final int REQ_CHAT_ACTIVITY = 109;
     protected MyApplication mMyApp;
 
     TextView userName, userMessage;
@@ -67,6 +69,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         messageSearch();
         loadParticipantData();
         mMyApp = (MyApplication) this.getApplicationContext();
+        userMessage.requestFocus();
+
     }
 
 
@@ -86,7 +90,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
             i.putExtra(User.class.getSimpleName(),participantId);
             i.putExtra(MessageSession.class.getSimpleName(),messageSession.getMessageSessionId());
-            startActivity(i);
+            startActivityForResult(i,REQ_CHAT_ACTIVITY);
         }else if (view.getId() == buttonSend.getId()){
             Message m = new Message(null,senderUser.getUserId(),userMessage.getText().toString(),new Date().getTime(),false);
             senderUser.sendMessageTo(this,participant,messageSession,m,null);
@@ -168,5 +172,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public void onPause() {
         senderUser.stopLoadingMessages(messageSession);
         super.onPause();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_CHAT_ACTIVITY && resultCode == Message.LEAVE_CHAT){
+            finish();
+        }
     }
 }

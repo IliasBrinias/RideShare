@@ -62,8 +62,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="15sp"
-        android:text="asdasdasdassdasdad asdasdasda asdasd asdas asd "
-        android:textColor="@color/shadow" />
+        android:text="Great Driver"
+        android:textColor="?colorPrimaryVariant" />
 
     <TextView
         android:id="@+id/textViewDate"
@@ -72,6 +72,6 @@
         android:layout_gravity="end"
         android:fontFamily="@font/tcm"
         android:text="18/5/2022"
-        android:textColor="@color/shadow"
+        android:textColor="?colorPrimaryVariant"
         android:textSize="15sp" />
 </LinearLayout>

@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,7 +35,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
-import com.unipi.diplomaThesis.rideshare.Interface.OnImageLoad;
 import com.unipi.diplomaThesis.rideshare.Model.Car;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.Rider;
@@ -163,6 +161,7 @@ public class CarFragment extends Fragment implements TextWatcher {
     }
 
     private void saveEditedCar(){
+//        start ProgressBar
         startProgressBarAnimation();
         ((Driver) user).saveCar(
                 new Car(
@@ -282,23 +281,22 @@ public class CarFragment extends Fragment implements TextWatcher {
     public void afterTextChanged(Editable editable) {}
     private void loadDriverCarData(){
         title.setText(getString(R.string.edit_car));
-        ((Driver) user).loadCarImage(new OnImageLoad() {
-            @Override
-            public void loadImageSuccess(Bitmap image) {
-                carImage.setImageBitmap(null);
-                carImage.setBackgroundResource(0);
-                if (image != null){
-                    carImage.setImageBitmap(image);
-                }else {
-                    carImage.setBackgroundResource(R.drawable.ic_car);
-                }
-                carImage.setVisibility(View.VISIBLE);
+        ((Driver) user).loadCarImage(image -> {
+            carImage.setImageBitmap(null);
+            carImage.setBackgroundResource(0);
+            if (image != null){
+                carImage.setImageBitmap(image);
+            }else {
+                carImage.setBackgroundResource(R.drawable.ic_car);
             }
+            carImage.setVisibility(View.VISIBLE);
         });
-        carManufacturer.setText(((Driver) user).getOwnedCar().getMake());
-        carModel.setText(((Driver) user).getOwnedCar().getModel());
-        carYear.setText(((Driver) user).getOwnedCar().getYear());
-        carPlate.setText(((Driver) user).getOwnedCar().getCarPlates());
+        ((Driver) user).loadCarData(car -> {
+            carManufacturer.setText(car.getMake());
+            carModel.setText(car.getModel());
+            carYear.setText(car.getYear());
+            carPlate.setText(car.getCarPlates());
+        });
     }
     public void startProgressBarAnimation(){
         progressBar.setIndeterminate(true);

@@ -21,6 +21,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.unipi.diplomaThesis.rideshare.Interface.OnCarResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnImageLoad;
 import com.unipi.diplomaThesis.rideshare.Interface.OnProcedureComplete;
 import com.unipi.diplomaThesis.rideshare.Interface.OnRequestLoad;
@@ -34,17 +35,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Driver extends User{
     public static final int REQ_CREATE_DRIVER_ACCOUNT=234;
     public static final int REQ_DISABLE_DRIVER_ACCOUNT=457;
     private Car ownedCar = new Car();
 
-    public Driver() {
-    }
+    public Driver() {}
 
     public Driver(String userId, String email, String fullName) {
         super(userId, email, fullName, Driver.class.getSimpleName());
@@ -56,22 +54,11 @@ public class Driver extends User{
         this.ownedCar = ownedCar;
     }
 
-    public static void createDriver(String driverId, OnUserLoadComplete onUserLoadComplete){
-//        update User mode {Rider or Driver with a boolean Variable}
-        Map<String,Object> updateUserMode = new HashMap<>();
-        updateUserMode.put(User.REQ_TYPE_TAG,Driver.class.getSimpleName());
-        FirebaseDatabase.getInstance().getReference()
-                .child(User.class.getSimpleName())
-                .child(driverId)
-                .updateChildren(updateUserMode).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-//                load Driver Object From Firebase
-                loadDriver(driverId,onUserLoadComplete);
-            }
-        });
-
-    }
+    /**
+     * load the user from the Firebase. If is not Driver returns null
+     * @param driverId
+     * @param onUserLoadComplete
+     */
     public static void loadDriver(String driverId, OnUserLoadComplete onUserLoadComplete){
         FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName())
@@ -94,6 +81,12 @@ public class Driver extends User{
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
+
+    /**
+     * Save new/edited Drivers Route and added the routeId to his lastRoutes
+     * @param r
+     * @param onCompleteListener
+     */
     public void saveRoute(Route r, OnCompleteListener<Void> onCompleteListener){
 //      save route
         DatabaseReference database = FirebaseDatabase.getInstance().getReference()
@@ -129,6 +122,11 @@ public class Driver extends User{
                 });
 //        Update the driver Object
     }
+
+    /**
+     * load Drivers Route based on Drivers lastRoutes ids
+     * @param onRouteResponse
+     */
     public void loadDriverRoutes(OnRouteResponse onRouteResponse){
         DatabaseReference database = FirebaseDatabase.getInstance().getReference()
                 .child(Route.class.getSimpleName());
@@ -136,7 +134,7 @@ public class Driver extends User{
                 .child(User.class.getSimpleName())
                 .child(this.getUserId())
                 .child("lastRoutes")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.getValue() == null) {
@@ -144,11 +142,13 @@ public class Driver extends User{
                             return;
                         };
                         ArrayList<String> routeIds = (ArrayList<String>) snapshot.getValue();
+                        if (routeIds == null) onRouteResponse.returnedRoute(null);
                         for (String id:routeIds) {
                             database.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     Route route = snapshot.getValue(Route.class);
+                                    if (route == null) return;
                                     onRouteResponse.returnedRoute(route);
                                 }
                                 @Override
@@ -160,6 +160,14 @@ public class Driver extends User{
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
+
+    /**
+     * Save Car info and Image to firebase
+     * @param c
+     * @param carImage
+     * @param onCompleteListener
+     * @param onFailureListener
+     */
     public void saveCar(Car c, byte[] carImage, OnCompleteListener<Void> onCompleteListener, OnFailureListener onFailureListener){
         saveCarImage(carImage, new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -177,6 +185,12 @@ public class Driver extends User{
         });
 
     }
+
+    /**
+     * Load Image from the FirebaseStorage
+     * @param riderId
+     * @param onImageLoad
+     */
     public void loadRouteRiderIcon(String riderId, OnImageLoad onImageLoad){
         try {
             File f = File.createTempFile(riderId, ".jpg");
@@ -197,6 +211,14 @@ public class Driver extends User{
             e.printStackTrace();
         }
     }
+
+    /**
+     * Create a new MessageSession Object. Make it visible to the rider (save the id MessageSession to his Object)
+     * and to the Driver. Sends a Notification to the Riders Token with the CloudMessaging by Firebase
+     * @param activity
+     * @param d
+     * @param riderId
+     */
     private void createMessageSession(Activity activity, Driver d, String riderId){
         ArrayList<String> participants = new ArrayList<>();
         participants.add(this.getUserId());
@@ -225,6 +247,12 @@ public class Driver extends User{
                     }
                 });
     }
+
+    /**
+     * This method is called by createMessageSession method and save the MessageSession id to the participant
+     * @param participants
+     * @param sessionId
+     */
     private void makeMessageSessionVisibleToParticipants(ArrayList<String> participants, String sessionId){
         for (String p:participants){
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
@@ -257,6 +285,11 @@ public class Driver extends User{
             });
         }
     }
+
+    /**
+     * Load Car Image from Firebase Storage
+     * @param onImageLoad
+     */
     public void loadCarImage(OnImageLoad onImageLoad){
         try {
             File f = File.createTempFile("car", ".jpg");
@@ -277,6 +310,12 @@ public class Driver extends User{
             e.printStackTrace();
         }
     }
+
+    /**
+     * Saves Car Image
+     * @param carImage
+     * @param onCompleteListener
+     */
     public void saveCarImage(byte[] carImage, OnCompleteListener<UploadTask.TaskSnapshot> onCompleteListener){
         FirebaseStorage.getInstance().getReference()
                 .child(Car.class.getSimpleName())
@@ -285,6 +324,22 @@ public class Driver extends User{
                 .addOnCompleteListener(onCompleteListener);
     }
 
+    /**
+     * Change the child ("seen") Of messageSession to true
+     * @param routeId
+     * @param passengerId
+     */
+    private void makeRequestSeen(String routeId, String passengerId){
+        FirebaseDatabase.getInstance().getReference()
+                .child(Request.class.getSimpleName())
+                .child(routeId).child(passengerId)
+                .child("seen").setValue(true);
+    }
+
+    /**
+     * Load requests based on Driver last Routes ids
+     * @param onRequestLoad
+     */
     public void loadRequests(OnRequestLoad onRequestLoad){
         loadDriverRoutes(route->{
             if (route == null) onRequestLoad.returnedRequest(null);
@@ -295,7 +350,9 @@ public class Driver extends User{
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.hasChild(route.getRouteId())){
                                 for (DataSnapshot request:snapshot.child(route.getRouteId()).getChildren()){
-                                    onRequestLoad.returnedRequest(request.getValue(Request.class));
+                                    Request r = request.getValue(Request.class);
+                                    makeRequestSeen(r.getRouteId(),r.getRiderId());
+                                    onRequestLoad.returnedRequest(r);
                                 }
                             }
                         }
@@ -304,6 +361,11 @@ public class Driver extends User{
                     });
         });
     }
+
+    /**
+     * Returns lastRoutes ids for
+     * @param onReturnedIds
+     */
     public void loadDriversRouteId(OnReturnedIds onReturnedIds){
         FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName())
@@ -324,6 +386,14 @@ public class Driver extends User{
                 });
 
     }
+
+    /**
+     * Check if the driver has messageSession with the Rider. If he hasn't
+     * calls the createMessageSession.
+     * Adds the routeId to participant lastRoutes and adds the participantId to Route passengersId list
+     * @param activity
+     * @param request
+     */
     public void acceptRequest(Activity activity,Request request){
 //        create Messages Session
         FirebaseDatabase.getInstance().getReference()
@@ -351,6 +421,11 @@ public class Driver extends User{
 
     }
 
+    /**
+     * Is used from acceptRequest method, add routeId to lastRoutes passengers List
+     * @param routeId
+     * @param riderId
+     */
     private void addRouteToRiders(String routeId, String riderId) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName())
@@ -375,6 +450,38 @@ public class Driver extends User{
                 });
     }
 
+    /**
+     * Add the riderId to Route passengersId list
+     * @param routeId
+     * @param riderId
+     */
+    private void addRiderToRoute(String routeId, String riderId) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                .child(Route.class.getSimpleName())
+                .child(routeId);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<String> passengersId;
+                if (!snapshot.hasChild("passengersId")){
+                    passengersId = new ArrayList<>();
+                }else {
+                    passengersId = (ArrayList<String>) snapshot.child("passengersId").getValue();
+                }
+                passengersId.add(riderId);
+                ref.child("passengersId").setValue(passengersId);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+    /**
+     * Check if the Driver and Rider has mutual MessageSessionId
+     * @param riderId
+     * @param driverId
+     * @param hasAllreadyMessageSession
+     */
     private void checkIfRiderHasMessageSessionWithDriver(String riderId, String driverId, hasAllreadyMessageSession hasAllreadyMessageSession){
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName());
@@ -400,15 +507,16 @@ public class Driver extends User{
                                         }
 //                                        if the rider and drier has a mutual session id return true
                                         for (String riderId:riderMessageSessionId){
+                                            System.out.println(riderId+" "+riderMessageSessionId);
+                                            System.out.println(driverMessageSessionId);
                                             if (driverMessageSessionId.contains(riderId)){
+                                                System.out.println(true);
                                                 hasAllreadyMessageSession.isExists(true);
                                                 return;
                                             }
-                                            hasAllreadyMessageSession.isExists(false);
                                         }
-                                    }else {
-                                        hasAllreadyMessageSession.isExists(false);
                                     }
+                                    hasAllreadyMessageSession.isExists(false);
                                 }
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {}
@@ -424,28 +532,11 @@ public class Driver extends User{
                     }
                 });
     }
-    private void addRiderToRoute(String routeId, String riderId) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
-                .child(Route.class.getSimpleName())
-                .child(routeId);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<String> passengersId;
-                if (!snapshot.hasChild("passengersId")){
-                    passengersId = new ArrayList<>();
-                }else {
-                    passengersId = (ArrayList<String>) snapshot.child("passengersId").getValue();
-                }
-                passengersId.add(riderId);
-                ref.child("passengersId").setValue(passengersId);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
-        });
-    }
-
+    /**
+     * Simply deletes the Request from the Rider
+     * @param request
+     */
     public void declineRequest(Request request) {
         FirebaseDatabase.getInstance()
                 .getReference()
@@ -453,6 +544,21 @@ public class Driver extends User{
                 .child(request.getRouteId()).removeValue();
     }
 
+    /**
+     * When the Driver Delete his account he must Delete:
+     *  1. requests
+     *  2. reviews
+     *  3. passengers of his routes
+     *  4. his routes
+     *  5. his images (profile, car)
+     *  6. his Message Session id from the riders
+     *  7. his Message Session id
+     *  8. MessageSession
+     *  9. His Object
+     *  10. his Authorized account
+     * @param password
+     * @param onCompleteListener
+     */
     public void deleteAccount(String password, OnCompleteListener<Void> onCompleteListener){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -467,7 +573,7 @@ public class Driver extends User{
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()){
-                            deleteDatabaseData(complete ->{
+                            deleteDatabaseData((t,complete) ->{
                                 if (complete){
                                     user.delete().addOnCompleteListener(onCompleteListener);
                                 }
@@ -487,11 +593,12 @@ public class Driver extends User{
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 startProcedures();
-
 //              delete Messages
-                if (snapshot.hasChild("messageSessionId")){
-                    ArrayList<String> messageSessionId = (ArrayList<String>) snapshot.child("messageSessionId").getValue();
 
+                ArrayList<String> messageSessionId;
+                addProcedures();
+                if (snapshot.hasChild("messageSessionId")){
+                    messageSessionId = (ArrayList<String>) snapshot.child("messageSessionId").getValue();
 //                            User MessageSessionIds
                     for (String sessionId:messageSessionId){
                         DatabaseReference messageSessionRef =
@@ -516,11 +623,12 @@ public class Driver extends User{
     //                                                    deleteMessageSessionId from the other participants
                                             ArrayList<String> messageSessionId = (ArrayList<String>) snapshot.child("messageSessionId").getValue();
                                             if (!messageSessionId.contains(sessionId)) return;
-                                            addProcedures();
                                             messageSessionId.remove(sessionId);
-                                            participantRef.child("messageSessionId").setValue(messageSessionId);
-    //                                                    finally remove the Message Session Completely
-                                            messageSessionRef.removeValue().addOnCompleteListener(task -> onProcedureComplete.isComplete(isCompleted()));
+                                            addProcedures();
+                                            participantRef.child("messageSessionId").setValue(messageSessionId).addOnCompleteListener(task -> onProcedureComplete.isComplete(null,isCompleted()));
+                                            //                                                    finally remove the Message Session Completely
+                                            addProcedures();
+                                            messageSessionRef.removeValue().addOnCompleteListener(task -> onProcedureComplete.isComplete(null,isCompleted()));
                                         }
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError error) {}
@@ -530,79 +638,46 @@ public class Driver extends User{
                                 public void onCancelled(@NonNull DatabaseError error) {}
                         });
                     }
-                    addProcedures();
-                    userRef.child("messageSessionId").removeValue().addOnCompleteListener(task -> onProcedureComplete.isComplete(isCompleted()));
                 }
-
-//                      delete Routes and Requests
-                if (snapshot.hasChild("lastRoutes")) {
-                    ArrayList<String> lastRoutes = (ArrayList<String>) snapshot.child("lastRoutes").getValue();
-                    for (String routeId : lastRoutes) {
-                        DatabaseReference routeRef =
-                                FirebaseDatabase.getInstance().getReference()
-                                        .child(Route.class.getSimpleName())
-                                        .child(routeId);
-                        routeRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.hasChild("passengersId")){
-                                    ArrayList<String> passengersId = (ArrayList<String>) snapshot.child("passengersId").getValue();
-                                    for (String userId:passengersId){
-                                        DatabaseReference userRef =
-                                        FirebaseDatabase.getInstance().getReference()
-                                                .child(User.class.getSimpleName())
-                                                .child(userId);
-                                        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                if (snapshot.hasChild("lastRoutes")){
-                                                    ArrayList<String> lastRoutes = (ArrayList<String>) snapshot.child("lastRoutes").getValue();
-                                                    if (lastRoutes.contains(routeId)){
-                                                        lastRoutes.remove(routeId);
-                                                        addProcedures();
-                                                        userRef.child("lastRoutes").setValue(lastRoutes)
-                                                                .addOnCompleteListener(task -> onProcedureComplete.isComplete(isCompleted()));
-                                                    }
-                                                }
-                                            }
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {}
-                                        });
-                                    }
-                                }
-                                addProcedures();
-                                FirebaseDatabase.getInstance().getReference()
-                                        .child(Request.class.getSimpleName())
-                                        .child(routeId).removeValue().addOnCompleteListener(task -> onProcedureComplete.isComplete(isCompleted()));
-
-                                addProcedures();
-                                routeRef.removeValue().addOnCompleteListener(task -> onProcedureComplete.isComplete(isCompleted()));
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {}
-                        });
-
-                    }
+                onProcedureComplete.isComplete(null,isCompleted());
+                ArrayList<String> lastRoutesId;
+                addProcedures();
+                if (snapshot.hasChild("lastRoutes")){
+                    lastRoutesId = (ArrayList<String>) snapshot.child("lastRoutes").getValue();
+//                  Delete Routes
+                    deleteDriversRoutes(lastRoutesId, onProcedureComplete);
                 }
+                onProcedureComplete.isComplete(null,isCompleted());
 //              Delete Reviews
                 addProcedures();
                 FirebaseDatabase.getInstance().getReference()
                         .child(Review.class.getSimpleName())
-                        .child(FirebaseAuth.getInstance().getUid())
-                        .removeValue().addOnCompleteListener(task -> onProcedureComplete.isComplete(isCompleted()));
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.getChildrenCount()>0){
+                                    addProcedures();
+                                    FirebaseDatabase.getInstance().getReference()
+                                    .child(Review.class.getSimpleName())
+                                    .child(FirebaseAuth.getInstance().getUid())
+                                    .removeValue().addOnCompleteListener(task -> onProcedureComplete.isComplete(task,isCompleted()));
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {}
+                        });
+                onProcedureComplete.isComplete(null,isCompleted());
 //              delete User
                 addProcedures();
-                userRef.removeValue().addOnCompleteListener(task -> onProcedureComplete.isComplete(isCompleted()));
+                userRef.removeValue().addOnCompleteListener(task -> onProcedureComplete.isComplete(task,isCompleted()));
 //              deletePhotos
                 StorageReference photo = FirebaseStorage.getInstance().getReference();
                 addProcedures();
                 photo.child(User.class.getSimpleName()).child(Driver.this.getUserId()).delete()
-                        .addOnCompleteListener(task -> onProcedureComplete.isComplete(isCompleted()))
-                        .addOnFailureListener(task -> onProcedureComplete.isComplete(isCompleted()));
+                        .addOnCompleteListener(task -> onProcedureComplete.isComplete(task,isCompleted()));
                 addProcedures();
                 photo.child(Car.class.getSimpleName()).child(Driver.this.getUserId()).delete()
-                        .addOnCompleteListener(task -> onProcedureComplete.isComplete(isCompleted()))
-                        .addOnFailureListener(task -> onProcedureComplete.isComplete(isCompleted()));
+                        .addOnCompleteListener(task -> onProcedureComplete.isComplete(task,isCompleted()));
 
             }
             @Override
@@ -610,18 +685,69 @@ public class Driver extends User{
         });
 
     }
+    private void deleteDriversRoutes(ArrayList<String> routes, OnProcedureComplete onProcedureComplete){
+        FirebaseDatabase.getInstance().getReference().child(Route.class.getSimpleName())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        ArrayList<String> passengers = new ArrayList<>();
+                        addProcedures();
+                        for (String id:routes){
+                            if (snapshot.child(id).child("passengersId").getValue() !=null){
+                                ArrayList<String> routePass = (ArrayList<String>) snapshot.child(id).child("passengersId").getValue();
+                                passengers.removeAll(routePass);
+                                passengers.addAll(routePass);
+                            }
+                        }
+                        DatabaseReference passengersRef = FirebaseDatabase.getInstance()
+                                .getReference().child(User.class.getSimpleName());
+                        passengersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (String id:passengers){
+                                    ArrayList<String> lastRoutesPass = (ArrayList<String>) snapshot.child(id).child("lastRoutes").getValue();
+                                    for (String routeId:routes){
+                                        if (lastRoutesPass.contains(routeId)){
+                                            lastRoutesPass.remove(routeId);
+                                        }
+                                    }
+                                    addProcedures();
+                                    passengersRef.child(id).child("lastRoutes").setValue(lastRoutesPass)
+                                            .addOnCompleteListener(t->onProcedureComplete.isComplete(t,isCompleted()));
+                                }
+                                for (String id:routes) {
+                                    addProcedures();
+                                    FirebaseDatabase.getInstance().getReference().child(Request.class.getSimpleName())
+                                            .child(id).removeValue()
+                                            .addOnCompleteListener(task -> onProcedureComplete.isComplete(task, isCompleted()));
+                                    addProcedures();
+                                    FirebaseDatabase.getInstance().getReference().child(Route.class.getSimpleName())
+                                            .child(id).removeValue()
+                                            .addOnCompleteListener(task -> onProcedureComplete.isComplete(task, isCompleted()));
+                                }
+                            }
 
-    private static int proceduresCount;
-    private void startProcedures(){
-        proceduresCount = 0;
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                        onProcedureComplete.isComplete(null,isCompleted());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
-    private void addProcedures(){
-        proceduresCount++;
-    }
-    private boolean isCompleted(){
-        proceduresCount--;
-        return proceduresCount == 0;
-    }
+
+
+    /**
+     * delete Route and route id from the rider and check for every passenger if this was the only mutual route.
+     * if is true deletes and the Message Session
+     * @param deletedRoute
+     */
     public void deleteRoute(Route deletedRoute){
 //        delete all the route data
         DatabaseReference routeRef = FirebaseDatabase.getInstance().getReference()
@@ -664,113 +790,96 @@ public class Driver extends User{
 
     }
 
+    /**
+     * Delete a single passenger from the route and checks if was the only mutual Route
+     * @param routeId
+     * @param passengerId
+     * @param onCompleteListener
+     */
     public void deletePassenger(String routeId, String passengerId, OnCompleteListener<Void> onCompleteListener){
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName());
         DatabaseReference messageSessionRef = FirebaseDatabase.getInstance().getReference()
                 .child(MessageSession.class.getSimpleName());
+        DatabaseReference routeRef =  FirebaseDatabase.getInstance().getReference()
+                .child(Route.class.getSimpleName())
+                .child(routeId);
+        routeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<String> passengers = (ArrayList<String>) snapshot.child("passengersId").getValue();
+                if (passengers.contains(passengerId)) {
+                    passengers.remove(passengerId);
+                }
+                routeRef.child("passengersId").setValue(passengers);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
 
-        System.out.println(routeId+" "+passengerId);
         usersRef.child(this.getUserId())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot driver) {
-                        ArrayList<String> driverLastRoutes = (ArrayList<String>) driver.child("lastRoutes").getValue();
-                        ArrayList<String> driverMessageSessionId = (ArrayList<String>) driver.child("messageSessionId").getValue();
-                        System.out.println("driverLastRoutes "+driverLastRoutes);
-                        System.out.println("driverMessageSessionId "+driverMessageSessionId);
                         usersRef.child(passengerId).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot passenger) {
                                         ArrayList<String> passengerLastRoutes = (ArrayList<String>) passenger.child("lastRoutes").getValue();
-                                        ArrayList<String> passengerMessageSessionId = (ArrayList<String>) passenger.child("messageSessionId").getValue();
-                                        System.out.println("passengerLastRoutes "+passengerLastRoutes+" "+ passengerId);
-                                        System.out.println("passengerMessageSessionId "+passengerMessageSessionId+" "+ passengerId);
                                         passengerLastRoutes.remove(routeId);
-                                        driverLastRoutes.remove(routeId);
-                                        if (!hasMutualRoutes(driverLastRoutes,passengerLastRoutes)){
-//                                          if they don't have other mutual route delete the Messages
-                                            for (String id:driverMessageSessionId){
-                                                if (passengerMessageSessionId.contains(id)){
-                                                    driverMessageSessionId.remove(id);
-                                                    passengerMessageSessionId.remove(id);
-                                                    messageSessionRef.child(id).removeValue();
-                                                    break;
-                                                }
-                                            }
-                                        }
                                         usersRef.child(passengerId).child("lastRoutes").setValue(passengerLastRoutes).addOnCompleteListener(onCompleteListener);
-                                        usersRef.child(passengerId).child("messageSessionId").setValue(passengerMessageSessionId);
-                                        usersRef.child(Driver.this.getUserId()).child("messageSessionId").setValue(driverMessageSessionId);
-
                                     }
 
                                     @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
+                                    public void onCancelled(@NonNull DatabaseError error) {}
+                        });
                     }
-
                     @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
+                    public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
+
+    /**
+     * is used from deleteRoute and deletes all the passengers.
+     * i created two separate methods because the firebase async calls was not working correctly.
+     * @param routeId
+     * @param passengersId
+     * @param onCompleteListener
+     */
     public void deleteRoutePassengers(String routeId, List<String> passengersId, OnCompleteListener<Void> onCompleteListener){
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName());
-        DatabaseReference messageSessionRef = FirebaseDatabase.getInstance().getReference()
-                .child(MessageSession.class.getSimpleName());
-
         usersRef.child(this.getUserId())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot driver) {
-                        ArrayList<String> driverLastRoutes = (ArrayList<String>) driver.child("lastRoutes").getValue();
-                        ArrayList<String> driverMessageSessionId = (ArrayList<String>) driver.child("messageSessionId").getValue();
                         for (String id:passengersId) {
                             usersRef.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot passenger) {
                                     ArrayList<String> passengerLastRoutes = (ArrayList<String>) passenger.child("lastRoutes").getValue();
-                                    ArrayList<String> passengerMessageSessionId = (ArrayList<String>) passenger.child("messageSessionId").getValue();
                                     passengerLastRoutes.remove(routeId);
-                                    if (!hasMutualRoutes(driverLastRoutes, passengerLastRoutes)) {
-//                                          if they don't have other mutual route delete the Messages
-                                        for (String id : driverMessageSessionId) {
-                                            if (passengerMessageSessionId.contains(id)) {
-                                                driverMessageSessionId.remove(id);
-                                                passengerMessageSessionId.remove(id);
-                                                messageSessionRef.child(id).removeValue();
-                                                break;
-                                            }
+                                    usersRef.child(id).child("lastRoutes").setValue(passengerLastRoutes).addOnCompleteListener(t-> {
+                                        if (passengersId.indexOf(id) == passengersId.size() - 1) {
+                                            onCompleteListener.onComplete(t);
                                         }
-                                    }
-                                    usersRef.child(id).child("lastRoutes").setValue(passengerLastRoutes);
-                                    usersRef.child(id).child("messageSessionId").setValue(passengerMessageSessionId);
-                                    if (passengersId.indexOf(id) == passengersId.size()-1){
-                                        usersRef.child(Driver.this.getUserId()).child("messageSessionId").setValue(driverMessageSessionId).addOnCompleteListener(onCompleteListener);
-                                    }
+                                    });
                                 }
-
                                 @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                }
+                                public void onCancelled(@NonNull DatabaseError error) {}
                             });
                         }
-
                     }
-
                     @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
+                    public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
 
+    /**
+     * Simple comparison of two list with Routes id.
+     * @param driverLastRoutes
+     * @param passengerLastRoutes
+     * @return
+     */
     private boolean hasMutualRoutes(ArrayList<String> driverLastRoutes, ArrayList<String> passengerLastRoutes) {
         for (String driverRouteId:driverLastRoutes){
             if (passengerLastRoutes.contains(driverRouteId)) {
@@ -778,5 +887,41 @@ public class Driver extends User{
             }
         }
         return false;
+    }
+
+    private static int proceduresCount;
+
+    /**
+     * I crated a static variable to control when all the delete procedures will end.
+     *  The driver must completely deleted and then the auth account must deleted too. If the auth
+     *  account deleted faster than driver data the database will lock because your are not authorized.
+     */
+    private void startProcedures(){
+        proceduresCount = 0;
+    }
+    private void addProcedures(){
+        proceduresCount++;
+    }
+    private boolean isCompleted(){
+        proceduresCount--;
+        return proceduresCount == 0;
+    }
+
+    public void loadCarData(OnCarResponse onCarResponse) {
+        FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName())
+                .child(this.getUserId())
+                .child("ownedCar")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        onCarResponse.returnCar(snapshot.getValue(Car.class));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
 }

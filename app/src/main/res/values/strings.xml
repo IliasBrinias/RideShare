@@ -7,10 +7,10 @@
     <string name="facebook_client_token" translatable="false">caed0e2a94bd9a34438a31f5d148ec9f</string>
 
     <string name="password">Password</string>
-    <string name="email">Email</string>
+    <string name="email" translatable="false">Email</string>
     <string name="login">Login</string>
     <string name="create_account">CREATE ACCOUNT</string>
-    <string name="title_activity_maps">MapsActivity</string>
+    <string name="title_activity_maps" translatable="false">MapsActivity</string>
     <string name="rider">Rider</string>
     <string name="driver">Driver</string>
     <string name="wrongPassword">Wrong Password</string>
@@ -23,33 +23,22 @@
     <string name="password_format_error_digit"> * Your password must contains at least one digit</string>
     <string name="password_format_error_length"> * Your password length must be greater than 6</string>
     <string name="password_error_message_title">Your Password must contain:</string>
-    <string name="ilias">Ilias</string>
+    <string translatable="false" name="ilias">Ilias</string>
     <string name="first_name">First Name</string>
     <string name="password_verify">Password Verify</string>
     <string name="sign_up">Sign Up</string>
     <string name="null_error_editText">You must complete this field</string>
-    <string name="title_activity_driver">DriverActivity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
+    <string name="title_activity_driver" translatable="false">DriverActivity</string>
+    <string name="nav_header_title" translatable="false">Android Studio</string>
     <string name="action_settings">Settings</string>
-    <string name="webClientIdGoogleSignIn">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</string>
+    <string translatable="false" name="webClientIdGoogleSignIn">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</string>
     <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="available_cars">Car</string>
     <string name="personal_data">Personal Data</string>
     <string name="your_routes">Your routes</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="passengers">Passengers</string>
     <string name="active_passengers">Active Passengers:</string>
     <string name="next_step">Next Step</string>
@@ -86,8 +75,6 @@
     <string name="time">Time</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
     <string name="or">or</string>
-    <string name="log_in_with_google">Log in with Google</string>
-    <string name="log_in_with_facebook">Log in with Facebook</string>
     <string name="save_money_make_friends">\"Save money, make friends\"</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="where_to">Where to?</string>
@@ -96,7 +83,7 @@
     <string name="we_found">We found</string>
     <string name="routes">routes</string>
     <string name="route">route</string>
-    <string name="android_api_key">AIzaSyCO-ylUowiKV6IECv1L6eVw9Bl8CBzhaFk</string>
+    <string name="android_api_key" translatable="false">AIzaSyCO-ylUowiKV6IECv1L6eVw9Bl8CBzhaFk</string>
     <string name="became_a_driver">Became a Driver</string>
     <string name="last_name">Last Name</string>
     <string name="birthday">BirthDay</string>
@@ -115,9 +102,6 @@
     <string name="no_repeat">No repeat</string>
     <string name="daily">Daily</string>
     <string name="weekly">Weekly</string>
-    <string name="monthly">Monthly</string>
-    <string name="yearly">Yearly</string>
-    <string name="custom">Custom</string>
 
     <string name="sunday">Sunday</string>
     <string name="monday">Monday</string>
@@ -135,7 +119,6 @@
     <string name="distance">Distance</string>
     <string name="rating">Rating</string>
     <string name="hour">hour</string>
-    <string name="away">away</string>
     <string name="hours">hours</string>
     <string name="after">after</string>
     <string name="same_time">Same time</string>
@@ -157,9 +140,7 @@
     <string name="error_format_car_plate">Not acceptable Car Plate</string>
     <string name="e_x">e.x.</string>
     <string name="become_a_driver">Become a Driver</string>
-    <string name="car_type">Car Type</string>
     <string name="save_car">Save Car</string>
-    <string name="set">Set</string>
     <string name="error_message">Something  happened.. Please try again later</string>
     <string name="classification">Classification</string>
     <string name="ride_capacity">Ride Capacity</string>
@@ -179,7 +160,7 @@
     <string name="previous_routes">Previous Routes</string>
     <string name="car">Car</string>
     <string name="you_are_driver_now">You are Driver now</string>
-    <string name="successfull_edit_car_driver">You saved your Car successfully</string>
+    <string name="successfull_edit_car_driver">Your Car edited successfully</string>
     <string name="accepte_request_msg">was accepted your request</string>
     <string name="request_accepted">Request Accepted</string>
     <string name="route_start">Route start</string>
@@ -200,7 +181,6 @@
     <string name="request">Request</string>
     <string name="is_instrested_for">is interested for</string>
     <string name="mute_notifications">Mute Notifications</string>
-    <string name="dark_mode">Dark Mode</string>
     <string name="delete_driver_account">Delete Driver Account</string>
     <string name="save">Save</string>
     <string name="error_email_format">Email is not Acceptable\n(e.x. email@gmail.com)</string>
@@ -220,6 +200,19 @@
     <string name="do_you_want_to_delete_this_route">Do you want to delete this route?</string>
     <string name="wrong_date">Unacceptable Date</string>
     <string name="too_old_car">Your car is too old</string>
+    <string name="passenger_deleted_success">Passenger Deleted Successfully</string>
+    <string name="something_happened">Something happened... Try again later</string>
+    <string name="do_you_want_to_delete_all_of_your_activities_with">Do you want to delete all of your activities with</string>
+    <string name="set">set</string>
+    <string name="hello">Hello</string>
+    <string name="ascending_price">Ascending Price</string>
+    <string name="declining_price">Declining Price</string>
+    <string name="based_on_time">Based on Time</string>
+    <string name="based_on_driver_reviews">Based on Driver Reviews</string>
+    <string name="requests">Requests</string>
+    <string name="is_on_your_way">Is on your way</string>
+    <string name="interested_in_route">Interested in route:</string>
+    <string name="all_your_data_will_be_erased_if_you_want_to_keep_your_messages_and_your_routes_create_a_new_account_and_become_driver">All your data will be erased. If you want to keep your Messages and your routes create a new account and become driver.</string>
     <string-array translatable="false" name="repeat_options">
         <item>@string/daily</item>
         <item>@string/weekly</item>

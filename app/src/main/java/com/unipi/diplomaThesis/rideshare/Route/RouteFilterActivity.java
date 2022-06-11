@@ -126,7 +126,7 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
         radioGroupRepeatability.check(1);
         radioGroupClassification.check(1);
 //        setValues to sliders
-        rangeSliderPrice.setValues(routeFilter.getDefaultMinPrice(),routeFilter.getDefaultMaxPrice());
+        rangeSliderPrice.setValues((float) routeFilter.getDefaultMinPrice(),(float) routeFilter.getDefaultMaxPrice());
         minPrice.setText(routeFilter.getDefaultMinPrice() +"€");
         maxPrice.setText(routeFilter.getDefaultMaxPrice() +"€");
 
@@ -204,9 +204,12 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
             minPrice.setText(String.format(Locale.getDefault(), "%.2f", slider.getValues().get(0)) + "€");
             maxPrice.setText(String.format(Locale.getDefault(), "%.2f", slider.getValues().get(1)) + "€");
             if (slider.getValues().get(0)< routeFilter.getDefaultMinPrice()){
-                slider.setValues(routeFilter.getDefaultMinPrice(),slider.getValues().get(1));
-            }else if (slider.getValues().get(1)> routeFilter.getDefaultMaxPrice()) {
-                slider.setValues(slider.getValues().get(0), routeFilter.getDefaultMaxPrice());
+                slider.setValues((float) routeFilter.getDefaultMinPrice(),slider.getValues().get(1));
+            }else if (slider.getValues().get(1)> (float) routeFilter.getDefaultMaxPrice()) {
+                System.out.println(slider.getValues().get(1));
+                System.out.println((float) routeFilter.getDefaultMaxPrice());
+                System.out.println(slider.getValues().get(1)> (float) routeFilter.getDefaultMaxPrice());
+                slider.setValues(slider.getValues().get(0), (float) routeFilter.getDefaultMaxPrice());
             }
         }
 //        Time
@@ -248,7 +251,8 @@ public class RouteFilterActivity extends AppCompatActivity implements RangeSlide
             radioGroupClassification.check(radioGroupClassification.getChildAt(routeFilter.getClassification()).getId());
         }
 //        Price
-        rangeSliderPrice.setValues(routeFilter.getDefaultMinPrice(),routeFilter.getDefaultMaxPrice());
+        System.out.println(routeFilter.getDefaultMinPrice() +" "+routeFilter.getDefaultMaxPrice());
+        rangeSliderPrice.setValues((float) routeFilter.getDefaultMinPrice(),(float) routeFilter.getDefaultMaxPrice());
 //        Time
         rangeSliderTime.setValues(routeFilter.getMinTime(),routeFilter.getMaxTime());
 //        Rating

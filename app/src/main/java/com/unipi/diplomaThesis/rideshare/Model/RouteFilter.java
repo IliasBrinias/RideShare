@@ -2,15 +2,13 @@ package com.unipi.diplomaThesis.rideshare.Model;
 
 import android.content.Context;
 
-import com.unipi.diplomaThesis.rideshare.Interface.OnDistanceResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnFilterResult;
-
-import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
 public class RouteFilter implements Serializable {
     private double maximumDistance = 0.1;
@@ -18,12 +16,12 @@ public class RouteFilter implements Serializable {
     private String destinationRiderPlaceId = "";
     private int defaultTimetable = -1;
     private int defaultClassification = -1;
-    private float defaultMinPrice = 0.f, defaultMaxPrice = 100.f;
+    private double defaultMinPrice = 0.f, defaultMaxPrice = 100.f;
     private float defaultMinTime = -12, defaultMaxTime = 12;
     private float defaultMinRating = 0.f, defaultMaxRating = 5.f;
     private int timetable,classification;
     private long timeUnix = -1;
-    private float minPricePerPassenger, maxPricePerPassenger;
+    private double minPricePerPassenger, maxPricePerPassenger;
     private float minTime, maxTime;
     private float minRating, maxRating;
 
@@ -54,11 +52,11 @@ public class RouteFilter implements Serializable {
         this.classification = classification;
     }
 
-    public void setDefaultMinPrice(float defaultMinPrice) {
+    public void setDefaultMinPrice(double defaultMinPrice) {
         this.defaultMinPrice = defaultMinPrice;
     }
 
-    public void setDefaultMaxPrice(float defaultMaxPrice) {
+    public void setDefaultMaxPrice(double defaultMaxPrice) {
         this.defaultMaxPrice = defaultMaxPrice;
     }
 
@@ -102,11 +100,11 @@ public class RouteFilter implements Serializable {
         this.defaultMaxRating = defaultMaxRating;
     }
 
-    public float getDefaultMinPrice() {
+    public double getDefaultMinPrice() {
         return defaultMinPrice;
     }
 
-    public float getDefaultMaxPrice() {
+    public double getDefaultMaxPrice() {
         return defaultMaxPrice;
     }
 
@@ -203,19 +201,19 @@ public class RouteFilter implements Serializable {
         this.destinationRiderPlaceId = destinationRiderPlaceId;
     }
 
-    public float getMinPricePerPassenger() {
+    public double getMinPricePerPassenger() {
         return minPricePerPassenger;
     }
 
-    public void setMinPricePerPassenger(float minPricePerPassenger) {
+    public void setMinPricePerPassenger(double minPricePerPassenger) {
         this.minPricePerPassenger = minPricePerPassenger;
     }
 
-    public float getMaxPricePerPassenger() {
+    public double getMaxPricePerPassenger() {
         return maxPricePerPassenger;
     }
 
-    public void setMaxPricePerPassenger(float maxPricePerPassenger) {
+    public void setMaxPricePerPassenger(double maxPricePerPassenger) {
         this.maxPricePerPassenger = maxPricePerPassenger;
     }
 
@@ -227,47 +225,40 @@ public class RouteFilter implements Serializable {
         this.timetable = timetable;
     }
 
+    /**
+     * check all the user parameters and finally returns the route.
+     * I use the google Directions Api and add the user origin and destination points as waypoints.
+     * Then i compare the new Distance Route with the old and the maximum Deviation
+     * @param c
+     * @param r
+     * @param onFilterResult
+     */
     public void filterCheck(Context c, Route r, OnFilterResult onFilterResult){
-        onFilterResult.result(true,0);
-        if (true) return;
-        //
         ApiCalls.getDistanceWithWaypoints(c,
                 r.getRouteLatLng().getStartPlaceId(),
                 r.getRouteLatLng().getEndPlaceId(),
                 originRiderPlaceId,
-                destinationRiderPlaceId, new OnDistanceResponse() {
-                    @Override
-                    public void returnedData(JSONObject response, Double distance) {
-                        if (distance - r.getRouteLatLng().getDistance() >= r.getRouteLatLng().getMaximumDeviation()*1000) {
-                                onFilterResult.result(false,0);
-                                return;
-                        }
-//                        Cost Check
-                        System.out.println("!checkCost(r) "+!checkCost(r));
-                        if (!checkCost(r)) {
+                destinationRiderPlaceId, (response, distance) -> {
+                    if (distance >= r.getRouteLatLng().getDistance() + r.getRouteLatLng().getMaximumDeviation()*1000) {
                             onFilterResult.result(false,0);
                             return;
-                        }
-//                         timetable check
-                        System.out.println("RouteFilter.this.timetable "+(RouteFilter.this.timetable != r.getRouteDateTime().getTimetable() && RouteFilter.this.timetable != RouteFilter.this.defaultTimetable));
-                        if (RouteFilter.this.timetable != r.getRouteDateTime().getTimetable() && RouteFilter.this.timetable != RouteFilter.this.defaultTimetable) {
-                            onFilterResult.result(false,0);
-                            return;
-                        }
-//                        date check
-                        if (!checkDate(r)) {
-                            onFilterResult.result(false,0);
-                            return;
-                        }
-//                        time check
-                        if (!checkTime(r)) {
-                            onFilterResult.result(false,0);
-                            return;
-                        }
-
-//                      TODO:  Rating Check
-                        onFilterResult.result(true,distance - r.getRouteLatLng().getDistance());
                     }
+//                        Cost Check
+                    if (!checkCost(r)) {
+                        onFilterResult.result(false,0);
+                        return;
+                    }
+//                        date check
+                    if (!checkDate(r)) {
+                        onFilterResult.result(false,0);
+                        return;
+                    }
+//                        time check
+                    if (!checkTime(r)) {
+                        onFilterResult.result(false,0);
+                        return;
+                    }
+                    onFilterResult.result(true,distance - r.getRouteLatLng().getDistance());
                 });
     }
 
@@ -292,26 +283,31 @@ public class RouteFilter implements Serializable {
         if (routeCalendarStart.getTimeInMillis() > userInput.getTimeInMillis() || userInput.getTimeInMillis() > routeCalendarEnd.getTimeInMillis()){
             return false;
         }
+
         if (!r.getRouteDateTime().isRepeat()){
             if (routeCalendarStart.get(Calendar.YEAR) != userInput.get(Calendar.YEAR) ||
                     routeCalendarStart.get(Calendar.MONTH) != userInput.get(Calendar.MONTH) ||
                     routeCalendarStart.get(Calendar.DAY_OF_MONTH) != userInput.get(Calendar.DAY_OF_MONTH)) {
                 return false;
             }
-        }
-        switch (r.getRouteDateTime().getTimetable()){
-            case 0: // daily
-                if (routeCalendarStart.getTimeInMillis() > RouteFilter.this.timeUnix ||
-                        RouteFilter.this.timeUnix > routeCalendarEnd.getTimeInMillis()){
-                    return false;
-                }
-                break;
-            case 1://weekly
+        }else {
+            if (timetable-1 != r.getRouteDateTime().getTimetable() && timetable!=defaultTimetable) return false;
+            switch (r.getRouteDateTime().getTimetable()){
+                case 0: // daily
+                    if (routeCalendarStart.getTimeInMillis() > RouteFilter.this.timeUnix ||
+                            RouteFilter.this.timeUnix > routeCalendarEnd.getTimeInMillis()){
+                        return false;
+                    }
+                    break;
+                case 1://weekly
 //              check if the day of week is the same and if the user date is between start and end route date
-                if (routeCalendarStart.get(Calendar.DAY_OF_WEEK) != userInput.get(Calendar.DAY_OF_WEEK)){
+                    for (Map.Entry<String,String> d: r.getRouteDateTime().getSelectedDays().entrySet()){
+                        if (Integer.parseInt(d.getValue()) == userInput.get(Calendar.DAY_OF_WEEK)){
+                            return true;
+                        }
+                    }
                     return false;
-                }
-                break;
+            }
         }
         return true;
     }
@@ -320,7 +316,7 @@ public class RouteFilter implements Serializable {
 //      cost Check
         if (RouteFilter.this.minPricePerPassenger != defaultMinPrice || RouteFilter.this.maxPricePerPassenger != defaultMaxPrice){
             try {
-                float costPerRider = Float.parseFloat(r.getCostPerRider());
+                Double costPerRider = r.getCostPerRider();
                 if (RouteFilter.this.minPricePerPassenger > costPerRider || RouteFilter.this.maxPricePerPassenger < costPerRider) {
                     return false;
                 }

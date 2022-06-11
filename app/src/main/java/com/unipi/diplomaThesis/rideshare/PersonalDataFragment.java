@@ -157,9 +157,6 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
         loadUserData();
         return v;
     }
-    private void loadReviewView(View reviews) {
-    }
-
     private void reviewSearch() {
         reviewList.clear();
         User.loadReviews(u.getUserId(),5,this::refreshData);
@@ -330,6 +327,11 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
         alertDialog.setCancelable(true);
         alertDialog.show();
     }
+    private void clearFocus(){
+        name.clearFocus();
+        email.clearFocus();
+        birthDate.clearFocus();
+    }
     private void saveUserDataWithPass(ProgressBar progressBar, TextInputLayout passwordLayout, EditText password, AlertDialog alertDialog){
         if (password.getText().toString().equals("")){
             makeFieldError(passwordLayout,password,getString(R.string.null_error_editText));
@@ -353,6 +355,7 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
                             progressBar.setVisibility(View.GONE);
                             progressBar.setIndeterminate(false);
                             alertDialog.dismiss();
+                            clearFocus();
                             return;
                         }
                         if (!u.getEmail().equals(email.getText().toString())) {
@@ -456,6 +459,9 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
                                     progressBar.setIndeterminate(false);
                                     Toast.makeText(getActivity(), getString(R.string.password_changed_success), Toast.LENGTH_SHORT).show();
                                     alertDialog.dismiss();
+                                    password.clearFocus();
+                                    clearFocus();
+
                                 }
                             }
                         });
@@ -467,6 +473,8 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
                         }
                         progressBar.setVisibility(View.GONE);
                         progressBar.setIndeterminate(false);
+                        clearFocus();
+
                     }
                 }
             });

@@ -17,6 +17,13 @@ public class CustomCardView {
     public CustomCardView(Activity c){
         this.c=c;
     }
+
+    /**
+     * Create a CardView of a dynamically count Images
+     * @param count
+     * @param image
+     * @return
+     */
     public CardView getCardView(int count,Bitmap image){
         CardView cardView = new CardView(c);
         cardView.setCardBackgroundColor(Color.TRANSPARENT);

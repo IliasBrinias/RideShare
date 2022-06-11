@@ -74,11 +74,9 @@ public class RiderActivity extends AppCompatActivity {
         topAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.messages:
-                        startActivity(new Intent(RiderActivity.this, MessengerActivity.class));
-                        break;
-
+                if (item.getItemId() == R.id.messages) {
+                    startActivity(new Intent(RiderActivity.this, MessengerActivity.class));
+                    return true;
                 }
                 return false;
             }
@@ -127,7 +125,6 @@ public class RiderActivity extends AppCompatActivity {
         u.loadUserImage(image -> {
             imageNavigationHeader.setImageBitmap(null);
             imageNavigationHeader.setBackgroundResource(0);
-
             if (image!=null){
                 imageNavigationHeader.setImageBitmap(image);
             }else{
@@ -140,7 +137,7 @@ public class RiderActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
-            super.onBackPressed();
+            finishAffinity();
             return;
         }
 

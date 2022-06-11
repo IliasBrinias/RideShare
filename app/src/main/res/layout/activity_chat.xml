@@ -82,26 +82,27 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputMessageLayout"
             style="@style/TextInputEditTextLoginStyle"
-            android:layout_width="300dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:focusable="true"
+            android:layout_weight="1"
             android:focusableInTouchMode="true"
             android:fontFamily="@font/trebuc"
             android:inputType="text"
-            app:boxStrokeWidth="0dp"
-            app:placeholderText="Aa">
+            app:placeholderText="Aa"
+            app:boxStrokeWidth="0dp">
 
             <AutoCompleteTextView
                 android:id="@+id/autoCompleteMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/tablerow_background"
+                android:backgroundTint="?chatTextBack"
                 android:focusable="true"
                 android:fontFamily="@font/trebuc"
                 android:padding="10dp"
                 android:maxLines="4"
-                android:textSize="20sp"
                 tools:ignore="TouchTargetSizeCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -109,10 +110,11 @@
         <ImageButton
             android:id="@+id/buttonSend"
             android:background="@android:color/transparent"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_weight="1"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_gravity="bottom|end|center_horizontal"
             android:src="@drawable/ic_send"
             android:paddingBottom="5dp"/>
     </LinearLayout>

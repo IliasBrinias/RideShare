@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +38,7 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  * create an instance of this fragment.
  */
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment implements TextWatcher {
 
     private static final int REQ_GOOGLE_SIGN_IN = 123;
     private FirebaseAuth mAuth;
@@ -65,6 +67,8 @@ public class LoginFragment extends Fragment {
         password = v.findViewById(R.id.textInputRegisterPassword);
         login = v.findViewById(R.id.buttonLogin);
         login.setOnClickListener(this::login);
+        email.addTextChangedListener(this);
+        password.addTextChangedListener(this);
         mAuth = FirebaseAuth.getInstance();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return v;
@@ -138,5 +142,21 @@ public class LoginFragment extends Fragment {
         mAuth.signOut();
         if (t!=null) t.cancel();
         t.makeText(getActivity(), error_msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        if (email.getError() != null || password.getError()!=null){
+            email.setError(null);
+            password.setError(null);
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+
     }
 }

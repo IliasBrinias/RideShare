@@ -25,7 +25,7 @@ import java.util.Map;
 public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.ViewHolder> {
     List<MessageSession> messageSessionList;
     OnClickMessageSession onClickMessageSession;
-    private final SimpleDateFormat time = new SimpleDateFormat("HH:mm");
+    private final SimpleDateFormat time = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     Context c;
 
     public MessengerAdapter(List<MessageSession> messageSessionList, Context c, OnClickMessageSession onClickMessageSession) {
@@ -58,7 +58,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
         }
         Map.Entry<String, Message> m = messageSessionList.get(position).getMessages().entrySet().iterator().next();
         Message lastMessage = m.getValue();
-        holder.lastMessage.setText(cutMessageIfIsLong(lastMessage.getMessage(),20));
+        holder.lastMessage.setText(cutMessageIfIsLong(lastMessage.getMessage(),12));
         if (!lastMessage.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())) {
             if (!lastMessage.isSeen()) {
                 makeMessageUnseen(holder);

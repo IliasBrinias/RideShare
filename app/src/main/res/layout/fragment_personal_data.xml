@@ -194,26 +194,28 @@
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:background="@color/shadow" />
+
         <TextView
             android:id="@+id/textViewReviewTitle"
+            style="@style/TitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/TitleTextView"
+            android:layout_gravity="start"
+            android:layout_marginStart="25dp"
             android:fontFamily="@font/trebuc"
             android:text="@string/reviews"
-            android:textSize="20sp"
-            android:visibility="gone"
-            android:layout_marginStart="25dp"
-            android:textStyle="bold"
             android:textColor="?colorPrimaryVariant"
-            android:layout_gravity="start"/>
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
         <RatingBar
             android:id="@+id/ratingBar"
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:focusable="true"/>
+            android:theme="@style/RatingBar"
+            android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewReviews"

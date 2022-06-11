@@ -120,7 +120,7 @@
                     android:focusableInTouchMode="true"
                     android:fontFamily="@font/trebuc"
                     android:maxLines="1"
-                    android:nextFocusDown="@id/editTextCarYear"
+                    android:nextFocusDown="@id/editTextCarModel"
                     android:singleLine="true"
                     tools:ignore="TouchTargetSizeCheck" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -141,7 +141,7 @@
                     android:focusableInTouchMode="true"
                     android:fontFamily="@font/trebuc"
                     android:maxLines="1"
-                    android:nextFocusDown="@id/editTextCarManufacturer"
+                    android:nextFocusDown="@id/editTextCarYear"
                     android:singleLine="true"
                     tools:ignore="TouchTargetSizeCheck" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -202,6 +202,7 @@
             android:fontFamily="@font/trebuc"
             android:text="@string/save_car"
             android:textStyle="bold"
+            android:textAllCaps="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.449"

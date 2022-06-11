@@ -12,6 +12,7 @@ public class Message implements Serializable {
     public static final int DATE_YEAR_FORMAT = 753;
     public static final int NO_TIME_LABEL_NEEDED = 345;
     public static final int MINUTES_AFTER_TIME = 10;
+    public static final int LEAVE_CHAT = 262;
 
     private String messageId;
     private String userSenderId;

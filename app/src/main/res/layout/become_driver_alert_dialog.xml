@@ -32,7 +32,7 @@
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
         android:fontFamily="@font/trebuc"
-        android:text="All your data will be erased. If you want to keep your Messages and your routes create a new account and become driver."
+        android:text="@string/all_your_data_will_be_erased_if_you_want_to_keep_your_messages_and_your_routes_create_a_new_account_and_become_driver"
         android:textColor="@color/shadow"
         android:textSize="15sp"
         android:textStyle="bold"/>

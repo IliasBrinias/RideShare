@@ -19,11 +19,15 @@
         android:theme="@style/Theme.RideShare">
         <activity
             android:name=".driver.RequestsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+
+            />
         <activity
             android:name=".messenger.ChatInfoActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            />
         <activity
             android:name=".messenger.MessengerActivity"
             android:exported="false"
@@ -35,6 +39,7 @@
         <activity
             android:name=".driver.DriverSaveRouteActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
 
         <activity
@@ -63,6 +68,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCO-ylUowiKV6IECv1L6eVw9Bl8CBzhaFk" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="firebase_messaging_auto_init_enabled"
             android:value="false" />

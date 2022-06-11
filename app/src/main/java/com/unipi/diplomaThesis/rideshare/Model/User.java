@@ -212,12 +212,23 @@ public class User {
         if (profile.getBackground() == c.getDrawable(R.drawable.ic_default_profile)) profile =null;
         saveUserImage(getByteArray(profile), onUploadComplete);
     }
+
+    /**
+     * Saves User Image
+     * @param userImage
+     * @param onCompleteListener
+     */
     public void saveUserImage(byte[] userImage, OnCompleteListener<UploadTask.TaskSnapshot> onCompleteListener){
         FirebaseStorage.getInstance().getReference()
                 .child(User.class.getSimpleName())
                 .child(this.userId)
                 .putBytes(userImage).addOnCompleteListener(onCompleteListener);
     }
+
+    /**
+     * Save User Instance with Shared Preferences
+     * @param a
+     */
     public void saveUserInstance(Activity a){
         PreferenceManager.getDefaultSharedPreferences(a).edit()
                 .putString(User.REQ_TYPE_TAG,this.getType()).apply();
@@ -252,6 +263,10 @@ public class User {
         }
     }
 
+    /**
+     * Removes listener for the Messages
+     * @param messageSession
+     */
     public void stopLoadingMessages(MessageSession messageSession) {
         FirebaseDatabase.getInstance().getReference()
                 .child(MessageSession.class.getSimpleName())
@@ -281,6 +296,12 @@ public class User {
                 .setValue(m).addOnCompleteListener(onCompleteListener);
         sendNotification(activity,participant,messageSession,m);
     }
+
+    /**
+     * Make the Message child ("seen") true
+     * @param messageSession
+     * @param m
+     */
     private void messageSeen(MessageSession messageSession,Message m){
         FirebaseDatabase.getInstance().getReference()
                 .child(MessageSession.class.getSimpleName())
@@ -290,6 +311,15 @@ public class User {
                 .child("seen").setValue(true);
     }
     FcmNotificationsSender fcmNotificationsSender;
+
+    /**
+     * Send Notification with FCM
+     *
+     * @param a
+     * @param sender
+     * @param messageSession
+     * @param message
+     */
     private void sendNotification(Activity a,User sender,MessageSession messageSession,Message message){
         fcmNotificationsSender = new FcmNotificationsSender(sender.token_FCM,
                 Message.class.getSimpleName(),
@@ -324,6 +354,7 @@ public class User {
                     }
                 });
     }
+
     private void makeMessageSessionSeen(String messageSessionId){
         FirebaseDatabase.getInstance().getReference()
                 .child(MessageSession.class.getSimpleName())
@@ -331,6 +362,12 @@ public class User {
                 .child("seen").setValue(true);
 
     }
+    ValueEventListener messageSessionListener;
+
+    /**
+     * Load Riders Message Session
+     * @param onMessageSessionLoad
+     */
     public void loadUserMessageSession(OnMessageSessionLoad onMessageSessionLoad){
         getMessageSessionId(sessionIds -> {
             if (sessionIds == null) {
@@ -345,9 +382,9 @@ public class User {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         MessageSession messageSession = new MessageSession();
-                        messageSession.setMessageSessionId(snapshot.getKey());
-                        if (!messageSession.isSeen()) makeMessageSessionSeen(id);
+                        messageSession.setMessageSessionId(id);
                         if (!snapshot.hasChild("participants")) return;
+                        if (!messageSession.isSeen()) makeMessageSessionSeen(id);
                         messageSession.setParticipants((ArrayList<String>) snapshot.child("participants").getValue());
                         messageSession.setCreationTimestamp(snapshot.child("creationTimestamp").getValue(Long.class));
                         if (snapshot.child("messages").getChildrenCount() == 0) {
@@ -385,6 +422,11 @@ public class User {
         });
     }
 
+    /**
+     * load and return Riders Messages
+     * @param messageSession
+     * @param onMessageReturn
+     */
     public void loadMessages(MessageSession messageSession, OnMessageReturn onMessageReturn){
         loadMessages = FirebaseDatabase.getInstance().getReference()
                 .child(MessageSession.class.getSimpleName())
@@ -430,6 +472,12 @@ public class User {
             });
         }
     }
+
+    /**
+     * load routes based on lastRoutes ids
+     * @param onActiveRouteResponse
+     * @param onPreviousRouteResponse
+     */
     public void loadLastRoutes(OnActiveRouteResponse onActiveRouteResponse, OnPreviousRouteResponse onPreviousRouteResponse){
         FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName())
@@ -442,6 +490,7 @@ public class User {
                         if (lastRoutes == null) return;
                         for (String routeId:lastRoutes){
                             Route.loadRoute(routeId, route -> {
+                                if (route == null) return;
                                 if (route.getRouteDateTime().getEndDateUnix()<=new Date().getTime()){
                                     User.loadUser(route.getDriverId(), u -> onPreviousRouteResponse.returnRoute(route,u));
                                 }else {
@@ -455,6 +504,12 @@ public class User {
                 });
     }
 
+    /**
+     * load Reviews with order
+     * @param driverId
+     * @param limit
+     * @param onReviewResponse
+     */
     public static void loadReviews(String driverId,int limit,OnReviewResponse onReviewResponse){
         FirebaseDatabase.getInstance().getReference()
                 .child(Review.class.getSimpleName())
@@ -473,6 +528,12 @@ public class User {
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
+
+    /**
+     * load Review Score for the driver
+     * @param targetUserId
+     * @param onReviewTotalScoreResponse
+     */
     public void loadReviewTotalScore(String targetUserId, OnReviewTotalScoreResponse onReviewTotalScoreResponse){
         FirebaseDatabase.getInstance().getReference()
                 .child(Review.class.getSimpleName())
@@ -579,6 +640,11 @@ public class User {
         byte[] data = baos.toByteArray();
         return data;
     }
+
+    /**
+     * Load and save token FCM
+     *
+     */
     public void loadTokenFCM(){
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
             @Override
@@ -596,4 +662,111 @@ public class User {
 
     }
 
+    /**
+     * delete all the activities between rider and driver:
+     *  1. delete Messages
+     *  2. delete Riders routes and message Session
+     *  3. delete rider from the routes
+     *  4. delete rider requests for the driver
+     *  but keeps the reviews for the driver
+     * @param participantId
+     * @param onCompleteListener
+     */
+    public void leaveChat(String participantId, OnCompleteListener<Void> onCompleteListener){
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName()).child(this.getUserId());
+        DatabaseReference participantRef = FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName()).child(participantId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot user) {
+                        participantRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot participant) {
+                                if (participant.child(User.REQ_TYPE_TAG).getValue(String.class).equals(Driver.class.getSimpleName())){
+                                    deleteMutualActivities(participant.getValue(Driver.class),user.getValue(Rider.class),onCompleteListener);
+                                }else {
+                                    deleteMutualActivities(user.getValue(Driver.class),participant.getValue(Rider.class),onCompleteListener);
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {}
+                        });
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                });
+
+    }
+    public void deleteMutualActivities(Driver driver, Rider rider, OnCompleteListener<Void> onCompleteListener){
+        DatabaseReference requestRef = FirebaseDatabase.getInstance().getReference().child(Request.class.getSimpleName());
+        DatabaseReference riderRef = FirebaseDatabase.getInstance().getReference().child(User.class.getSimpleName()).child(rider.getUserId());
+        DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child(User.class.getSimpleName()).child(driver.getUserId());
+//        delete Messages
+        DatabaseReference messageSessionRef = FirebaseDatabase.getInstance().getReference().child(MessageSession.class.getSimpleName());
+        for (String id: driver.getMessageSessionId()){
+            if (rider.getMessageSessionId().contains(id)){
+                messageSessionRef.child(id).removeValue().addOnCompleteListener(onCompleteListener);
+                break;
+            }
+        }
+//          delete Riders routes and message Session
+        riderRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<String> lastRoutes = (ArrayList<String>) snapshot.child("lastRoutes").getValue();
+                ArrayList<String> messageSessionId = (ArrayList<String>) snapshot.child("messageSessionId").getValue();
+                for (String id:driver.getLastRoutes()){
+                    if (lastRoutes.contains(id)) {
+                        lastRoutes.remove(id);
+                    }
+                }
+                for (String id:driver.getMessageSessionId()){
+                    if (messageSessionId.remove(id)){
+                        messageSessionId.remove(id);
+                        driver.getMessageSessionId().remove(id);
+                    }
+                }
+                riderRef.child("lastRoutes").setValue(lastRoutes);
+                riderRef.child("messageSessionId").setValue(messageSessionId);
+                driverRef.child("messageSessionId").setValue(driver.getMessageSessionId());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        for (String id:driver.getLastRoutes()){
+            DatabaseReference routeRef = FirebaseDatabase.getInstance().getReference().child(Route.class.getSimpleName());
+
+//          delete rider from the routes
+            routeRef.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    ArrayList<String> passengersId = (ArrayList<String>) snapshot.child("passengersId").getValue();
+                    if (passengersId.contains(rider.getUserId())){
+                        passengersId.remove(rider.getUserId());
+                        routeRef.child(id).child("passengersId").setValue(passengersId);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {}
+            });
+//            delete rider requests for the driver
+            requestRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.hasChild(id)){
+                        if (snapshot.child(id).hasChild(rider.getUserId())){
+                            requestRef.child(id).child(rider.getUserId()).removeValue();
+                        }
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {}
+            });
+        }
+    }
 }

@@ -1,75 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     >
 
-    <View
-        android:id="@+id/view6"
-        android:layout_width="match_parent"
-        android:layout_height="10dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/trebuc"
-        android:text="@string/delete_passenger"
-        android:textColor="?colorPrimaryVariant"
-        android:textSize="25sp"
-        android:layout_marginStart="10dp"/>
-    <View
-        android:id="@+id/view8"
-        android:layout_width="match_parent"
-        android:layout_height="10dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/trebuc"
-        android:text="@string/do_you_want_to_delete_this_passenger_from_your_route"
-        android:textColor="@color/shadow"
-        android:textSize="15sp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        />
-
-    <include
-        android:id="@+id/passengerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-
-        layout="@layout/edit_passengers_route_layout"/>
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:gravity="end">
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <View
+            android:id="@+id/view6"
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
 
         <TextView
-            android:id="@+id/textViewCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="25dp"
+            android:layout_marginStart="10dp"
             android:fontFamily="@font/trebuc"
-            android:text="@string/cancel"
-            android:textColor="@color/shadow"
-            android:textSize="20sp" />
+            android:text="@string/delete_passenger"
+            android:textColor="?colorPrimaryVariant"
+            android:textSize="25sp" />
 
-        <android.widget.Button
-            android:id="@+id/deleteAccount"
+        <View
+            android:id="@+id/view8"
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_button_decline"
-            android:text="@string/delete"
-            android:textAllCaps="false"
-            android:textColor="@color/sliderRed"
-            android:textSize="18sp" />
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:fontFamily="@font/trebuc"
+            android:text="@string/do_you_want_to_delete_this_passenger_from_your_route"
+            android:textColor="@color/shadow"
+            android:textSize="15sp" />
+
+        <include
+            android:id="@+id/passengerView"
+            layout="@layout/edit_passengers_route_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+
+            android:layout_marginEnd="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/textViewCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="25dp"
+                android:fontFamily="@font/trebuc"
+                android:text="@string/cancel"
+                android:textColor="@color/shadow"
+                android:textSize="20sp" />
+
+            <android.widget.Button
+                android:id="@+id/deleteAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_button_decline"
+                android:text="@string/delete"
+                android:textAllCaps="false"
+                android:textColor="@color/sliderRed"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="10dp"/>
-</LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

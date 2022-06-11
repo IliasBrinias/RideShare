@@ -1,4 +1,4 @@
-package com.unipi.diplomaThesis.rideshare.driver.fragments.Route;
+package com.unipi.diplomaThesis.rideshare.driver.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -141,10 +141,11 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
             ((DriverSaveRouteActivity) getActivity()).nextStep();
         });
         buttonSubmitEditedRoute.setOnClickListener(view -> {
-            ((DriverSaveRouteActivity) getActivity()).saveRoute();
+            ((DriverSaveRouteActivity) getActivity()).editRoute();
         });
         if (routeDateTime!=null){
-            nextStage(View.GONE);
+            nextStep.setVisibility(View.GONE);
+            nextStage(View.VISIBLE);
             startDateUnixTime = routeDateTime.getStartDateUnix();
             endDateUnixTime = routeDateTime.getEndDateUnix();
             switchRepeat.setChecked(routeDateTime.isRepeat());
@@ -169,11 +170,13 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
                 linearLayoutRepeatTypeSelection.setVisibility(View.VISIBLE);
                 endDateLayout.setVisibility(View.VISIBLE);
                 infoMessage.setVisibility(View.VISIBLE);
-
+                linearLayoutChooseDays.setVisibility(View.VISIBLE);
             }else {
+                repeatField.setSelection(0);
                 linearLayoutRepeatTypeSelection.setVisibility(View.GONE);
                 endDateLayout.setVisibility(View.GONE);
                 infoMessage.setVisibility(View.GONE);
+                linearLayoutChooseDays.setVisibility(View.GONE);
             }
             validateFields();
             return;
@@ -292,7 +295,7 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
 
                     if (repeatField.getSelectedItemPosition() == 0) {
                         nextStage(View.VISIBLE);
-                        if (Math.abs(duration.toDays())<=1){
+                        if (duration.toDays()<=1){
                             endDateUnixTime=0;
                             endDate.setText("");
                             Toast.makeText(getActivity(), getActivity().getString(R.string.end_date_error_daily),Toast.LENGTH_SHORT).show();
@@ -301,7 +304,7 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
                         }
                     }
                     else if (repeatField.getSelectedItemPosition()==1) {
-                        if (Math.abs(duration.toDays())<7){
+                        if (duration.toDays()<7){
                             endDateUnixTime=0;
                             endDate.setText("");
                             Toast.makeText(getActivity(), getActivity().getString(R.string.end_date_error_week),Toast.LENGTH_SHORT).show();
@@ -329,6 +332,7 @@ public class DriverSaveRouteTimeTableFragment extends Fragment implements Compou
         }
     }
     public RouteDateTime getRouteDateTime(){
+        if (repeatField == null && routeDateTime!=null) return routeDateTime;
         if (!days.isEmpty() & repeatField.getSelectedItemPosition()==1){
             Map<String, String> sortedDays = days.entrySet()
                     .stream()

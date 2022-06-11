@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -33,19 +34,19 @@ import com.unipi.diplomaThesis.rideshare.Model.Request;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.PersonalDataFragment;
 import com.unipi.diplomaThesis.rideshare.R;
-import com.unipi.diplomaThesis.rideshare.RiderLastRoutesFragment;
 import com.unipi.diplomaThesis.rideshare.messenger.MessengerActivity;
 
 import java.util.ArrayList;
 
 public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, NavigationView.OnNavigationItemSelectedListener {
     protected MyApplication mMyApp;
+    private static final int REQ_REQUEST_ACTIVITY = 898;
+    private static final int REQ_MESSAGE_SESSION = 517;
 
     private MaterialToolbar topAppBar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private PersonalDataFragment personalDataFragment;
-    RiderLastRoutesFragment riderLastRoutesFragment;
     CarFragment carFragment;
 
     DriverRouteListFragment driverRouteListFragment;
@@ -118,10 +119,10 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()){
             case R.id.requests:
-                startActivity(new Intent(this, RequestsActivity.class));
+                startActivityForResult(new Intent(this, RequestsActivity.class), REQ_REQUEST_ACTIVITY);
                 break;
             case R.id.messages:
-                startActivity(new Intent(this, MessengerActivity.class));
+                startActivityForResult(new Intent(this, MessengerActivity.class),REQ_MESSAGE_SESSION);
                 break;
         }
         return false;
@@ -138,10 +139,6 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
                 personalDataFragment = new PersonalDataFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,personalDataFragment).commit();
                 break;
-            case R.id.yourRoutes:
-                riderLastRoutesFragment = new RiderLastRoutesFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,riderLastRoutesFragment).commit();
-                break;
             case R.id.carDriver:
                 carFragment = new CarFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,carFragment).commit();
@@ -154,26 +151,6 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-    boolean doubleBackToExitPressedOnce = false;
-
-    @Override
-    public void onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            super.onBackPressed();
-            return;
-        }
-
-        this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, getString(R.string.msg_back_again_exit), Toast.LENGTH_SHORT).show();
-
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce=false;
-            }
-        }, 2000);
-    }
     @Override
     public void onPause() {
         super.onPause();
@@ -181,9 +158,9 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
     @Override
     protected void onResume() {
         super.onResume();
-        startChecking();
         newRequests.clear();
         newMessages.clear();
+        startChecking();
     }
 
     @Override
@@ -193,18 +170,23 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
 
     @SuppressLint("UnsafeOptInUsageError")
     private void startChecking(){
-        userDriver.loadDriversRouteId(ids -> {
+        userDriver.loadDriversRouteId(routeIds -> {
             FirebaseDatabase.getInstance().getReference()
                 .child(Request.class.getSimpleName())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (String id:ids) {
+                        for (String id:routeIds) {
                             if (!snapshot.hasChild(id)) continue;
                             for (DataSnapshot requests : snapshot.child(id).getChildren()) {
                                 String userId = requests.getKey();
-                                if (!newRequests.contains(userId)) {
-                                    newRequests.add(userId);
+                                System.out.println(requests);
+                                if (requests.child("seen").getValue(Boolean.class) == true){
+                                    if (newRequests.contains(userId)) newRequests.remove(userId);
+                                }else {
+                                    if (!newRequests.contains(userId)) {
+                                        newRequests.add(userId);
+                                    }
                                 }
                             }
                             if (newRequests == null) return;
@@ -256,6 +238,37 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
             badgeDrawableMessages.setNumber(newMessages.size());
             BadgeUtils.attachBadgeDrawable(badgeDrawableMessages,topAppBar,R.id.messages);
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_REQUEST_ACTIVITY || requestCode == REQ_MESSAGE_SESSION){
+            if (navigationView.getMenu().getItem(0).isChecked()){
+                driverRouteListFragment.routeSearch();
+            }
+        }
+    }
+
+    boolean doubleBackToExitPressedOnce = false;
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            finishAffinity();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, getString(R.string.msg_back_again_exit), Toast.LENGTH_SHORT).show();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 
 }

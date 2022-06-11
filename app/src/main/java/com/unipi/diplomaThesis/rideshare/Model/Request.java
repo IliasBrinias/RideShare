@@ -1,7 +1,5 @@
 package com.unipi.diplomaThesis.rideshare.Model;
 
-import com.google.firebase.database.FirebaseDatabase;
-
 public class Request {
     private String routeId;
     private String riderId;
@@ -70,11 +68,4 @@ public class Request {
         this.description = description;
     }
 
-    public void makeSeen() {
-        FirebaseDatabase.getInstance().getReference()
-                .child(Request.class.getSimpleName())
-                .child(this.getRouteId())
-                .child(this.riderId)
-                .child("seen").setValue(true);
-    }
 }

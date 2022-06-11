@@ -4,10 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,6 +24,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,6 +52,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -152,7 +158,16 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
     @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
     private void refreshData(Route r, User driver, double distanceDeviation, float reviewTotalScore, int reviewCount){
         stopProgressBarAnimation();
-        if (r==null) return;
+        if (r==null) {
+            if (routeList.isEmpty()){
+                routeCountTitle.setText(getString(R.string.we_found)+" "+0+" "+getString(R.string.route));
+            }
+            return;
+        }
+        if (routeFilter.getMinRating()>reviewTotalScore || routeFilter.getMaxRating()< reviewTotalScore) {
+            return;
+        }
+
         Map<String,Object> reviewData = new HashMap<>();
         reviewData.put("total",reviewTotalScore);
         reviewData.put("count",reviewCount);
@@ -188,7 +203,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
                 routeList.sort(new Comparator<Route>() {
                     @Override
                     public int compare(Route r1, Route r2) {
-                        return r1.getCostPerRider().compareTo(r2.getCostPerRider());
+                        return Double.compare(r1.getCostPerRider(),r2.getCostPerRider());
                     }
                 });
                 break;
@@ -196,7 +211,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
                 routeList.sort(new Comparator<Route>() {
                     @Override
                     public int compare(Route r1, Route r2) {
-                        return r2.getCostPerRider().compareTo(r1.getCostPerRider());
+                        return Double.compare(r2.getCostPerRider(),r1.getCostPerRider());
                     }
                 });
                 break;
@@ -249,17 +264,10 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
                 break;
         }
     }
-
     @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
     @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
     @Override
     public void afterTextChanged(Editable editable) {
 //        Call to PlacesApi and handle the returned Data
@@ -294,9 +302,22 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
                     tableRowLocationSearch.setVisibility(View.VISIBLE);
                     tableRowReturnedData.setVisibility(View.GONE);
                 }
-                listViewLocationSearch.setAdapter(new ArrayAdapter<>(getApplicationContext(),
+                listViewLocationSearch.setAdapter(new ArrayAdapter<String>(getApplicationContext(),
                         R.layout.list_item,
-                        streetNames.toArray(new String[streetNames.size()])));
+                        streetNames.toArray(new String[streetNames.size()])){
+                    @NonNull
+                    @Override
+                    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                        View v = super.getView(position, convertView, parent);
+                        TextView text = v.findViewById(R.id.textView);
+                        TypedValue typedValue = new TypedValue();
+                        Resources.Theme theme = getTheme();
+                        theme.resolveAttribute(R.attr.listViewTextColor, typedValue, true);
+                        @ColorInt int color = typedValue. data;
+                        text.setTextColor(color);
+                        return v;
+                    }
+                });
             }
         });
 
@@ -311,6 +332,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         alertDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.alert_dialog_background));
         TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.time_picker);
         DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
+        datePicker.setMinDate(new Date().getTime());
         timePicker.setVisibility(View.GONE);
         dialogView.findViewById(R.id.date_time_set).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -340,8 +362,8 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
     }
-    Float min;
-    Float max;
+    Double min;
+    Double max;
 
     @SuppressLint("NotifyDataSetChanged")
     private void RouteSearch() {
@@ -352,15 +374,15 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         routeList.clear();
         r.routeSearch(RiderRouteActivity.this ,routeFilter, RiderRouteActivity.this::refreshData);
         tableRowFilter.setVisibility(View.GONE);
-        min = -1.f;
-        max = -1.f;
+        min = -1.;
+        max = -1.;
 
         r.findMinMaxPrice(returnData -> {
 //            find Price min max
             if (returnData.get("min")!=null){
-                min = (Float) returnData.get("min");
+                min = (double) returnData.get("min");
             }else if (returnData.get("max")!=null){
-                max = (Float) returnData.get("max");
+                max = (double) returnData.get("max");
             }
             if (min==-1f || max == -1f) return;
             routeFilter.setDefaultMaxPrice(max);

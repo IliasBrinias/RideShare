@@ -40,6 +40,7 @@ public class DriverRouteListFragment extends Fragment {
 
     private static final int REQ_NEW_ROUTE_ACTIVITY = 123;
     private static final int REQ_EDIT_ROUTE_ACTIVITY = 798;
+    private static final int REQ_ROUTE_ACTIVITY_SHOW = 1019;
     private TextView welcomeTitle;
     private RecyclerView recyclerViewDriver;
     private Driver driver;
@@ -79,7 +80,7 @@ public class DriverRouteListFragment extends Fragment {
                 Intent i =new Intent(getActivity(), RouteActivity.class);
                 i.putExtra(Route.class.getSimpleName(),routeList.get(position).getRouteId());
                 i.putExtra(Driver.class.getSimpleName(),routeList.get(position).getDriverId());
-                startActivity(i);
+                startActivityForResult(i,REQ_ROUTE_ACTIVITY_SHOW);
 
             }
             public void editRoute(int position) {
@@ -166,7 +167,7 @@ public class DriverRouteListFragment extends Fragment {
         return v;
     }
     @SuppressLint("NotifyDataSetChanged")
-    private void routeSearch() {
+    public void routeSearch() {
         startProgressBarAnimation();
         routeList.clear();
         clicked.clear();
@@ -182,26 +183,34 @@ public class DriverRouteListFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
     }
     @SuppressLint("NotifyDataSetChanged")
-    private void returnData(Route r){
+    private void returnData(Route route){
         stopProgressBarAnimation();
-        if (r==null) return;
-        routeList.add(r);
+        if (route==null) return;
+        for (Route r:routeList){
+            if (route.getRouteId().equals(r.getRouteId())){
+                routeList.remove(r);
+                break;
+            }
+        }
+        routeList.add(route);
         driverRouteListAdapter.notifyDataSetChanged();
     }
     @SuppressLint("SetTextI18n")
     private void initializeTitle(){
         String[] name =driver.getFullName().split(" ");
         if (name.length!=2){
-            welcomeTitle.setText("Hello "+driver.getFullName()+"!");
+            welcomeTitle.setText(getString(R.string.hello)+" "+driver.getFullName()+"!");
         }else {
-            welcomeTitle.setText("Hello "+name[0]+"!");
+            welcomeTitle.setText(getString(R.string.hello)+" "+name[0]+"!");
         }
 
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if ((requestCode == REQ_NEW_ROUTE_ACTIVITY || requestCode==REQ_EDIT_ROUTE_ACTIVITY)){
+        if ((requestCode == REQ_NEW_ROUTE_ACTIVITY ||
+                requestCode==REQ_EDIT_ROUTE_ACTIVITY ||
+                requestCode == REQ_ROUTE_ACTIVITY_SHOW)){
             routeSearch();
         }
     }

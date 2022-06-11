@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="bottomSheet" format="reference|color" />
+    <attr name="navItem" format="reference|color" />
+    <attr name="listViewTextColor" format="reference|color" />
+    <attr name="textShadow" format="reference|color" />
+    <attr name="navItemCheckedBack" format="reference|color"/>
+    <attr name="navItemUncheckedBack" format="reference|color"/>
+    <attr name="chatTextBack" format="reference|color"/>
+    <attr name="tableRowShadow" format="reference|color"/>
+    <attr name="lastRouteInactiveShadow" format="reference|color"/>
 </resources>

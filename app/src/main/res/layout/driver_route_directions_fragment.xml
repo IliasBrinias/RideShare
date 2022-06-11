@@ -7,115 +7,102 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical"
-    tools:context=".driver.fragments.Route.DriverSaveRouteDirectionsFragment">
+    tools:context=".driver.fragments.DriverSaveRouteDirectionsFragment">
 
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputOriginLayout"
-        style="@style/TextInputEditTextLoginStyle"
-        android:layout_marginTop="8dp"
-        android:elevation="5sp"
-        android:hint="@string/route_start"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:startIconDrawable="@drawable/ic_location_point">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/autoCompleteOrigin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/trebuc"
-            tools:ignore="TouchTargetSizeCheck" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputDestinationLayout"
-        style="@style/TextInputEditTextLoginStyle"
-        android:layout_marginTop="8dp"
-        android:elevation="5sp"
-        android:hint="@string/route_end"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/textInputOriginLayout"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="@+id/textInputOriginLayout"
-        app:layout_constraintTop_toBottomOf="@+id/textInputOriginLayout"
-        app:layout_constraintVertical_bias="0.0"
-        app:startIconDrawable="@drawable/ic_finish_route"
-        app:startIconTint="@null">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/autoCompleteDestination"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/trebuc"
-            tools:ignore="TouchTargetSizeCheck" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView2"
-        android:layout_width="0dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="24dp"
-        android:elevation="5dp"
-        app:cardCornerRadius="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/textInputDestinationLayout"
-        app:layout_constraintStart_toStartOf="@+id/textInputDestinationLayout"
-        app:layout_constraintTop_toBottomOf="@+id/textInputDestinationLayout"
         app:layout_constraintVertical_bias="0.0">
 
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/mapView"
+        <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </androidx.cardview.widget.CardView>
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:gravity="center"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/buttonSubmitStepDirections"
-        style="@style/SubmitButtons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:elevation="2dp"
-        android:stateListAnimator="@null"
-        android:text="@string/next_step"
-        android:translationZ="2dp"
-        android:visibility="visible"
-        app:cornerRadius="90dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
 
-    <ListView
-        android:id="@+id/listViewLocationSearch"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="?colorOnPrimary"
-        android:backgroundTint="?colorOnPrimary"
-        android:translationZ="90dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView2"
-        app:layout_constraintEnd_toEndOf="@+id/textInputDestinationLayout"
-        app:layout_constraintStart_toStartOf="@+id/textInputDestinationLayout"
-        app:layout_constraintTop_toBottomOf="@+id/textInputOriginLayout"
-        app:layout_constraintVertical_bias="0.0" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputOriginLayout"
+                style="@style/TextInputEditTextLoginStyle"
+                android:layout_marginTop="8dp"
+                android:elevation="5sp"
+                android:hint="@string/route_start"
+                app:startIconDrawable="@drawable/ic_location_point">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/autoCompleteOrigin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/trebuc"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputDestinationLayout"
+                style="@style/TextInputEditTextLoginStyle"
+                android:layout_marginTop="8dp"
+                android:elevation="5sp"
+                android:hint="@string/route_end"
+                app:startIconDrawable="@drawable/ic_finish_route"
+                app:startIconTint="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/autoCompleteDestination"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/trebuc"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView2"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="20dp"
+                android:elevation="5dp"
+                app:cardCornerRadius="10dp">
+
+                <com.unipi.diplomaThesis.rideshare.Model.CustomMapView
+                    android:id="@+id/mapView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </androidx.cardview.widget.CardView>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="70dp"/>
+            <ListView
+                android:id="@+id/listViewLocationSearch"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@android:color/transparent"
+                android:backgroundTint="@android:color/transparent"
+                android:translationZ="90dp"
+                android:visibility="gone" >
+
+
+            </ListView>
+        </LinearLayout>
+    </ScrollView>
 
     <TableRow
         android:id="@+id/tableRowEditRoute"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:layout_marginBottom="20dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintStart_toStartOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -126,7 +113,6 @@
                 style="@style/SubmitButtons"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
                 android:elevation="2dp"
                 android:stateListAnimator="@null"
                 android:text="@string/save"
@@ -144,7 +130,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="20dp"
                 android:background="@drawable/ic_circle"
                 android:backgroundTint="?colorPrimary"
                 android:src="@drawable/ic_next"
@@ -156,5 +141,23 @@
                 app:tint="?colorOnPrimary" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </TableRow>
+
+    <Button
+        android:id="@+id/buttonSubmitStepDirections"
+        style="@style/SubmitButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:elevation="2dp"
+        android:stateListAnimator="@null"
+        android:text="@string/next_step"
+        android:translationZ="2dp"
+        android:visibility="invisible"
+        app:cornerRadius="90dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

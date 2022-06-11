@@ -20,9 +20,9 @@ import com.unipi.diplomaThesis.rideshare.Model.RouteDateTime;
 import com.unipi.diplomaThesis.rideshare.Model.RouteLatLng;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
-import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteAdditionalInfoFragment;
-import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteDirectionsFragment;
-import com.unipi.diplomaThesis.rideshare.driver.fragments.Route.DriverSaveRouteTimeTableFragment;
+import com.unipi.diplomaThesis.rideshare.driver.fragments.DriverSaveRouteAdditionalInfoFragment;
+import com.unipi.diplomaThesis.rideshare.driver.fragments.DriverSaveRouteDirectionsFragment;
+import com.unipi.diplomaThesis.rideshare.driver.fragments.DriverSaveRouteTimeTableFragment;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -36,10 +36,18 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
     DriverSaveRouteTimeTableFragment driverSaveRouteTimeTableFragment;
     DriverSaveRouteAdditionalInfoFragment driverSaveRouteAdditionalInfoFragment;
     Route route;
+    Driver driver = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_save_route);
+        try {
+            driver = (Driver) User.loadUserInstance(this);
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            FirebaseAuth.getInstance().signOut();
+            finish();
+        }
         progressBar = findViewById(R.id.progressBar);
         driverSaveRouteDirectionsFragment = new DriverSaveRouteDirectionsFragment();
         driverSaveRouteTimeTableFragment = new DriverSaveRouteTimeTableFragment();
@@ -107,15 +115,32 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
         anim.setDuration(1000);
         anim.start();
     }
-    public void saveRoute(){
-        Driver driver = null;
-        try {
-            driver = (Driver) User.loadUserInstance(this);
-        }catch (ClassCastException e){
-            e.printStackTrace();
-            FirebaseAuth.getInstance().signOut();
-            finish();
+    public void editRoute(){
+//        collect all the data from the fragments and create the route Object
+        RouteLatLng points = driverSaveRouteDirectionsFragment.getPoints();
+        RouteDateTime routeDateTime = driverSaveRouteTimeTableFragment.getRouteDateTime();
+        Map<String,Object> additionalInfo = driverSaveRouteAdditionalInfoFragment.getAdditionalInfo();
+
+        if (points!=null) {
+            points.setMaximumDeviation(route.getRouteLatLng().getMaximumDeviation());
+            route.setRouteLatLng(points);
         }
+        if (additionalInfo !=null){
+            route.getRouteLatLng().setMaximumDeviation((double) additionalInfo.get("maximumDeviation"));
+            ArrayList<String> deletedPassengers = (ArrayList<String>) additionalInfo.get("deletedPassengers");
+            route.setRideCapacity((int) additionalInfo.get("rideCapacity"));
+            route.setPassengersId((ArrayList<String>) additionalInfo.get("passengersId"));
+            route.setCostPerRider((Double) additionalInfo.get("costPreRider"));
+            route.setName(additionalInfo.get("name").toString());
+            for (String id:deletedPassengers){
+                driver.deletePassenger(route.getRouteId(),id, null);
+            }
+        }
+        if (routeDateTime!=null) route.setRouteDateTime(routeDateTime);
+
+        saveRouteToDatabase(route);
+    }
+    public void saveRoute(){
 //        collect all the data from the fragments and create the route Object
         RouteLatLng points = driverSaveRouteDirectionsFragment.getPoints();
         RouteDateTime routeDateTime = driverSaveRouteTimeTableFragment.getRouteDateTime();
@@ -127,7 +152,7 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
             route.setName(additionalInfo.get("name").toString());
             route.setRouteLatLng(points);
             route.setRouteDateTime(routeDateTime);
-            route.setCostPerRider(additionalInfo.get("costPreRider").toString());
+            route.setCostPerRider((Double) additionalInfo.get("costPreRider"));
             route.setRideCapacity((int) additionalInfo.get("rideCapacity"));
             route.setPassengersId((ArrayList<String>) additionalInfo.get("passengersId"));
             for (String id:deletedPassengers){
@@ -141,10 +166,13 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
                     points,
                     null,
                     routeDateTime,
-                    additionalInfo.get("costPreRider").toString(),
+                    (Double) additionalInfo.get("costPreRider"),
                     (int) additionalInfo.get("rideCapacity")
             );
         }
+        saveRouteToDatabase(route);
+    }
+    private void saveRouteToDatabase(Route r){
         progressBarSave.setIndeterminate(true);
         progressBarSave.setVisibility(View.VISIBLE);
         driver.saveRoute(route, new OnCompleteListener<Void>() {
@@ -158,14 +186,19 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
                 }
             }
         });
+
     }
     public void loadRoute(Route route){
         driverSaveRouteDirectionsFragment.setPoints(route.getRouteLatLng());
         driverSaveRouteTimeTableFragment.setRouteDateTime(route.getRouteDateTime());
-        driverSaveRouteAdditionalInfoFragment.setAdditionalInfo(route.getRouteLatLng().getMaximumDeviation(),
+        driverSaveRouteAdditionalInfoFragment.setAdditionalInfo(
+                route.getRouteLatLng().getMaximumDeviation(),
                 route.getRideCapacity(),
                 route.getCostPerRider(),
                 route.getName(),
                 route.getPassengersId());
+    }
+    public Route getRoute(){
+        return route;
     }
 }

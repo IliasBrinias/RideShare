@@ -3,7 +3,6 @@ package com.unipi.diplomaThesis.rideshare.messenger.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,9 +31,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context c;
     List<Message> messageList = new ArrayList<>();
     String userId;
-    GradientDrawable bottomMessage;
-    GradientDrawable topMessage;
-    GradientDrawable middleMessage;
     Bitmap participantProfileBitmap;
     public ChatAdapter(Context c, List<Message> messageList, String userId, Bitmap participantProfileBitmap) {
         this.c = c;
@@ -48,9 +44,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        bottomMessage = (GradientDrawable) c.getDrawable(R.drawable.chat_message_background_multiple_bottom);
-        topMessage = (GradientDrawable) c.getDrawable(R.drawable.chat_message_background_multiple_top);
-        middleMessage = (GradientDrawable) c.getDrawable(R.drawable.chat_message_background_multiple_middle);
         switch (viewType){
             case RECEIVER:
                 view = LayoutInflater.from(parent.getContext())

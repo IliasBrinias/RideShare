@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/trebuc"
-                android:text="Requests"
+                android:text="@string/requests"
                 android:textColor="?colorOnPrimary"
                 android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"

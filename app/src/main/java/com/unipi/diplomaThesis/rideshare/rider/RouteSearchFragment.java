@@ -3,10 +3,12 @@ package com.unipi.diplomaThesis.rideshare.rider;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.unipi.diplomaThesis.rideshare.Interface.OnPlacesApiResponse;
@@ -75,9 +80,9 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
         welcomeTitle = v.findViewById(R.id.textViewWelcomeTitle);
         String[] name =u.getFullName().split(" ");
         if (name.length!=2){
-            welcomeTitle.setText("Hello "+u.getFullName()+"!");
+            welcomeTitle.setText(getString(R.string.hello)+" "+u.getFullName()+"!");
         }else {
-            welcomeTitle.setText("Hello "+name[0]+"!");
+            welcomeTitle.setText(getString(R.string.hello)+" "+name[0]+"!");
         }
 //        TableRows
         tableRowStartPoint = v.findViewById(R.id.tableRowStartPoint);
@@ -216,9 +221,22 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
                     }
                 }
                 try {
-                    listViewSearchedLocation.setAdapter(new ArrayAdapter<>(getActivity().getApplicationContext(),
+                    listViewSearchedLocation.setAdapter(new ArrayAdapter<String>(getActivity().getApplicationContext(),
                             R.layout.list_item,
-                            streetNames.toArray(new String[streetNames.size()])));
+                            streetNames.toArray(new String[streetNames.size()])){
+                        @NonNull
+                        @Override
+                        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                            View v = super.getView(position, convertView, parent);
+                            TextView text = v.findViewById(R.id.textView);
+                            TypedValue typedValue = new TypedValue();
+                            Resources.Theme theme = getActivity().getTheme();
+                            theme.resolveAttribute(R.attr.listViewTextColor, typedValue, true);
+                            @ColorInt int color = typedValue. data;
+                            text.setTextColor(color);
+                            return v;
+                        }
+                    });
                 }catch (Exception ignore){
                     listViewSearchedLocation.setVisibility(View.GONE);
                     tableRowRideHistory.setVisibility(View.VISIBLE);
@@ -245,9 +263,22 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
                     e.printStackTrace();
                 }
             }
-            listViewLastLocations.setAdapter(new ArrayAdapter<>(getActivity().getApplicationContext(),
+            listViewLastLocations.setAdapter(new ArrayAdapter<String>(getActivity().getApplicationContext(),
                     R.layout.list_item,
-                    streetNames.toArray(new String[streetNames.size()])));
+                    streetNames.toArray(new String[streetNames.size()])){
+                @NonNull
+                @Override
+                public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                    View v = super.getView(position, convertView, parent);
+                    TextView text = v.findViewById(R.id.textView);
+                    TypedValue typedValue = new TypedValue();
+                    Resources.Theme theme = getActivity().getTheme();
+                    theme.resolveAttribute(R.attr.listViewTextColor, typedValue, true);
+                    @ColorInt int color = typedValue. data;
+                    text.setTextColor(color);
+                    return v;
+                }
+            });
         }catch (Exception e){
             e.printStackTrace();
             tableRowRideHistory.setVisibility(View.GONE);
