@@ -4,7 +4,7 @@
     <string name="password">Κωδικός πρόσβασης</string>
     <string name="login">Σύνδεση</string>
     <string name="create_account">Δημιουργήστε Λογαριασμό</string>
-    <string name="rider">Επιβάτης</string>
+    <string name="passenger">Επιβάτης</string>
     <string name="driver">Οδηγός</string>
     <string name="wrongPassword">Λάθος Κωδικός</string>
     <string name="rider_not_found">Ο Επιβάτης δεν βρέθηκε</string>

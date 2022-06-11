@@ -1,4 +1,4 @@
-package com.unipi.diplomaThesis.rideshare.rider;
+package com.unipi.diplomaThesis.rideshare.passenger;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -28,23 +28,23 @@ import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.PersonalDataFragment;
 import com.unipi.diplomaThesis.rideshare.R;
-import com.unipi.diplomaThesis.rideshare.RiderLastRoutesFragment;
+import com.unipi.diplomaThesis.rideshare.PassengerLastRoutesFragment;
 import com.unipi.diplomaThesis.rideshare.messenger.MessengerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RiderActivity extends AppCompatActivity {
+public class PassengerActivity extends AppCompatActivity {
     protected MyApplication mMyApp;
 
 
     private MaterialToolbar topAppBar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    RiderLastRoutesFragment riderLastRoutesFragment;
+    PassengerLastRoutesFragment passengerLastRoutesFragment;
 
     private CarFragment carFragment;
-    private RouteSearchFragment routeSearchFragment;
+    private PassengerSearchFragment passengerSearchFragment;
     private PersonalDataFragment personalDataFragment;
     private User u;
     private TextView userNameNavigationHeader,emailNavigationHeader;
@@ -75,7 +75,7 @@ public class RiderActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.messages) {
-                    startActivity(new Intent(RiderActivity.this, MessengerActivity.class));
+                    startActivity(new Intent(PassengerActivity.this, MessengerActivity.class));
                     return true;
                 }
                 return false;
@@ -88,16 +88,16 @@ public class RiderActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.home:
-                        routeSearchFragment = new RouteSearchFragment();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,routeSearchFragment).commit();
+                        passengerSearchFragment = new PassengerSearchFragment();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment, passengerSearchFragment).commit();
                         break;
                     case R.id.personalData:
                         personalDataFragment = new PersonalDataFragment();
                         getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,personalDataFragment).commit();
                         break;
                     case R.id.yourRoutes:
-                        riderLastRoutesFragment = new RiderLastRoutesFragment();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment,riderLastRoutesFragment).commit();
+                        passengerLastRoutesFragment = new PassengerLastRoutesFragment();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.riderFragment, passengerLastRoutesFragment).commit();
                         break;
                     case R.id.becameDriver:
                         carFragment = new CarFragment();
@@ -106,7 +106,7 @@ public class RiderActivity extends AppCompatActivity {
                     case R.id.logOut:
                         Intent i = new Intent();
                         i.putExtra("LogOut", FirebaseAuth.getInstance().getCurrentUser().getProviderId());
-                        RiderActivity.this.u.logOut(RiderActivity.this);
+                        PassengerActivity.this.u.logOut(PassengerActivity.this);
                         finish();
                         break;
                 }

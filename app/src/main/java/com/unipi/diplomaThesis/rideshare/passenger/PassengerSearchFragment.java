@@ -1,4 +1,4 @@
-package com.unipi.diplomaThesis.rideshare.rider;
+package com.unipi.diplomaThesis.rideshare.passenger;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -48,10 +48,10 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  * create an instance of this fragment.
  */
-public class RouteSearchFragment extends Fragment implements TextWatcher {
+public class PassengerSearchFragment extends Fragment implements TextWatcher {
 
 
-    public RouteSearchFragment() {
+    public PassengerSearchFragment() {
         // Required empty public constructor
     }
     @Override
@@ -162,7 +162,7 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
         return currentJsonObject;
     }
     private void openRiderRouteActivity(){
-        Intent i = new Intent(getActivity(),RiderRouteActivity.class);
+        Intent i = new Intent(getActivity(), PassengerRouteActivity.class);
         i.putExtra("originLocation", startLocation.toString());
         i.putExtra("destinationLocation", finishLocation.toString());
         i.putExtra("date", routeDateUnix);
@@ -201,7 +201,7 @@ public class RouteSearchFragment extends Fragment implements TextWatcher {
         ApiCalls.getLocationPlaces(getActivity(), editable.toString(), new OnPlacesApiResponse() {
             @Override
             public void results(JSONArray locations) {
-                RouteSearchFragment.this.locations = locations;
+                PassengerSearchFragment.this.locations = locations;
                 List<String> streetNames = new ArrayList<>();
                 for (int i=0; i<locations.length(); i++){
                     try {

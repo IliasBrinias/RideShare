@@ -388,7 +388,7 @@ public class Driver extends User{
     }
 
     /**
-     * Check if the driver has messageSession with the Rider. If he hasn't
+     * Check if the driver has messageSession with the Passenger. If he hasn't
      * calls the createMessageSession.
      * Adds the routeId to participant lastRoutes and adds the participantId to Route passengersId list
      * @param activity
@@ -477,7 +477,7 @@ public class Driver extends User{
         });
     }
     /**
-     * Check if the Driver and Rider has mutual MessageSessionId
+     * Check if the Driver and Passenger has mutual MessageSessionId
      * @param riderId
      * @param driverId
      * @param hasAllreadyMessageSession
@@ -534,7 +534,7 @@ public class Driver extends User{
     }
 
     /**
-     * Simply deletes the Request from the Rider
+     * Simply deletes the Request from the Passenger
      * @param request
      */
     public void declineRequest(Request request) {

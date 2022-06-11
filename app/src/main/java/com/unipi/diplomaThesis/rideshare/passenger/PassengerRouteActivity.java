@@ -1,4 +1,4 @@
-package com.unipi.diplomaThesis.rideshare.rider;
+package com.unipi.diplomaThesis.rideshare.passenger;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -32,17 +32,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.unipi.diplomaThesis.rideshare.Interface.OnPlacesApiResponse;
-import com.unipi.diplomaThesis.rideshare.Interface.OnRiderRouteClickListener;
+import com.unipi.diplomaThesis.rideshare.Interface.OnPassengerRouteClickListener;
 import com.unipi.diplomaThesis.rideshare.Model.ApiCalls;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
-import com.unipi.diplomaThesis.rideshare.Model.Rider;
+import com.unipi.diplomaThesis.rideshare.Model.Passenger;
 import com.unipi.diplomaThesis.rideshare.Model.Route;
 import com.unipi.diplomaThesis.rideshare.Model.RouteFilter;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.Route.RouteActivity;
 import com.unipi.diplomaThesis.rideshare.Route.RouteFilterActivity;
-import com.unipi.diplomaThesis.rideshare.rider.adapter.RiderRouteAdapter;
+import com.unipi.diplomaThesis.rideshare.passenger.adapter.PassengerRouteAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,15 +58,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RiderRouteActivity extends AppCompatActivity implements TextWatcher, AdapterView.OnItemClickListener {
+public class PassengerRouteActivity extends AppCompatActivity implements TextWatcher, AdapterView.OnItemClickListener {
     private RecyclerView recyclerView;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
     private TextView  routeCountTitle;
     private static List<Route> routeList = new ArrayList<>();
     private static List<User> routeDrivers = new ArrayList<>();
     private static Map<String,Object> driverReview = new HashMap<>();
-    private RiderRouteAdapter riderRouteAdapter;
-    private Rider r;
+    private PassengerRouteAdapter passengerRouteAdapter;
+    private Passenger r;
     private JSONArray locations;
     private final int REQ_ROUTE_FILTER = 23;
     private static JSONObject originLocation, destinationLocation;
@@ -83,7 +83,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rider_route);
+        setContentView(R.layout.activity_passenger_route);
 //        load the elements
         recyclerView = findViewById(R.id.recyclerView);
         autoCompleteDestinationPoint = findViewById(R.id.autoCompleteDestinationPoint);
@@ -114,7 +114,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
             finish();
         }
         try {
-            r = (Rider) User.loadUserInstance(this);
+            r = (Passenger) User.loadUserInstance(this);
 //            getIntent Data
             originLocation = new JSONObject(getIntent().getStringExtra("originLocation"));
             destinationLocation = new JSONObject(getIntent().getStringExtra("destinationLocation"));
@@ -137,11 +137,11 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         routeFilter.setOriginRiderPlaceId(originPlaceId);
         routeFilter.setDestinationRiderPlaceId(destinationPlaceId);
         routeFilter.setTimeUnix(dateTimeUnix);
-        riderRouteAdapter = new RiderRouteAdapter(this,routeList, routeDrivers, dateTimeUnix,
-                driverReview, new OnRiderRouteClickListener() {
+        passengerRouteAdapter = new PassengerRouteAdapter(this,routeList, routeDrivers, dateTimeUnix,
+                driverReview, new OnPassengerRouteClickListener() {
             @Override
             public void onRouteClick(View view, int position) {
-                Intent i =new Intent(RiderRouteActivity.this, RouteActivity.class);
+                Intent i =new Intent(PassengerRouteActivity.this, RouteActivity.class);
                 i.putExtra(Route.class.getSimpleName(),routeList.get(position).getRouteId());
                 i.putExtra(Driver.class.getSimpleName(),routeList.get(position).getDriverId());
                 i.putExtra("userDateTime",dateTimeUnix);
@@ -149,7 +149,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
                 startActivity(i);
             }
         });
-        recyclerView.setAdapter(riderRouteAdapter);
+        recyclerView.setAdapter(passengerRouteAdapter);
 
         listViewLocationSearch.setOnItemClickListener(this);
         RouteSearch();
@@ -188,7 +188,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         if (!exists){
             routeDrivers.add(driver);
         }
-        riderRouteAdapter.notifyDataSetChanged();
+        passengerRouteAdapter.notifyDataSetChanged();
 //        update the count if the returnData is null
         if (routeList.size()==0){
             routeCountTitle.setText(getString(R.string.we_found)+" "+1+" "+getString(R.string.route));
@@ -288,7 +288,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
         ApiCalls.getLocationPlaces(this, editable.toString(), new OnPlacesApiResponse() {
             @Override
             public void results(JSONArray locations) {
-                RiderRouteActivity.this.locations = locations;
+                PassengerRouteActivity.this.locations = locations;
                 List<String> streetNames = new ArrayList<>();
                 for (int i=0; i<locations.length(); i++){
                     try {
@@ -349,7 +349,7 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
                     dateTimeUnix = calendar.getTimeInMillis();
                     autoCompleteDate.setText(simpleDateFormat.format(dateTimeUnix));
                     alertDialog.dismiss();
-                    riderRouteAdapter.setDateTime(dateTimeUnix);
+                    passengerRouteAdapter.setDateTime(dateTimeUnix);
                     routeFilter.setTimeUnix(dateTimeUnix);
                     RouteSearch();
 
@@ -369,10 +369,10 @@ public class RiderRouteActivity extends AppCompatActivity implements TextWatcher
     private void RouteSearch() {
         startProgressBarAnimation();
         tableRowFilter.setVisibility(View.GONE);
-        riderRouteAdapter.notifyDataSetChanged();
+        passengerRouteAdapter.notifyDataSetChanged();
         routeDrivers.clear();
         routeList.clear();
-        r.routeSearch(RiderRouteActivity.this ,routeFilter, RiderRouteActivity.this::refreshData);
+        r.routeSearch(PassengerRouteActivity.this ,routeFilter, PassengerRouteActivity.this::refreshData);
         tableRowFilter.setVisibility(View.GONE);
         min = -1.;
         max = -1.;

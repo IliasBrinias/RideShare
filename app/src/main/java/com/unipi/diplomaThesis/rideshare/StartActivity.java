@@ -20,7 +20,7 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.driver.DriverActivity;
-import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
+import com.unipi.diplomaThesis.rideshare.passenger.PassengerActivity;
 
 public class StartActivity extends AppCompatActivity {
     private static String REQ_LAST_LOCATIONS = "lastLocation";
@@ -42,7 +42,7 @@ public class StartActivity extends AppCompatActivity {
                 if (u.getType().equals(Driver.class.getSimpleName())){
                     this.startActivityForResult(new Intent(this, DriverActivity.class),REQ_DRIVER_ACTIVITY);
                 }else{
-                    this.startActivityForResult(new Intent(this, RiderActivity.class), REQ_RIDER_ACTIVITY);
+                    this.startActivityForResult(new Intent(this, PassengerActivity.class), REQ_RIDER_ACTIVITY);
                 }
                 return;
             }
@@ -64,7 +64,7 @@ public class StartActivity extends AppCompatActivity {
                     if (u.getType().equals(Driver.class.getSimpleName())){
                         StartActivity.this.startActivityForResult(new Intent(StartActivity.this, DriverActivity.class),REQ_DRIVER_ACTIVITY);
                     }else {
-                        StartActivity.this.startActivityForResult(new Intent(StartActivity.this, RiderActivity.class), REQ_RIDER_ACTIVITY);
+                        StartActivity.this.startActivityForResult(new Intent(StartActivity.this, PassengerActivity.class), REQ_RIDER_ACTIVITY);
                     }
                 }
             });

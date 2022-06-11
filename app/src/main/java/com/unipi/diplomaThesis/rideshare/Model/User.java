@@ -57,7 +57,7 @@ public class User {
     private String fullName;
     private String description;
     private String token_FCM;
-    private String type = Rider.class.getSimpleName();
+    private String type = Passenger.class.getSimpleName();
     private long birthDay = 0;
     private Map<String,UserRating> userRating;
     private ArrayList<String> lastRoutes = new ArrayList<>();
@@ -195,7 +195,7 @@ public class User {
                         if (snapshot.child(User.REQ_TYPE_TAG).getValue(String.class).equals(Driver.class.getSimpleName())) {
                             u = snapshot.getValue(Driver.class);
                         }else {
-                            u = snapshot.getValue(Rider.class);
+                            u = snapshot.getValue(Passenger.class);
                         }
                         u.setFullName(newName);
                         u.setEmail(newEmail);
@@ -203,7 +203,7 @@ public class User {
                         if (u.getType().equals(Driver.class.getSimpleName())) {
                             ref.setValue((Driver) u).addOnCompleteListener(onDataUpdate);
                         }else {
-                            ref.setValue((Rider) u).addOnCompleteListener(onDataUpdate);
+                            ref.setValue((Passenger) u).addOnCompleteListener(onDataUpdate);
                         }
                     }
                     @Override
@@ -461,11 +461,11 @@ public class User {
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
-    public static void mutualRoutes(Driver driver, Rider rider, OnRouteResponse onRouteResponse){
+    public static void mutualRoutes(Driver driver, Passenger passenger, OnRouteResponse onRouteResponse){
         for (String routeId:driver.getLastRoutes()){
             Route.loadRoute(routeId, route->{
                 for (String p:route.getPassengersId()){
-                    if (p.equals(rider.getUserId())){
+                    if (p.equals(passenger.getUserId())){
                         onRouteResponse.returnedRoute(route);
                     }
                 }
@@ -582,7 +582,7 @@ public class User {
         if (type.equals(Driver.class.getSimpleName())){
             return gson.fromJson(json, Driver.class);
         }else {
-            return gson.fromJson(json, Rider.class);
+            return gson.fromJson(json, Passenger.class);
         }
     }
     public static void loadSignInUser(OnUserLoadComplete onUserLoadComplete){
@@ -597,7 +597,7 @@ public class User {
                         if (snapshot.child(User.REQ_TYPE_TAG).getValue(String.class).equals(Driver.class.getSimpleName())){
                             onUserLoadComplete.returnedUser(snapshot.getValue(Driver.class));
                         }else {
-                            onUserLoadComplete.returnedUser(snapshot.getValue(Rider.class));
+                            onUserLoadComplete.returnedUser(snapshot.getValue(Passenger.class));
                         }
                     }
 
@@ -684,9 +684,9 @@ public class User {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot participant) {
                                 if (participant.child(User.REQ_TYPE_TAG).getValue(String.class).equals(Driver.class.getSimpleName())){
-                                    deleteMutualActivities(participant.getValue(Driver.class),user.getValue(Rider.class),onCompleteListener);
+                                    deleteMutualActivities(participant.getValue(Driver.class),user.getValue(Passenger.class),onCompleteListener);
                                 }else {
-                                    deleteMutualActivities(user.getValue(Driver.class),participant.getValue(Rider.class),onCompleteListener);
+                                    deleteMutualActivities(user.getValue(Driver.class),participant.getValue(Passenger.class),onCompleteListener);
                                 }
                             }
                             @Override
@@ -698,14 +698,14 @@ public class User {
                 });
 
     }
-    public void deleteMutualActivities(Driver driver, Rider rider, OnCompleteListener<Void> onCompleteListener){
+    public void deleteMutualActivities(Driver driver, Passenger passenger, OnCompleteListener<Void> onCompleteListener){
         DatabaseReference requestRef = FirebaseDatabase.getInstance().getReference().child(Request.class.getSimpleName());
-        DatabaseReference riderRef = FirebaseDatabase.getInstance().getReference().child(User.class.getSimpleName()).child(rider.getUserId());
+        DatabaseReference riderRef = FirebaseDatabase.getInstance().getReference().child(User.class.getSimpleName()).child(passenger.getUserId());
         DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child(User.class.getSimpleName()).child(driver.getUserId());
 //        delete Messages
         DatabaseReference messageSessionRef = FirebaseDatabase.getInstance().getReference().child(MessageSession.class.getSimpleName());
         for (String id: driver.getMessageSessionId()){
-            if (rider.getMessageSessionId().contains(id)){
+            if (passenger.getMessageSessionId().contains(id)){
                 messageSessionRef.child(id).removeValue().addOnCompleteListener(onCompleteListener);
                 break;
             }
@@ -741,26 +741,26 @@ public class User {
         for (String id:driver.getLastRoutes()){
             DatabaseReference routeRef = FirebaseDatabase.getInstance().getReference().child(Route.class.getSimpleName());
 
-//          delete rider from the routes
+//          delete passenger from the routes
             routeRef.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     ArrayList<String> passengersId = (ArrayList<String>) snapshot.child("passengersId").getValue();
-                    if (passengersId.contains(rider.getUserId())){
-                        passengersId.remove(rider.getUserId());
+                    if (passengersId.contains(passenger.getUserId())){
+                        passengersId.remove(passenger.getUserId());
                         routeRef.child(id).child("passengersId").setValue(passengersId);
                     }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {}
             });
-//            delete rider requests for the driver
+//            delete passenger requests for the driver
             requestRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.hasChild(id)){
-                        if (snapshot.child(id).hasChild(rider.getUserId())){
-                            requestRef.child(id).child(rider.getUserId()).removeValue();
+                        if (snapshot.child(id).hasChild(passenger.getUserId())){
+                            requestRef.child(id).child(passenger.getUserId()).removeValue();
                         }
                     }
                 }

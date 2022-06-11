@@ -33,8 +33,8 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnImageLoad;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.Message;
 import com.unipi.diplomaThesis.rideshare.Model.MessageSession;
+import com.unipi.diplomaThesis.rideshare.Model.Passenger;
 import com.unipi.diplomaThesis.rideshare.Model.Review;
-import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.Route;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
@@ -59,7 +59,7 @@ public class ChatInfoActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     TableRow tableRowCar, tableRowRating;
     DriverRouteListAdapter riderRouteAdapter;
-    Rider rider=new Rider();
+    Passenger passenger =new Passenger();
     Driver driver = new Driver();
     ReviewAdapter reviewAdapter;
     List<Review> reviewList = new ArrayList<>();
@@ -118,15 +118,15 @@ public class ChatInfoActivity extends AppCompatActivity {
     User u;
     private void loadParticipantData() {
         u = User.loadUserInstance(this);
-        if (u.getType().equals(Rider.class.getSimpleName())){
-            Driver.loadDriver(participantId,d->searchMutualRoutes((Driver) d, (Rider) u));
+        if (u.getType().equals(Passenger.class.getSimpleName())){
+            Driver.loadDriver(participantId,d->searchMutualRoutes((Driver) d, (Passenger) u));
         }else {
             tableRowRating.setVisibility(View.GONE);
-            Rider.loadUser(participantId, r->searchMutualRoutes((Driver) u, (Rider) r));
+            Passenger.loadUser(participantId, r->searchMutualRoutes((Driver) u, (Passenger) r));
         }
     }
-    private void searchMutualRoutes(Driver driver, Rider rider){
-        if (FirebaseAuth.getInstance().getUid().equals(rider.getUserId())){
+    private void searchMutualRoutes(Driver driver, Passenger passenger){
+        if (FirebaseAuth.getInstance().getUid().equals(passenger.getUserId())){
             userName.setText(driver.getFullName());
             driver.loadCarImage(car -> {
                 imageCar.setImageBitmap(null);
@@ -148,13 +148,13 @@ public class ChatInfoActivity extends AppCompatActivity {
                 countReviews.setText(" ("+reviewCount+")");
             }));
         }else {
-            userName.setText(rider.getFullName());
+            userName.setText(passenger.getFullName());
         }
-        this.rider = rider;
+        this.passenger = passenger;
         this.driver = driver;
-        User.mutualRoutes(driver,rider,this::refreshData);
-        if (rider.getUserId().equals(participantId)){
-            loadParticipantImage(rider);
+        User.mutualRoutes(driver, passenger,this::refreshData);
+        if (passenger.getUserId().equals(participantId)){
+            loadParticipantImage(passenger);
         }else {
             loadParticipantImage(driver);
         }
@@ -243,9 +243,9 @@ public class ChatInfoActivity extends AppCompatActivity {
 
     private void saveReview(float rating, String description,AlertDialog alertDialog) {
         try {
-            rider = (Rider) u;
-            if (rider != null) {
-                rider.saveReview(participantId, rating, description, new OnCompleteListener<Void>() {
+            passenger = (Passenger) u;
+            if (passenger != null) {
+                passenger.saveReview(participantId, rating, description, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         finish();

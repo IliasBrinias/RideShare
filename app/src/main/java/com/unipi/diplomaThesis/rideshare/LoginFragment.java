@@ -30,7 +30,7 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.driver.DriverActivity;
-import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
+import com.unipi.diplomaThesis.rideshare.passenger.PassengerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,7 +127,7 @@ public class LoginFragment extends Fragment implements TextWatcher {
         if (u.getType().equals(Driver.class.getSimpleName())){
             getActivity().startActivityForResult(new Intent(getActivity(), DriverActivity.class), REQ_DRIVER_ACTIVITY);
         }else {
-            getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class), REQ_RIDER_ACTIVITY);
+            getActivity().startActivityForResult(new Intent(getActivity(), PassengerActivity.class), REQ_RIDER_ACTIVITY);
         }
         ((StartActivity) getActivity()).stopProgressBarAnimation();
     }

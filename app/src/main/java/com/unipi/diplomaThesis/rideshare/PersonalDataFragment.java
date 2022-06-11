@@ -50,12 +50,12 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.UploadTask;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
+import com.unipi.diplomaThesis.rideshare.Model.Passenger;
 import com.unipi.diplomaThesis.rideshare.Model.Review;
-import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.driver.DriverActivity;
 import com.unipi.diplomaThesis.rideshare.messenger.adapter.ReviewAdapter;
-import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
+import com.unipi.diplomaThesis.rideshare.passenger.PassengerActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -299,8 +299,8 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
                     }
                 }
             };
-            if (u instanceof Rider){
-                ((Rider) u).deleteAccount(password.getText().toString(), onCompleteListener);
+            if (u instanceof Passenger){
+                ((Passenger) u).deleteAccount(password.getText().toString(), onCompleteListener);
 
             }else if (u instanceof Driver){
                 ((Driver) u).deleteAccount(password.getText().toString(),onCompleteListener);
@@ -406,8 +406,8 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
             u.setBirthDay(user.getBirthDay());
             u.setFullName(user.getFullName());
             u.setEmail(user.getEmail());
-            if (getActivity() instanceof RiderActivity){
-                ((RiderActivity) getActivity()).loadUserData(user);
+            if (getActivity() instanceof PassengerActivity){
+                ((PassengerActivity) getActivity()).loadUserData(user);
             }else if (getActivity() instanceof DriverActivity){
                 ((DriverActivity) getActivity()).loadUserData(user);
             }

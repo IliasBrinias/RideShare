@@ -37,9 +37,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.unipi.diplomaThesis.rideshare.Model.Car;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
-import com.unipi.diplomaThesis.rideshare.Model.Rider;
+import com.unipi.diplomaThesis.rideshare.Model.Passenger;
 import com.unipi.diplomaThesis.rideshare.Model.User;
-import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
+import com.unipi.diplomaThesis.rideshare.passenger.PassengerActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -121,14 +121,14 @@ public class CarFragment extends Fragment implements TextWatcher {
             createDriverDialog();
         }
     }
-    RiderActivity riderActivity;
+    PassengerActivity passengerActivity;
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof Activity){
             Activity activity = (Activity) context;
-            if (activity instanceof RiderActivity){
-                riderActivity =(RiderActivity) activity;
+            if (activity instanceof PassengerActivity){
+                passengerActivity =(PassengerActivity) activity;
             }
         }
     }
@@ -150,9 +150,9 @@ public class CarFragment extends Fragment implements TextWatcher {
                     carYear.getText().toString(),
                     carPlate.getText().toString()
             );
-            ((Rider) user).becomeDriver(c, User.getByteArray(carImage),driver -> {
-                riderActivity.setResult(RESULT_OK, new Intent());
-                riderActivity.finish();
+            ((Passenger) user).becomeDriver(c, User.getByteArray(carImage), driver -> {
+                passengerActivity.setResult(RESULT_OK, new Intent());
+                passengerActivity.finish();
 
             });
         });

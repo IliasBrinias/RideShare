@@ -11,7 +11,7 @@
     <string name="login">Login</string>
     <string name="create_account">CREATE ACCOUNT</string>
     <string name="title_activity_maps" translatable="false">MapsActivity</string>
-    <string name="rider">Rider</string>
+    <string name="passenger">Rider</string>
     <string name="driver">Driver</string>
     <string name="wrongPassword">Wrong Password</string>
     <string name="rider_not_found">Rider not found</string>

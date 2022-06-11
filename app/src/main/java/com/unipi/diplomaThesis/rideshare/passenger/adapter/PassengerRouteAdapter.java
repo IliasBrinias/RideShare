@@ -1,4 +1,4 @@
-package com.unipi.diplomaThesis.rideshare.rider.adapter;
+package com.unipi.diplomaThesis.rideshare.passenger.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -19,7 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.unipi.diplomaThesis.rideshare.Interface.OnImageLoad;
-import com.unipi.diplomaThesis.rideshare.Interface.OnRiderRouteClickListener;
+import com.unipi.diplomaThesis.rideshare.Interface.OnPassengerRouteClickListener;
 import com.unipi.diplomaThesis.rideshare.Model.Route;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.Model.UserRating;
@@ -31,21 +31,21 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.ViewHolder>{
+public class PassengerRouteAdapter extends RecyclerView.Adapter<PassengerRouteAdapter.ViewHolder>{
     private List<Route> routeList;
     private List<User> driverList;
     private Map<String,Object> driverReview;
     private long userDateTime;
-    private OnRiderRouteClickListener onRiderRouteClickListener;
+    private OnPassengerRouteClickListener onPassengerRouteClickListener;
     private ViewGroup parent;
     private Context c;
 
-    public RiderRouteAdapter(Context c, List<Route> routeList,
-                             List<User> driverList,
-                             long userDateTime,
-                             Map<String,Object> driverReview,
-                             OnRiderRouteClickListener onRiderRouteClickListener) {
-        this.onRiderRouteClickListener = onRiderRouteClickListener;
+    public PassengerRouteAdapter(Context c, List<Route> routeList,
+                                 List<User> driverList,
+                                 long userDateTime,
+                                 Map<String,Object> driverReview,
+                                 OnPassengerRouteClickListener onPassengerRouteClickListener) {
+        this.onPassengerRouteClickListener = onPassengerRouteClickListener;
         this.routeList = routeList;
         this.driverList = driverList;
         this.c=c;
@@ -55,17 +55,17 @@ public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.Vi
 
     @NonNull
     @Override
-    public RiderRouteAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public PassengerRouteAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.rider_route_layout, parent, false);
+                .inflate(R.layout.passenger_route_layout, parent, false);
         this.parent = parent;
-        return new RiderRouteAdapter.ViewHolder(v);
+        return new PassengerRouteAdapter.ViewHolder(v);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull RiderRouteAdapter.ViewHolder holder, int position) {
-        holder.onRiderRouteClickListener = this.onRiderRouteClickListener;
+    public void onBindViewHolder(@NonNull PassengerRouteAdapter.ViewHolder holder, int position) {
+        holder.onPassengerRouteClickListener = this.onPassengerRouteClickListener;
         Route currentRoute = routeList.get(position);
         holder.cost.setText( currentRoute.getCostPerRider()+"$");
 //        Addresses Names
@@ -137,7 +137,7 @@ public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.Vi
     }
 
 
-    private void loadDriverData(RiderRouteAdapter.ViewHolder holder ,User driver){
+    private void loadDriverData(PassengerRouteAdapter.ViewHolder holder , User driver){
         driver.loadUserImage(new OnImageLoad() {
             @Override
             public void loadImageSuccess(Bitmap image) {
@@ -178,7 +178,7 @@ public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.Vi
                 cost,
                 timeDifference;
         TableRow tableRowTimeDiff;
-        private OnRiderRouteClickListener onRiderRouteClickListener;
+        private OnPassengerRouteClickListener onPassengerRouteClickListener;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -194,7 +194,7 @@ public class RiderRouteAdapter extends RecyclerView.Adapter<RiderRouteAdapter.Vi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onRiderRouteClickListener.onRouteClick(view, getAdapterPosition());
+                    onPassengerRouteClickListener.onRouteClick(view, getAdapterPosition());
                 }
             });
         }

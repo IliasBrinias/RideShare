@@ -26,9 +26,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.unipi.diplomaThesis.rideshare.Interface.OnCompleteUserSave;
-import com.unipi.diplomaThesis.rideshare.Model.Rider;
+import com.unipi.diplomaThesis.rideshare.Model.Passenger;
 import com.unipi.diplomaThesis.rideshare.Model.User;
-import com.unipi.diplomaThesis.rideshare.rider.RiderActivity;
+import com.unipi.diplomaThesis.rideshare.passenger.PassengerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +113,7 @@ public class RegisterFragment extends Fragment implements TextWatcher {
                             return;
                         }
 //                Create User object
-                        User u = new Rider(null,email.getText().toString(),
+                        User u = new Passenger(null,email.getText().toString(),
                                     name.getText().toString());
 //                Save the user Object
                         User.saveUser(u, new OnCompleteUserSave() {
@@ -126,7 +126,7 @@ public class RegisterFragment extends Fragment implements TextWatcher {
                                     String json = gson.toJson(u);
                                     PreferenceManager.getDefaultSharedPreferences(getActivity())
                                             .edit().putString(User.class.getSimpleName(),json).apply();
-                                    getActivity().startActivityForResult(new Intent(getActivity(), RiderActivity.class),StartActivity.REQ_RIDER_ACTIVITY);
+                                    getActivity().startActivityForResult(new Intent(getActivity(), PassengerActivity.class),StartActivity.REQ_RIDER_ACTIVITY);
                                 }
                             }
                         });

@@ -31,7 +31,7 @@
             android:id= "@+id/riderFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:name="com.unipi.diplomaThesis.rideshare.rider.RouteSearchFragment">
+            android:name="com.unipi.diplomaThesis.rideshare.passenger.PassengerSearchFragment">
 
         </androidx.fragment.app.FragmentContainerView>
 

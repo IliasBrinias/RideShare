@@ -30,14 +30,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Rider extends User{
+public class Passenger extends User{
 
-    public Rider(){
+    public Passenger(){
         super();
     }
 
-    public Rider(String userId, String email, String name) {
-        super(userId, email, name, Rider.class.getSimpleName());
+    public Passenger(String userId, String email, String name) {
+        super(userId, email, name, Passenger.class.getSimpleName());
     }
 
     /**
@@ -188,7 +188,7 @@ public class Rider extends User{
                         Request.class.getSimpleName(),
                         null,
                         driver.getFullName(),
-                        Rider.this.getFullName()+" "+activity.getString(R.string.is_instrested_for)+" "+route.getName(),
+                        Passenger.this.getFullName()+" "+activity.getString(R.string.is_instrested_for)+" "+route.getName(),
                         activity
                     );
                     fcmNotificationsSender.SendNotifications();
@@ -197,7 +197,7 @@ public class Rider extends User{
     }
 
     /**
-     * load Rider from the Firebase. If is not Rider returns null
+     * load Passenger from the Firebase. If is not Passenger returns null
      * @param userId
      * @param onUserLoadComplete
      */
@@ -208,7 +208,7 @@ public class Rider extends User{
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        onUserLoadComplete.returnedUser(snapshot.getValue(Rider.class));
+                        onUserLoadComplete.returnedUser(snapshot.getValue(Passenger.class));
                     }
 
                     @Override
@@ -235,7 +235,7 @@ public class Rider extends User{
     }
 
     /**
-     * Deletes Rider account:
+     * Deletes Passenger account:
      *  1. delete his id from the route participant
      *  2. delete id MessageSession from the Drivers and the Message Session
      *  3. delete the Requests
@@ -276,17 +276,17 @@ public class Rider extends User{
             if (complete){
                 //        delete photos
                 StorageReference photo= FirebaseStorage.getInstance().getReference();
-                photo.child(User.class.getSimpleName()).child(Rider.this.getUserId())
+                photo.child(User.class.getSimpleName()).child(Passenger.this.getUserId())
                         .delete()
                         .addOnSuccessListener(task -> FirebaseDatabase.getInstance().getReference()
                                 .child(User.class.getSimpleName())
-                                .child(Rider.this.getUserId())
+                                .child(Passenger.this.getUserId())
                                 .removeValue()
                                 .addOnCompleteListener(t-> onProcedureComplete.isComplete(t, true)))
                         .addOnFailureListener(task->
                                 FirebaseDatabase.getInstance().getReference()
                                         .child(User.class.getSimpleName())
-                                        .child(Rider.this.getUserId())
+                                        .child(Passenger.this.getUserId())
                                         .removeValue()
                                         .addOnCompleteListener(t-> onProcedureComplete.isComplete(t, true)));
 
@@ -440,7 +440,7 @@ public class Rider extends User{
     }
 
     /**
-     * Make the rider Driver. Deletes all the data from the Rider and becomes Driver with a "clean" account
+     * Make the rider Driver. Deletes all the data from the Passenger and becomes Driver with a "clean" account
      *
      * @param c
      * @param carImage

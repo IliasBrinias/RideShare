@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lastRoutesShadow"
-    tools:context=".RiderLastRoutesFragment"
+    tools:context=".PassengerLastRoutesFragment"
     android:orientation="vertical">
         <TableRow
             android:layout_width="match_parent"

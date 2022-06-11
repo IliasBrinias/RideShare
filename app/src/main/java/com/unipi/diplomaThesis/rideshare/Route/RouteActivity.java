@@ -38,8 +38,8 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.MapDrawer;
+import com.unipi.diplomaThesis.rideshare.Model.Passenger;
 import com.unipi.diplomaThesis.rideshare.Model.Request;
-import com.unipi.diplomaThesis.rideshare.Model.Rider;
 import com.unipi.diplomaThesis.rideshare.Model.Route;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
@@ -321,7 +321,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                         description.getText().toString(),
                         new Date().getTime(),
                         distanceDeviation,false);
-                ((Rider) user).makeRequest(RouteActivity.this ,driverUser, r,request, new OnCompleteListener<Void>() {
+                ((Passenger) user).makeRequest(RouteActivity.this ,driverUser, r,request, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()){
