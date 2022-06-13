@@ -23,7 +23,7 @@ import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.unipi.diplomaThesis.rideshare.CarFragment;
-import com.unipi.diplomaThesis.rideshare.Model.Message;
+import com.unipi.diplomaThesis.rideshare.Model.Messages;
 import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.PersonalDataFragment;
@@ -180,7 +180,7 @@ public class PassengerActivity extends AppCompatActivity {
                 BadgeUtils.attachBadgeDrawable(badgeDrawableMessages, topAppBar, R.id.messages);
                 return;
             }
-            Message m = messageSession.getMessages().entrySet().iterator().next().getValue();
+            Messages m = messageSession.getMessages().entrySet().iterator().next().getValue();
 
             if (m.getUserSenderId().equals(u.getUserId())) {
                 if (newMessages.contains(messageSession.getMessageSessionId())) {

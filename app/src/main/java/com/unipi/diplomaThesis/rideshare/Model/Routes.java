@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class Route implements Serializable {
+public class Routes implements Serializable {
     private String name;
     private String routeId;
     private String driverId;
@@ -29,7 +29,7 @@ public class Route implements Serializable {
     private Double costPerRider;
     private int rideCapacity;
 
-    public Route(String name, String routeId, String driverId, RouteLatLng routeLatLng, ArrayList<String> passengersId, RouteDateTime routeDateTime, double costPerRider, int rideCapacity) {
+    public Routes(String name, String routeId, String driverId, RouteLatLng routeLatLng, ArrayList<String> passengersId, RouteDateTime routeDateTime, double costPerRider, int rideCapacity) {
         this.name = name;
         this.routeId = routeId;
         this.driverId = driverId;
@@ -40,7 +40,7 @@ public class Route implements Serializable {
         this.rideCapacity = rideCapacity;
     }
 
-    public Route() {
+    public Routes() {
     }
 
     public int getRideCapacity() {
@@ -108,12 +108,12 @@ public class Route implements Serializable {
     }
     public static void loadRoute(String routeId, OnCompleteRouteLoad onCompleteRoutesLoad){
         FirebaseDatabase.getInstance().getReference()
-                .child(Route.class.getSimpleName())
+                .child(Routes.class.getSimpleName())
                 .child(routeId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Route r = snapshot.getValue(Route.class);
+                        Routes r = snapshot.getValue(Routes.class);
                         if (r == null) return;
                         onCompleteRoutesLoad.returnedRoute(r);
                     }

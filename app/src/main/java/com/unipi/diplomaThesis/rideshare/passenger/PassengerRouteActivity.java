@@ -36,7 +36,7 @@ import com.unipi.diplomaThesis.rideshare.Interface.OnPassengerRouteClickListener
 import com.unipi.diplomaThesis.rideshare.Model.ApiCalls;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.Passenger;
-import com.unipi.diplomaThesis.rideshare.Model.Route;
+import com.unipi.diplomaThesis.rideshare.Model.Routes;
 import com.unipi.diplomaThesis.rideshare.Model.RouteFilter;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
@@ -62,7 +62,7 @@ public class PassengerRouteActivity extends AppCompatActivity implements TextWat
     private RecyclerView recyclerView;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
     private TextView  routeCountTitle;
-    private static List<Route> routeList = new ArrayList<>();
+    private static List<Routes> routesList = new ArrayList<>();
     private static List<User> routeDrivers = new ArrayList<>();
     private static Map<String,Object> driverReview = new HashMap<>();
     private PassengerRouteAdapter passengerRouteAdapter;
@@ -105,8 +105,8 @@ public class PassengerRouteActivity extends AppCompatActivity implements TextWat
         autoCompleteDate.setOnClickListener(this::setDateTime);
         autoCompleteOriginPoint.addTextChangedListener(this);
         autoCompleteDestinationPoint.addTextChangedListener(this);
-//        reset the routeList and RouteDrivers
-        routeList.clear();
+//        reset the routesList and RouteDrivers
+        routesList.clear();
         routeDrivers.clear();
         if(!getIntent().hasExtra("originLocation")
                 ||!getIntent().hasExtra("destinationLocation")
@@ -137,15 +137,15 @@ public class PassengerRouteActivity extends AppCompatActivity implements TextWat
         routeFilter.setOriginRiderPlaceId(originPlaceId);
         routeFilter.setDestinationRiderPlaceId(destinationPlaceId);
         routeFilter.setTimeUnix(dateTimeUnix);
-        passengerRouteAdapter = new PassengerRouteAdapter(this,routeList, routeDrivers, dateTimeUnix,
+        passengerRouteAdapter = new PassengerRouteAdapter(this, routesList, routeDrivers, dateTimeUnix,
                 driverReview, new OnPassengerRouteClickListener() {
             @Override
             public void onRouteClick(View view, int position) {
                 Intent i =new Intent(PassengerRouteActivity.this, RouteActivity.class);
-                i.putExtra(Route.class.getSimpleName(),routeList.get(position).getRouteId());
-                i.putExtra(Driver.class.getSimpleName(),routeList.get(position).getDriverId());
+                i.putExtra(Routes.class.getSimpleName(), routesList.get(position).getRouteId());
+                i.putExtra(Driver.class.getSimpleName(), routesList.get(position).getDriverId());
                 i.putExtra("userDateTime",dateTimeUnix);
-                i.putExtra("distanceDeviation",distanceDeviationMap.get(routeList.get(position).getRouteId()));
+                i.putExtra("distanceDeviation",distanceDeviationMap.get(routesList.get(position).getRouteId()));
                 startActivity(i);
             }
         });
@@ -156,10 +156,10 @@ public class PassengerRouteActivity extends AppCompatActivity implements TextWat
     }
     Map<String,Double> distanceDeviationMap = new HashMap<>();
     @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
-    private void refreshData(Route r, User driver, double distanceDeviation, float reviewTotalScore, int reviewCount){
+    private void refreshData(Routes r, User driver, double distanceDeviation, float reviewTotalScore, int reviewCount){
         stopProgressBarAnimation();
         if (r==null) {
-            if (routeList.isEmpty()){
+            if (routesList.isEmpty()){
                 routeCountTitle.setText(getString(R.string.we_found)+" "+0+" "+getString(R.string.route));
             }
             return;
@@ -172,10 +172,10 @@ public class PassengerRouteActivity extends AppCompatActivity implements TextWat
         reviewData.put("total",reviewTotalScore);
         reviewData.put("count",reviewCount);
         driverReview.put(r.getRouteId(),reviewData);
-        routeList.add(r);
+        routesList.add(r);
         distanceDeviationMap.put(r.getRouteId(),distanceDeviation);
         if (routeFilter.getClassification()!=routeFilter.getDefaultClassification()){
-            routeList = classificationBasedRouteFilter(routeList,routeFilter.getClassification());
+            routesList = classificationBasedRouteFilter(routesList,routeFilter.getClassification());
         }
 //        check if the driver exists
         boolean exists = false;
@@ -190,52 +190,52 @@ public class PassengerRouteActivity extends AppCompatActivity implements TextWat
         }
         passengerRouteAdapter.notifyDataSetChanged();
 //        update the count if the returnData is null
-        if (routeList.size()==0){
+        if (routesList.size()==0){
             routeCountTitle.setText(getString(R.string.we_found)+" "+1+" "+getString(R.string.route));
         }else{
-            routeCountTitle.setText(getString(R.string.we_found)+" "+routeList.size()+" "+getString(R.string.routes));
+            routeCountTitle.setText(getString(R.string.we_found)+" "+ routesList.size()+" "+getString(R.string.routes));
         }
 
     }
-    private List<Route> classificationBasedRouteFilter(List<Route> routeList, int typeOfClassification){
+    private List<Routes> classificationBasedRouteFilter(List<Routes> routesList, int typeOfClassification){
         switch (typeOfClassification){
             case 0: // asc Price
-                routeList.sort(new Comparator<Route>() {
+                routesList.sort(new Comparator<Routes>() {
                     @Override
-                    public int compare(Route r1, Route r2) {
+                    public int compare(Routes r1, Routes r2) {
                         return Double.compare(r1.getCostPerRider(),r2.getCostPerRider());
                     }
                 });
                 break;
             case 1: // Dec Price
-                routeList.sort(new Comparator<Route>() {
+                routesList.sort(new Comparator<Routes>() {
                     @Override
-                    public int compare(Route r1, Route r2) {
+                    public int compare(Routes r1, Routes r2) {
                         return Double.compare(r2.getCostPerRider(),r1.getCostPerRider());
                     }
                 });
                 break;
             case 2: // Based on Time
-                routeList.sort(new Comparator<Route>() {
+                routesList.sort(new Comparator<Routes>() {
                     @Override
-                    public int compare(Route r1, Route r2) {
+                    public int compare(Routes r1, Routes r2) {
                         return Float.compare(Math.abs(r1.getMinDiff(dateTimeUnix)),Math.abs(r2.getMinDiff(dateTimeUnix)));
                     }
                 });
                 break;
             case 3: // Based on Reviews
-                routeList.sort(new Comparator<Route>() {
+                routesList.sort(new Comparator<Routes>() {
                     @Override
-                    public int compare(Route route, Route route1) {
-                        double routeTotalReview = (float) ((Map<String,Object>) driverReview.get(routeList.get(routeList.indexOf(route)).getRouteId())).get("total");
-                        double routeTotalReview1 = (float) ((Map<String,Object>) driverReview.get(routeList.get(routeList.indexOf(route1)).getRouteId())).get("total");
+                    public int compare(Routes routes, Routes routes1) {
+                        double routeTotalReview = (float) ((Map<String,Object>) driverReview.get(routesList.get(routesList.indexOf(routes)).getRouteId())).get("total");
+                        double routeTotalReview1 = (float) ((Map<String,Object>) driverReview.get(routesList.get(routesList.indexOf(routes1)).getRouteId())).get("total");
                         return Double.compare(routeTotalReview1,routeTotalReview);
                     }
                 });
                 break;
 
         }
-        return routeList;
+        return routesList;
     }
     public void openFilter(View view){
         Intent i = new Intent(new Intent(this, RouteFilterActivity.class));
@@ -371,7 +371,7 @@ public class PassengerRouteActivity extends AppCompatActivity implements TextWat
         tableRowFilter.setVisibility(View.GONE);
         passengerRouteAdapter.notifyDataSetChanged();
         routeDrivers.clear();
-        routeList.clear();
+        routesList.clear();
         r.routeSearch(PassengerRouteActivity.this ,routeFilter, PassengerRouteActivity.this::refreshData);
         tableRowFilter.setVisibility(View.GONE);
         min = -1.;

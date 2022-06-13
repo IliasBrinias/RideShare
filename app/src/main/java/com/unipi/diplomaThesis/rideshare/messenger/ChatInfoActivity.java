@@ -31,11 +31,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.unipi.diplomaThesis.rideshare.Interface.OnClickDriverRoute;
 import com.unipi.diplomaThesis.rideshare.Interface.OnImageLoad;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
-import com.unipi.diplomaThesis.rideshare.Model.Message;
-import com.unipi.diplomaThesis.rideshare.Model.MessageSession;
+import com.unipi.diplomaThesis.rideshare.Model.MessageSessions;
+import com.unipi.diplomaThesis.rideshare.Model.Messages;
 import com.unipi.diplomaThesis.rideshare.Model.Passenger;
-import com.unipi.diplomaThesis.rideshare.Model.Review;
-import com.unipi.diplomaThesis.rideshare.Model.Route;
+import com.unipi.diplomaThesis.rideshare.Model.Reviews;
+import com.unipi.diplomaThesis.rideshare.Model.Routes;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.Route.RouteActivity;
@@ -62,7 +62,7 @@ public class ChatInfoActivity extends AppCompatActivity {
     Passenger passenger =new Passenger();
     Driver driver = new Driver();
     ReviewAdapter reviewAdapter;
-    List<Review> reviewList = new ArrayList<>();
+    List<Reviews> reviewsList = new ArrayList<>();
     RatingBar reviewRatingBar;
     EditText reviewDescription;
     String messageSessionId;
@@ -71,7 +71,7 @@ public class ChatInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_info);
         if (!getIntent().hasExtra(User.class.getSimpleName())) finish();
-        messageSessionId = getIntent().getStringExtra(MessageSession.class.getSimpleName());
+        messageSessionId = getIntent().getStringExtra(MessageSessions.class.getSimpleName());
         participantId = getIntent().getStringExtra(User.class.getSimpleName());
 
         userImage = findViewById(R.id.imageViewUser);
@@ -102,18 +102,18 @@ public class ChatInfoActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
         List<User> drivers = new ArrayList<>();
         drivers.add(driver);
-        riderRouteAdapter = new DriverRouteListAdapter(this, routeList, driver, new OnClickDriverRoute() {
+        riderRouteAdapter = new DriverRouteListAdapter(this, routesList, driver, new OnClickDriverRoute() {
             @Override
             public void itemClick(View routeInfo, View layoutOptions, ImageView show, ImageView edit, ImageView delete, int position) {
                 Intent i =new Intent(ChatInfoActivity.this, RouteActivity.class);
-                i.putExtra(Route.class.getSimpleName(),routeList.get(position).getRouteId());
-                i.putExtra(Driver.class.getSimpleName(),routeList.get(position).getDriverId());
+                i.putExtra(Routes.class.getSimpleName(), routesList.get(position).getRouteId());
+                i.putExtra(Driver.class.getSimpleName(), routesList.get(position).getDriverId());
                 startActivity(i);
 
             }
         });
         recyclerView.setAdapter(riderRouteAdapter);
-        routeList.clear();
+        routesList.clear();
     }
     User u;
     private void loadParticipantData() {
@@ -174,10 +174,10 @@ public class ChatInfoActivity extends AppCompatActivity {
             }
         });
     }
-    List<Route> routeList = new ArrayList<>();
+    List<Routes> routesList = new ArrayList<>();
     @SuppressLint("NotifyDataSetChanged")
-    private void refreshData(Route r){
-        routeList.add(r);
+    private void refreshData(Routes r){
+        routesList.add(r);
 //        check if the driver exists
         riderRouteAdapter.notifyDataSetChanged();
     }
@@ -199,7 +199,7 @@ public class ChatInfoActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 if (charSequence.toString().length()!=0){
                     try {
-                        if (!userReview.getDescription().equals(charSequence.toString())){
+                        if (!userReviews.getDescription().equals(charSequence.toString())){
                             buttonSubmit.setVisibility(View.VISIBLE);
                         }else {
                             throw new NullPointerException();
@@ -217,7 +217,7 @@ public class ChatInfoActivity extends AppCompatActivity {
         reviewRatingBar.setOnRatingBarChangeListener((ratingBar, v1, b) -> {
             if (v1 !=0){
                 try {
-                    if (userReview.getReview()!=v1){
+                    if (userReviews.getReview()!=v1){
                         buttonSubmit.setVisibility(View.VISIBLE);
                     }else {
                         throw new NullPointerException();
@@ -232,7 +232,7 @@ public class ChatInfoActivity extends AppCompatActivity {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(linearLayoutManager);
-        reviewAdapter = new ReviewAdapter(reviewList);
+        reviewAdapter = new ReviewAdapter(reviewsList);
         recyclerView.setAdapter(reviewAdapter);
         reviewSearch();
 
@@ -261,20 +261,20 @@ public class ChatInfoActivity extends AppCompatActivity {
         }
     }
     private void reviewSearch() {
-        reviewList.clear();
+        reviewsList.clear();
         User.loadReviews(participantId,50,this::refreshData);
     }
-    Review userReview;
+    Reviews userReviews;
     @SuppressLint("NotifyDataSetChanged")
-    private void refreshData(Review review){
-        if (review==null) return;
-        if (review.getUserId().equals(FirebaseAuth.getInstance().getUid())){
-            userReview = review;
-            reviewRatingBar.setRating((float) review.getReview());
-            reviewDescription.setText(review.getDescription());
+    private void refreshData(Reviews reviews){
+        if (reviews ==null) return;
+        if (reviews.getUserId().equals(FirebaseAuth.getInstance().getUid())){
+            userReviews = reviews;
+            reviewRatingBar.setRating((float) reviews.getReview());
+            reviewDescription.setText(reviews.getDescription());
             return;
         }
-        reviewList.add(review);
+        reviewsList.add(reviews);
         reviewAdapter.notifyDataSetChanged();
     }
 
@@ -308,7 +308,7 @@ public class ChatInfoActivity extends AppCompatActivity {
                 progressBar.setIndeterminate(false);
                 alertDialog.dismiss();
                 if (task.isSuccessful()){
-                    setResult(Message.LEAVE_CHAT,new Intent());
+                    setResult(Messages.LEAVE_CHAT,new Intent());
                 }else {
                     Toast.makeText(this, getString(R.string.something_happened), Toast.LENGTH_SHORT).show();
                 }

@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class Message implements Serializable {
+public class Messages implements Serializable {
     public static final int TIME_FORMAT = 132;
     public static final int DATE_FORMAT = 234;
     public static final int DATE_YEAR_FORMAT = 753;
@@ -20,10 +20,10 @@ public class Message implements Serializable {
     private long timestamp;
     private boolean seen;
 
-    public Message() {
+    public Messages() {
     }
 
-    public Message(String messageId, String userSenderId, String message, long timestamp, boolean seen) {
+    public Messages(String messageId, String userSenderId, String message, long timestamp, boolean seen) {
         this.messageId = messageId;
         this.userSenderId = userSenderId;
         this.message = message;

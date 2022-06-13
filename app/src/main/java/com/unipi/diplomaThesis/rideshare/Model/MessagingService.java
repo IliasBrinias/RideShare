@@ -43,8 +43,7 @@ public class MessagingService extends FirebaseMessagingService {
      * @param remoteMessage
      */
     @Override
-    public void
-    onMessageReceived(RemoteMessage remoteMessage) {
+    public void onMessageReceived(RemoteMessage remoteMessage) {
         String channelId = remoteMessage.getData().get("title");
         String messageSessionId = remoteMessage.getData().get("body");
 
@@ -52,7 +51,7 @@ public class MessagingService extends FirebaseMessagingService {
                 PreferenceManager.getDefaultSharedPreferences(this).getBoolean(messageSessionId,false)) return;
 
         Activity activeActivity =((MyApplication) getApplication()).getActiveActivity();
-        if (channelId.equals(Message.class.getSimpleName())){
+        if (channelId.equals(Messages.class.getSimpleName())){
             if (activeActivity instanceof ChatActivity||activeActivity instanceof MessengerActivity){
                 return;
             }
@@ -61,30 +60,23 @@ public class MessagingService extends FirebaseMessagingService {
                 return;
             }
         }
-
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "CHANNEL_ID");
-
         Intent resultIntent = new Intent(this, MessengerActivity.class);
-
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, resultIntent, PendingIntent.FLAG_IMMUTABLE);
-
-
         builder.setContentTitle(remoteMessage.getNotification().getTitle());
         builder.setContentText(remoteMessage.getNotification().getBody());
         builder.setSmallIcon(R.drawable.ic_car_notification_icon);
         builder.setContentIntent(pendingIntent);
         builder.setStyle(new NotificationCompat.BigTextStyle().bigText(remoteMessage.getNotification().getBody()));
         builder.setAutoCancel(true);
-        mNotificationManager =
-                (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel channel = new NotificationChannel(
                 channelId,
                 "Channel human readable title",
                 NotificationManager.IMPORTANCE_HIGH);
         mNotificationManager.createNotificationChannel(channel);
         builder.setChannelId(channelId);
-
-        if (channelId.equals(Message.class.getSimpleName())){
+        if (channelId.equals(Messages.class.getSimpleName())){
             if (messageUsers.get(messageSessionId)==null){
                 messageUsers.put(messageSessionId,new Random().nextInt());
             }

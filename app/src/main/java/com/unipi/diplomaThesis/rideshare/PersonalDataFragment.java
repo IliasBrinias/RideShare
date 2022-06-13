@@ -51,7 +51,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.UploadTask;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.Passenger;
-import com.unipi.diplomaThesis.rideshare.Model.Review;
+import com.unipi.diplomaThesis.rideshare.Model.Reviews;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.driver.DriverActivity;
 import com.unipi.diplomaThesis.rideshare.messenger.adapter.ReviewAdapter;
@@ -84,7 +84,7 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
     ReviewAdapter reviewAdapter;
     RecyclerView recyclerView;
     RatingBar ratingBar;
-    List<Review> reviewList = new ArrayList<>();
+    List<Reviews> reviewsList = new ArrayList<>();
     TextView textViewReviewTitle;
 
     public PersonalDataFragment() {
@@ -116,7 +116,7 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
             recyclerView = v.findViewById(R.id.recyclerViewReviews);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
             recyclerView.setLayoutManager(linearLayoutManager);
-            reviewAdapter = new ReviewAdapter(reviewList);
+            reviewAdapter = new ReviewAdapter(reviewsList);
             recyclerView.setAdapter(reviewAdapter);
             recyclerView.setNestedScrollingEnabled(false);
             reviewSearch();
@@ -158,13 +158,13 @@ public class PersonalDataFragment extends Fragment implements TextWatcher, Compo
         return v;
     }
     private void reviewSearch() {
-        reviewList.clear();
+        reviewsList.clear();
         User.loadReviews(u.getUserId(),5,this::refreshData);
     }
     @SuppressLint("NotifyDataSetChanged")
-    private void refreshData(Review review){
-        if (review==null) return;
-        reviewList.add(review);
+    private void refreshData(Reviews reviews){
+        if (reviews ==null) return;
+        reviewsList.add(reviews);
         reviewAdapter.notifyDataSetChanged();
         ratingBar.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.VISIBLE);

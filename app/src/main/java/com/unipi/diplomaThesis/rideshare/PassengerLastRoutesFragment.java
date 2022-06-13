@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.unipi.diplomaThesis.rideshare.Interface.OnPassengerRouteClickListener;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
-import com.unipi.diplomaThesis.rideshare.Model.Route;
+import com.unipi.diplomaThesis.rideshare.Model.Routes;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.Route.RouteActivity;
 import com.unipi.diplomaThesis.rideshare.passenger.adapter.PassengerRouteAdapter;
@@ -29,8 +29,8 @@ public class PassengerLastRoutesFragment extends Fragment {
 
     RecyclerView recyclerViewActiveRoutes, recyclerViewPreviousRoutes;
     PassengerRouteAdapter riderActiveRouteAdapter,riderPreviousRouteAdapter;
-    List<Route> activeRoutes = new ArrayList<>();
-    List<Route> previousRoutes = new ArrayList<>();
+    List<Routes> activeRoutes = new ArrayList<>();
+    List<Routes> previousRoutes = new ArrayList<>();
     List<User> routeDrivers= new ArrayList<>();
     User u;
     public PassengerLastRoutesFragment() {
@@ -58,7 +58,7 @@ public class PassengerLastRoutesFragment extends Fragment {
             @Override
             public void onRouteClick(View view, int position) {
                 Intent i =new Intent(getActivity(), RouteActivity.class);
-                i.putExtra(Route.class.getSimpleName(),activeRoutes.get(position).getRouteId());
+                i.putExtra(Routes.class.getSimpleName(),activeRoutes.get(position).getRouteId());
                 i.putExtra(Driver.class.getSimpleName(),activeRoutes.get(position).getDriverId());
                 startActivity(i);
             }
@@ -77,7 +77,7 @@ public class PassengerLastRoutesFragment extends Fragment {
         u.loadLastRoutes(this::activeRouteDataReturned,this::previousRouteDataReturned);
     }
     @SuppressLint("NotifyDataSetChanged")
-    private void activeRouteDataReturned(Route r, User driver){
+    private void activeRouteDataReturned(Routes r, User driver){
         activeRoutes.add(r);
 //        check if the driver exists
         boolean exists = false;
@@ -93,7 +93,7 @@ public class PassengerLastRoutesFragment extends Fragment {
         riderActiveRouteAdapter.notifyDataSetChanged();
     }
     @SuppressLint("NotifyDataSetChanged")
-    private void previousRouteDataReturned(Route r, User driver){
+    private void previousRouteDataReturned(Routes r, User driver){
         previousRoutes.add(r);
 //        check if the driver exists
         boolean exists = false;

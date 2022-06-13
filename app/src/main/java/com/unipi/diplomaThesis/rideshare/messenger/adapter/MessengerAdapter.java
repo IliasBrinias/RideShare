@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.unipi.diplomaThesis.rideshare.Interface.OnClickMessageSession;
-import com.unipi.diplomaThesis.rideshare.Model.Message;
-import com.unipi.diplomaThesis.rideshare.Model.MessageSession;
+import com.unipi.diplomaThesis.rideshare.Model.Messages;
+import com.unipi.diplomaThesis.rideshare.Model.MessageSessions;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 
@@ -23,14 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.ViewHolder> {
-    List<MessageSession> messageSessionList;
+    List<MessageSessions> messageSessionsList;
     OnClickMessageSession onClickMessageSession;
     private final SimpleDateFormat time = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     Context c;
 
-    public MessengerAdapter(List<MessageSession> messageSessionList, Context c, OnClickMessageSession onClickMessageSession) {
+    public MessengerAdapter(List<MessageSessions> messageSessionsList, Context c, OnClickMessageSession onClickMessageSession) {
         this.c = c;
-        this.messageSessionList = messageSessionList;
+        this.messageSessionsList = messageSessionsList;
         this.onClickMessageSession = onClickMessageSession;
     }
 
@@ -45,22 +45,22 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.onClickMessageSession = onClickMessageSession;
-        for (String p :messageSessionList.get(position).getParticipants()){
+        for (String p : messageSessionsList.get(position).getParticipants()){
             if (!p.equals(FirebaseAuth.getInstance().getUid())){
                 User.loadUser(p, u -> loadUserData(u,holder));
             }
         }
-        if (messageSessionList.get(position).getMessages().isEmpty()) {
+        if (messageSessionsList.get(position).getMessages().isEmpty()) {
             holder.lastMessage.setText(c.getString(R.string.first_message_chat));
             holder.lastMessage.setVisibility(View.VISIBLE);
             makeMessageUnseen(holder);
             return;
         }
-        Map.Entry<String, Message> m = messageSessionList.get(position).getMessages().entrySet().iterator().next();
-        Message lastMessage = m.getValue();
-        holder.lastMessage.setText(cutMessageIfIsLong(lastMessage.getMessage(),12));
-        if (!lastMessage.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())) {
-            if (!lastMessage.isSeen()) {
+        Map.Entry<String, Messages> m = messageSessionsList.get(position).getMessages().entrySet().iterator().next();
+        Messages lastMessages = m.getValue();
+        holder.lastMessage.setText(cutMessageIfIsLong(lastMessages.getMessage(),12));
+        if (!lastMessages.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())) {
+            if (!lastMessages.isSeen()) {
                 makeMessageUnseen(holder);
             }else {
                 makeMessageSeen(holder);
@@ -68,7 +68,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
         }else {
             makeMessageSeen(holder);
         }
-        holder.timeLastMessage.setText(time.format(lastMessage.getTimestamp()));
+        holder.timeLastMessage.setText(time.format(lastMessages.getTimestamp()));
         holder.timeLastMessage.setVisibility(View.VISIBLE);
         holder.lastMessage.setVisibility(View.VISIBLE);
     }
@@ -109,7 +109,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
 
     @Override
     public int getItemCount() {
-        return messageSessionList.size();
+        return messageSessionsList.size();
     }
     public int getItemViewType(int position) {
         return position;

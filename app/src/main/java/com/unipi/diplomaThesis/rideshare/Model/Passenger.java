@@ -46,7 +46,7 @@ public class Passenger extends User{
      */
     public void findMinMaxPrice(OnDataReturn onDataReturn){
         FirebaseDatabase.getInstance().getReference()
-                .child(Route.class.getSimpleName())
+                .child(Routes.class.getSimpleName())
                 .orderByChild("costPerRider")
                 .limitToFirst(1)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -54,7 +54,7 @@ public class Passenger extends User{
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Map<String,Object> returnData = new HashMap<>();
                         for (DataSnapshot route:snapshot.getChildren()) {
-                            Route r = route.getValue(Route.class);
+                            Routes r = route.getValue(Routes.class);
                             returnData.put("min",r.getCostPerRider());
                         }
                         onDataReturn.returnData(returnData);
@@ -66,7 +66,7 @@ public class Passenger extends User{
                     }
                 });
         FirebaseDatabase.getInstance().getReference()
-                .child(Route.class.getSimpleName())
+                .child(Routes.class.getSimpleName())
                 .orderByChild("costPerRider")
                 .limitToLast(1)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -74,7 +74,7 @@ public class Passenger extends User{
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Map<String,Object> returnData = new HashMap<>();
                         for (DataSnapshot route:snapshot.getChildren()) {
-                            Route r = route.getValue(Route.class);
+                            Routes r = route.getValue(Routes.class);
                             returnData.put("max",r.getCostPerRider());
                         }
                         onDataReturn.returnData(returnData);
@@ -89,20 +89,19 @@ public class Passenger extends User{
     private static int routeCount=0;
 
     /**
-     * search for routes based on Route filter
+     * search for routes based on Routes filter
      * @param c
      * @param routeFilter
      * @param onRouteSearchResponse
      */
     public void routeSearch(Context c, RouteFilter routeFilter, OnRouteSearchResponse onRouteSearchResponse){
-        FirebaseDatabase.getInstance().getReference()
-                .child(Route.class.getSimpleName())
+        FirebaseDatabase.getInstance().getReference().child(Routes.class.getSimpleName())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         routeCount = Math.toIntExact(snapshot.getChildrenCount()-1);
                         for (DataSnapshot route:snapshot.getChildren()) {
-                            Route r = route.getValue(Route.class);
+                            Routes r = route.getValue(Routes.class);
 //                            check if route exists
                             if (r==null) {
                                 if (checkIfIsTheLastRoute()) onRouteSearchResponse.returnedData(null,null,0,0,0);
@@ -137,9 +136,8 @@ public class Passenger extends User{
                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot user) {
-                                                loadReviewTotalScore(user.getKey(),(totalScore, ReviewCount) ->{
-                                                            onRouteSearchResponse.returnedData(r, user.getValue(User.class),distanceDeviation, totalScore, ReviewCount);
-                                                        });
+                                                loadReviewTotalScore(user.getKey(),(totalScore, ReviewCount) ->
+                                                onRouteSearchResponse.returnedData(r, user.getValue(User.class),distanceDeviation, totalScore, ReviewCount));
                                             }
 
                                             @Override
@@ -149,14 +147,10 @@ public class Passenger extends User{
                                         });
                                 if (checkIfIsTheLastRoute()) onRouteSearchResponse.returnedData(null,null,0,0,0);
                             });
-
                         }
                     }
-
                     @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
+                    public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
     private boolean checkIfIsTheLastRoute(){
@@ -172,11 +166,11 @@ public class Passenger extends User{
      * Create a request and sends a notification to driver
      * @param activity
      * @param driver
-     * @param route
+     * @param routes
      * @param request
      * @param onCompleteListener
      */
-    public void makeRequest(Activity activity, User driver, Route route, Request request, OnCompleteListener<Void> onCompleteListener){
+    public void makeRequest(Activity activity, User driver, Routes routes, Request request, OnCompleteListener<Void> onCompleteListener){
         request.setSeen(false);
         FirebaseDatabase.getInstance().getReference()
                 .child(Request.class.getSimpleName())
@@ -188,7 +182,7 @@ public class Passenger extends User{
                         Request.class.getSimpleName(),
                         null,
                         driver.getFullName(),
-                        Passenger.this.getFullName()+" "+activity.getString(R.string.is_instrested_for)+" "+route.getName(),
+                        Passenger.this.getFullName()+" "+activity.getString(R.string.is_instrested_for)+" "+ routes.getName(),
                         activity
                     );
                     fcmNotificationsSender.SendNotifications();
@@ -226,18 +220,18 @@ public class Passenger extends User{
      * @param onCompleteListener
      */
     public void saveReview(String participantId, double rating, String description,OnCompleteListener<Void> onCompleteListener) {
-        Review review = new Review(participantId,rating,description,new Date().getTime(),this.getUserId());
+        Reviews reviews = new Reviews(participantId,rating,description,new Date().getTime(),this.getUserId());
         FirebaseDatabase.getInstance().getReference()
-                .child(Review.class.getSimpleName())
+                .child(Reviews.class.getSimpleName())
                 .child(participantId)
                 .child(this.getUserId())
-                .setValue(review).addOnCompleteListener(onCompleteListener);
+                .setValue(reviews).addOnCompleteListener(onCompleteListener);
     }
 
     /**
      * Deletes Passenger account:
      *  1. delete his id from the route participant
-     *  2. delete id MessageSession from the Drivers and the Message Session
+     *  2. delete id MessageSessions from the Drivers and the Messages Session
      *  3. delete the Requests
      *  4. deletes the Reviews
      *  5. delete account
@@ -311,12 +305,12 @@ public class Passenger extends User{
                             for (String sessionId:messageSessionId){
                                 DatabaseReference messageSessionRef =
                                 FirebaseDatabase.getInstance().getReference()
-                                        .child(MessageSession.class.getSimpleName())
+                                        .child(MessageSessions.class.getSimpleName())
                                         .child(sessionId);
                                 messageSessionRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                                        MessageSession Participants
+//                                        MessageSessions Participants
                                         ArrayList<String> participants = (ArrayList<String>) snapshot.child("participants").getValue();
                                         participants.remove(FirebaseAuth.getInstance().getUid());
                                         for (String participantId: participants){
@@ -333,7 +327,7 @@ public class Passenger extends User{
                                                     messageSessionId.remove(sessionId);
                                                     addProcedures();
                                                     participantRef.child("messageSessionId").setValue(messageSessionId).addOnCompleteListener(task -> {
-//                                                    finally remove the Message Session Completely
+//                                                    finally remove the Messages Session Completely
                                                         addProcedures();
                                                         messageSessionRef.removeValue().addOnCompleteListener(t -> {
                                                             onProcedureComplete.isComplete(t, isCompleted());
@@ -355,7 +349,7 @@ public class Passenger extends User{
                         onProcedureComplete.isComplete(null,isCompleted());
 //                      delete Routes passengers
                         DatabaseReference routeRef = FirebaseDatabase.getInstance().getReference()
-                                .child(Route.class.getSimpleName());
+                                .child(Routes.class.getSimpleName());
 
                         addProcedures();
                         if (rider.hasChild("lastRoutes")) {
@@ -411,7 +405,7 @@ public class Passenger extends User{
                         addProcedures();
 
                         FirebaseDatabase.getInstance().getReference()
-                                .child(Review.class.getSimpleName())
+                                .child(Reviews.class.getSimpleName())
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -419,7 +413,7 @@ public class Passenger extends User{
                                             if (reviewedDriver.hasChild(FirebaseAuth.getInstance().getUid())){
                                                 addProcedures();
                                                 FirebaseDatabase.getInstance().getReference()
-                                                        .child(Review.class.getSimpleName())
+                                                        .child(Reviews.class.getSimpleName())
                                                         .child(reviewedDriver.getKey())
                                                         .child(FirebaseAuth.getInstance().getUid())
                                                         .removeValue().addOnCompleteListener(task -> {

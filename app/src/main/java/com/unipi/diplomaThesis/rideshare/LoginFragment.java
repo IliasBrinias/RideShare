@@ -17,12 +17,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.gson.Gson;
@@ -80,41 +76,35 @@ public class LoginFragment extends Fragment implements TextWatcher {
         editTexts.add(password);
         if (User.checkIfEditTextIsNull(this.getContext(), editTexts)) return;
         ((StartActivity) getActivity()).startProgressBarAnimation();
-        mAuth.signInWithEmailAndPassword(email.getText().toString(),password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    User.loadSignInUser(new OnUserLoadComplete() {
-                        @Override
-                        public void returnedUser(User u) {
-                            // if the user didn't found sign out
-                            if (u == null){
-                                FirebaseAuth.getInstance().signOut();
-                                email.setText("");
-                                password.setText("");
-                                errorMessage();
-                                return;
+        mAuth.signInWithEmailAndPassword(email.getText().toString(),password.getText().toString())
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()){
+                        User.loadSignInUser(new OnUserLoadComplete() {
+                            @Override
+                            public void returnedUser(User u) {
+                                // if the user didn't found sign out
+                                if (u == null){
+                                    FirebaseAuth.getInstance().signOut();
+                                    email.setText("");
+                                    password.setText("");
+                                    errorMessage();
+                                    return;
+                                }
+                                saveUserAndOpenActivity(u);
+                                ((StartActivity) getActivity()).stopProgressBarAnimation();
                             }
-                            saveUserAndOpenActivity(u);
-                            ((StartActivity) getActivity()).stopProgressBarAnimation();
+                        });
+                    }else{
+                        ((StartActivity) getActivity()).stopProgressBarAnimation();
+                        switch (((FirebaseAuthException) task.getException()).getErrorCode()){
+                            case "ERROR_WRONG_PASSWORD":
+                                password.setError(getString(R.string.wrongPassword));
+                                break;
+                            case "ERROR_USER_NOT_FOUND":
+                                errorMessage();
+                                break;
                         }
-                    });
-                }else{
-                    ((StartActivity) getActivity()).stopProgressBarAnimation();
-                    switch (((FirebaseAuthException) task.getException()).getErrorCode()){
-                        case "ERROR_WRONG_PASSWORD":
-                            password.setError(getString(R.string.wrongPassword));
-                            break;
-                        case "ERROR_USER_NOT_FOUND":
-                            errorMessage();
-                            break;
-                        default:
-                            if (t!=null) t.cancel();
-                            Toast.makeText(getActivity(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                            break;
                     }
-                }
-            }
         });
     }
     private void saveUserAndOpenActivity(User u){

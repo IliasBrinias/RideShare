@@ -1,16 +1,16 @@
 package com.unipi.diplomaThesis.rideshare.Model;
 
-public class Review {
+public class Reviews {
     private String driverId;
     private double review;
     private String description;
     private long timestamp;
     private String userId;
 
-    public Review() {
+    public Reviews() {
     }
 
-    public Review(String driverId, double review, String description, long timestamp, String userId) {
+    public Reviews(String driverId, double review, String description, long timestamp, String userId) {
         this.driverId = driverId;
         this.review = review;
         this.description = description;

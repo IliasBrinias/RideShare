@@ -13,14 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.unipi.diplomaThesis.rideshare.Interface.OnClickMessageSession;
-import com.unipi.diplomaThesis.rideshare.Model.MessageSession;
+import com.unipi.diplomaThesis.rideshare.Model.MessageSessions;
 import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 import com.unipi.diplomaThesis.rideshare.messenger.adapter.MessengerAdapter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class MessengerActivity extends AppCompatActivity {
@@ -31,7 +30,7 @@ public class MessengerActivity extends AppCompatActivity {
     ProgressBar progressBar;
     MessengerAdapter messengerAdapter;
     ImageView imageViewBack;
-    static List<MessageSession> messageSessionList=new ArrayList<>();
+    static List<MessageSessions> messageSessionsList =new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,11 +44,11 @@ public class MessengerActivity extends AppCompatActivity {
         //        initialize recyclerView
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         recyclerViewMessageSession.setLayoutManager(linearLayoutManager);
-        messengerAdapter = new MessengerAdapter(messageSessionList,this, new OnClickMessageSession() {
+        messengerAdapter = new MessengerAdapter(messageSessionsList,this, new OnClickMessageSession() {
             @Override
             public void onClick(View v, int position) {
                 Intent i =new Intent(MessengerActivity.this,ChatActivity.class);
-                i.putExtra(MessageSession.class.getSimpleName(),messageSessionList.get(position));
+                i.putExtra(MessageSessions.class.getSimpleName(), messageSessionsList.get(position));
                startActivityForResult(i,REQ_CHAT_ACTIVITY);
             }
         });
@@ -69,36 +68,24 @@ public class MessengerActivity extends AppCompatActivity {
     }
 
     @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
-    private void refreshData(MessageSession messageSession){
+    private void refreshData(MessageSessions messageSessions){
         stopProgressBarAnimation();
-        if (messageSession == null) return;
-//        check if the messageSession exists
-        for (int i=0; i<messageSessionList.size(); i++){
-            if (messageSessionList.get(i).getMessageSessionId().equals(messageSession.getMessageSessionId())){
-                messageSessionList.remove(i);
+        if (messageSessions == null) return;
+        System.out.println(messageSessions.getMessageSessionId());
+//        check if the messageSessions exists
+        for (int i = 0; i< messageSessionsList.size(); i++){
+            if (messageSessionsList.get(i).getMessageSessionId().equals(messageSessions.getMessageSessionId())){
+                messageSessionsList.remove(i);
                 break;
             }
         }
-        messageSessionList.add(messageSession);
-        messageSessionList.sort(new Comparator<MessageSession>() {
-            @Override
-            public int compare(MessageSession messageSession0, MessageSession messageSession1) {
-                try {
-                    Long messageSessionTimestamp0 = messageSession0.getMessages().entrySet().iterator().next().getValue().getTimestamp();
-                    Long messageSessionTimestamp1 = messageSession1.getMessages().entrySet().iterator().next().getValue().getTimestamp();
-                    return Long.compare(messageSessionTimestamp1,messageSessionTimestamp0);
-
-                }catch (Exception e){
-                    return 0;
-                }
-            }
-        });
+        messageSessionsList.add(messageSessions);
         messengerAdapter.notifyDataSetChanged();
     }
     @SuppressLint("NotifyDataSetChanged")
     private void routeSearch() {
         startProgressBarAnimation();
-        messageSessionList.clear();
+        messageSessionsList.clear();
         messengerAdapter.notifyDataSetChanged();
         user.loadUserMessageSession(this::refreshData);
     }

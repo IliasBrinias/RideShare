@@ -40,7 +40,7 @@ import com.unipi.diplomaThesis.rideshare.Model.Driver;
 import com.unipi.diplomaThesis.rideshare.Model.MapDrawer;
 import com.unipi.diplomaThesis.rideshare.Model.Passenger;
 import com.unipi.diplomaThesis.rideshare.Model.Request;
-import com.unipi.diplomaThesis.rideshare.Model.Route;
+import com.unipi.diplomaThesis.rideshare.Model.Routes;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 
@@ -78,7 +78,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     RatingBar ratingBar;
     Button contactDriver;
     MapView mapView;
-    Route r;
+    Routes r;
     Driver driverUser;
     View boundsOfTheMap, bottomSheet;
     String routeId, driverId;
@@ -98,7 +98,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         }catch (ClassCastException c){
             finish();
         }
-        if (!getIntent().hasExtra(Route.class.getSimpleName()) ||
+        if (!getIntent().hasExtra(Routes.class.getSimpleName()) ||
                 !getIntent().hasExtra(Driver.class.getSimpleName())){
             finish();
         }
@@ -117,7 +117,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         loadBottomSheetElements(bottomSheet);
 
-        routeId = getIntent().getStringExtra(Route.class.getSimpleName());
+        routeId = getIntent().getStringExtra(Routes.class.getSimpleName());
         driverId = getIntent().getStringExtra(Driver.class.getSimpleName());
         userDateTime = getIntent().getLongExtra("userDateTime",0);
         distanceDeviation = getIntent().getDoubleExtra("distanceDeviation",0.);
@@ -150,7 +150,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         map = googleMap;
-        Route.loadRoute(routeId, route -> {
+        Routes.loadRoute(routeId, route -> {
             r = route;
             LatLng startingPoint = new LatLng(
                     r.getRouteLatLng().getStartLat(), r.getRouteLatLng().getStartLng()
@@ -196,7 +196,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         m.directions(apiKey,startingPoint,destinationPoint,boundsOfTheMap);
         m.moveCameraToTop(startingPoint,destinationPoint,boundsOfTheMap.getWidth(),boundsOfTheMap.getHeight(),bottomSheet);
     }
-    private void initializeSliderRiderCapacity(Route r){
+    private void initializeSliderRiderCapacity(Routes r){
         sliderRiderCapacity.setValueFrom(0.f);
         sliderRiderCapacity.setValueTo(r.getRideCapacity());
         sliderRiderCapacity.setValue(r.getPassengersId().size());

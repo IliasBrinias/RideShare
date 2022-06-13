@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MessageSession implements Serializable {
+public class MessageSessions implements Serializable {
     private String messageSessionId;
     private ArrayList<String> participants = new ArrayList<>();
     private long creationTimestamp;
     private boolean seen = false;
-    private Map<String,Message> messages=new HashMap<>();
+    private Map<String, Messages> messages=new HashMap<>();
 
-    public MessageSession(String messageSessionId, ArrayList<String> participants, long creationTimestamp, Map<String,Message> messages) {
+    public MessageSessions(String messageSessionId, ArrayList<String> participants, long creationTimestamp, Map<String, Messages> messages) {
         this.messageSessionId = messageSessionId;
         this.participants = participants;
         this.creationTimestamp = creationTimestamp;
@@ -27,7 +27,7 @@ public class MessageSession implements Serializable {
         this.seen = seen;
     }
 
-    public MessageSession() {
+    public MessageSessions() {
     }
 
     public String getMessageSessionId() {
@@ -54,11 +54,11 @@ public class MessageSession implements Serializable {
         this.creationTimestamp = creationTimestamp;
     }
 
-    public Map<String,Message> getMessages() {
+    public Map<String, Messages> getMessages() {
         return messages;
     }
 
-    public void setMessages(Map<String,Message> messages) {
+    public void setMessages(Map<String, Messages> messages) {
         this.messages = messages;
     }
 }

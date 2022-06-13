@@ -15,7 +15,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
-import com.unipi.diplomaThesis.rideshare.Model.Route;
+import com.unipi.diplomaThesis.rideshare.Model.Routes;
 import com.unipi.diplomaThesis.rideshare.Model.RouteDateTime;
 import com.unipi.diplomaThesis.rideshare.Model.RouteLatLng;
 import com.unipi.diplomaThesis.rideshare.Model.User;
@@ -35,7 +35,7 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
     DriverSaveRouteDirectionsFragment driverSaveRouteDirectionsFragment;
     DriverSaveRouteTimeTableFragment driverSaveRouteTimeTableFragment;
     DriverSaveRouteAdditionalInfoFragment driverSaveRouteAdditionalInfoFragment;
-    Route route;
+    Routes routes;
     Driver driver = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +55,9 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
         buttonBack = findViewById(R.id.buttonBack);
         progressBarSave = findViewById(R.id.progressBarSave);
         buttonBack.setOnClickListener(v->finish());
-        if (getIntent().hasExtra(Route.class.getSimpleName())){
-            route =(Route) getIntent().getSerializableExtra(Route.class.getSimpleName());
-            loadRoute(route);
+        if (getIntent().hasExtra(Routes.class.getSimpleName())){
+            routes =(Routes) getIntent().getSerializableExtra(Routes.class.getSimpleName());
+            loadRoute(routes);
         }
 
         handleStep(0);
@@ -116,50 +116,50 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
         anim.start();
     }
     public void editRoute(){
-//        collect all the data from the fragments and create the route Object
+//        collect all the data from the fragments and create the routes Object
         RouteLatLng points = driverSaveRouteDirectionsFragment.getPoints();
         RouteDateTime routeDateTime = driverSaveRouteTimeTableFragment.getRouteDateTime();
         Map<String,Object> additionalInfo = driverSaveRouteAdditionalInfoFragment.getAdditionalInfo();
 
         if (points!=null) {
-            points.setMaximumDeviation(route.getRouteLatLng().getMaximumDeviation());
-            route.setRouteLatLng(points);
+            points.setMaximumDeviation(routes.getRouteLatLng().getMaximumDeviation());
+            routes.setRouteLatLng(points);
         }
         if (additionalInfo !=null){
-            route.getRouteLatLng().setMaximumDeviation((double) additionalInfo.get("maximumDeviation"));
+            routes.getRouteLatLng().setMaximumDeviation((double) additionalInfo.get("maximumDeviation"));
             ArrayList<String> deletedPassengers = (ArrayList<String>) additionalInfo.get("deletedPassengers");
-            route.setRideCapacity((int) additionalInfo.get("rideCapacity"));
-            route.setPassengersId((ArrayList<String>) additionalInfo.get("passengersId"));
-            route.setCostPerRider((Double) additionalInfo.get("costPreRider"));
-            route.setName(additionalInfo.get("name").toString());
+            routes.setRideCapacity((int) additionalInfo.get("rideCapacity"));
+            routes.setPassengersId((ArrayList<String>) additionalInfo.get("passengersId"));
+            routes.setCostPerRider((Double) additionalInfo.get("costPreRider"));
+            routes.setName(additionalInfo.get("name").toString());
             for (String id:deletedPassengers){
-                driver.deletePassenger(route.getRouteId(),id, null);
+                driver.deletePassenger(routes.getRouteId(),id, null);
             }
         }
-        if (routeDateTime!=null) route.setRouteDateTime(routeDateTime);
+        if (routeDateTime!=null) routes.setRouteDateTime(routeDateTime);
 
-        saveRouteToDatabase(route);
+        saveRouteToDatabase(routes);
     }
     public void saveRoute(){
-//        collect all the data from the fragments and create the route Object
+//        collect all the data from the fragments and create the routes Object
         RouteLatLng points = driverSaveRouteDirectionsFragment.getPoints();
         RouteDateTime routeDateTime = driverSaveRouteTimeTableFragment.getRouteDateTime();
         Map<String,Object> additionalInfo = driverSaveRouteAdditionalInfoFragment.getAdditionalInfo();
         points.setMaximumDeviation((double) additionalInfo.get("maximumDeviation"));
 
-        if (route!=null){
+        if (routes !=null){
             ArrayList<String> deletedPassengers = (ArrayList<String>) additionalInfo.get("deletedPassengers");
-            route.setName(additionalInfo.get("name").toString());
-            route.setRouteLatLng(points);
-            route.setRouteDateTime(routeDateTime);
-            route.setCostPerRider((Double) additionalInfo.get("costPreRider"));
-            route.setRideCapacity((int) additionalInfo.get("rideCapacity"));
-            route.setPassengersId((ArrayList<String>) additionalInfo.get("passengersId"));
+            routes.setName(additionalInfo.get("name").toString());
+            routes.setRouteLatLng(points);
+            routes.setRouteDateTime(routeDateTime);
+            routes.setCostPerRider((Double) additionalInfo.get("costPreRider"));
+            routes.setRideCapacity((int) additionalInfo.get("rideCapacity"));
+            routes.setPassengersId((ArrayList<String>) additionalInfo.get("passengersId"));
             for (String id:deletedPassengers){
-                driver.deletePassenger(route.getRouteId(),id, null);
+                driver.deletePassenger(routes.getRouteId(),id, null);
             }
         }else {
-            route = new Route(
+            routes = new Routes(
                     additionalInfo.get("name").toString(),
                     null,
                     driver.getUserId(),
@@ -170,12 +170,12 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
                     (int) additionalInfo.get("rideCapacity")
             );
         }
-        saveRouteToDatabase(route);
+        saveRouteToDatabase(routes);
     }
-    private void saveRouteToDatabase(Route r){
+    private void saveRouteToDatabase(Routes r){
         progressBarSave.setIndeterminate(true);
         progressBarSave.setVisibility(View.VISIBLE);
-        driver.saveRoute(route, new OnCompleteListener<Void>() {
+        driver.saveRoute(routes, new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 progressBarSave.setIndeterminate(false);
@@ -188,17 +188,17 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
         });
 
     }
-    public void loadRoute(Route route){
-        driverSaveRouteDirectionsFragment.setPoints(route.getRouteLatLng());
-        driverSaveRouteTimeTableFragment.setRouteDateTime(route.getRouteDateTime());
+    public void loadRoute(Routes routes){
+        driverSaveRouteDirectionsFragment.setPoints(routes.getRouteLatLng());
+        driverSaveRouteTimeTableFragment.setRouteDateTime(routes.getRouteDateTime());
         driverSaveRouteAdditionalInfoFragment.setAdditionalInfo(
-                route.getRouteLatLng().getMaximumDeviation(),
-                route.getRideCapacity(),
-                route.getCostPerRider(),
-                route.getName(),
-                route.getPassengersId());
+                routes.getRouteLatLng().getMaximumDeviation(),
+                routes.getRideCapacity(),
+                routes.getCostPerRider(),
+                routes.getName(),
+                routes.getPassengersId());
     }
-    public Route getRoute(){
-        return route;
+    public Routes getRoute(){
+        return routes;
     }
 }

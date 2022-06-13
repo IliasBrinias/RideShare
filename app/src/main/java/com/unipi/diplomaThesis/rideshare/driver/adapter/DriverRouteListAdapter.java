@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.unipi.diplomaThesis.rideshare.Interface.OnClickDriverRoute;
 import com.unipi.diplomaThesis.rideshare.Model.CustomCardView;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
-import com.unipi.diplomaThesis.rideshare.Model.Route;
+import com.unipi.diplomaThesis.rideshare.Model.Routes;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 
@@ -31,7 +31,7 @@ import java.util.List;
 
 public class DriverRouteListAdapter extends RecyclerView.Adapter<DriverRouteListAdapter.ViewHolder> {
     private OnClickDriverRoute onClickDriverRoute;
-    private List<Route> routeList;
+    private List<Routes> routesList;
     private Activity c;
     Driver driver;
 
@@ -43,10 +43,10 @@ public class DriverRouteListAdapter extends RecyclerView.Adapter<DriverRouteList
         return new DriverRouteListAdapter.ViewHolder(view);
     }
 
-    public DriverRouteListAdapter(Activity c, List<Route> routeList, Driver driver, OnClickDriverRoute onClickDriverRoute) {
+    public DriverRouteListAdapter(Activity c, List<Routes> routesList, Driver driver, OnClickDriverRoute onClickDriverRoute) {
         this.c = c;
         this.driver = driver;
-        this.routeList = routeList;
+        this.routesList = routesList;
         this.onClickDriverRoute = onClickDriverRoute;
     }
 
@@ -55,27 +55,27 @@ public class DriverRouteListAdapter extends RecyclerView.Adapter<DriverRouteList
     public void onBindViewHolder(@NonNull DriverRouteListAdapter.ViewHolder holder, int position) {
         holder.onClickDriverRoute = this.onClickDriverRoute;
         holder.makeRouteOptionsUnvisible();
-//      Current Route Object
-        Route currentRoute = routeList.get(position);
+//      Current Routes Object
+        Routes currentRoutes = routesList.get(position);
 //        Start and End Points
 //            load addresses from the LatLng for the textViews
         Geocoder g = new Geocoder(c);
         String startingAddress;
         String endAddress;
         try {
-            Address a = g.getFromLocation(currentRoute.getRouteLatLng().getStartLat(), currentRoute.getRouteLatLng().getStartLng(), 1).get(0);
+            Address a = g.getFromLocation(currentRoutes.getRouteLatLng().getStartLat(), currentRoutes.getRouteLatLng().getStartLng(), 1).get(0);
             startingAddress =c.getString(R.string.from)+" " + a.getThoroughfare() +" "+a.getFeatureName()+", "+a.getLocality()+", "+a.getCountryName();
-            a = g.getFromLocation(currentRoute.getRouteLatLng().getEndLat(),currentRoute.getRouteLatLng().getEndLng(),1).get(0);
+            a = g.getFromLocation(currentRoutes.getRouteLatLng().getEndLat(), currentRoutes.getRouteLatLng().getEndLng(),1).get(0);
             endAddress =c.getString(R.string.to)+" " + a.getThoroughfare() +" "+a.getFeatureName()+", "+a.getLocality()+", "+a.getCountryName();
             holder.startingRoute.setText(User.reformatLengthString(startingAddress,50));
             holder.endRoute.setText(User.reformatLengthString(endAddress,50));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        holder.routeName.setText(User.reformatLengthString(currentRoute.getName(),35));
-        holder.costPerPassenger.setText(currentRoute.getCostPerRider()+" €");
+        holder.routeName.setText(User.reformatLengthString(currentRoutes.getName(),35));
+        holder.costPerPassenger.setText(currentRoutes.getCostPerRider()+" €");
 
-        List<String> passengersId = currentRoute.getPassengersId();
+        List<String> passengersId = currentRoutes.getPassengersId();
         CustomCardView customCardView = new CustomCardView(c);
         for (int i =0; i<passengersId.size();i++){
             int finalI = i;
@@ -85,20 +85,20 @@ public class DriverRouteListAdapter extends RecyclerView.Adapter<DriverRouteList
                 holder.frameLayoutPassengersIcon.addView(c);
             });
         }
-        for (int i=currentRoute.getPassengersId().size();i<currentRoute.getRideCapacity();i++){
+        for (int i = currentRoutes.getPassengersId().size(); i< currentRoutes.getRideCapacity(); i++){
             CardView c =customCardView.getCardView(i, null);
             holder.frameLayoutPassengersIcon.addView(c);
         }
-        if (routeList.size() == 0){
+        if (routesList.size() == 0){
             holder.division.setVisibility(View.INVISIBLE);
-        }else if (routeList.size() == position){
+        }else if (routesList.size() == position){
             holder.division.setVisibility(View.INVISIBLE);
         }
     }
 
     @Override
     public int getItemCount() {
-        return routeList.size();
+        return routesList.size();
     }
     public int getItemViewType(int position) {
         return position;

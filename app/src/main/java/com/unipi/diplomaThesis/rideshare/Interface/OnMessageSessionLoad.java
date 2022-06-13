@@ -1,7 +1,7 @@
 package com.unipi.diplomaThesis.rideshare.Interface;
 
-import com.unipi.diplomaThesis.rideshare.Model.MessageSession;
+import com.unipi.diplomaThesis.rideshare.Model.MessageSessions;
 
 public interface OnMessageSessionLoad {
-    void returnedSession(MessageSession messageSession);
+    void returnedSession(MessageSessions messageSessions);
 }

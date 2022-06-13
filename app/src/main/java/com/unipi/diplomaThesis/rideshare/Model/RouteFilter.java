@@ -228,12 +228,12 @@ public class RouteFilter implements Serializable {
     /**
      * check all the user parameters and finally returns the route.
      * I use the google Directions Api and add the user origin and destination points as waypoints.
-     * Then i compare the new Distance Route with the old and the maximum Deviation
+     * Then i compare the new Distance Routes with the old and the maximum Deviation
      * @param c
      * @param r
      * @param onFilterResult
      */
-    public void filterCheck(Context c, Route r, OnFilterResult onFilterResult){
+    public void filterCheck(Context c, Routes r, OnFilterResult onFilterResult){
         ApiCalls.getDistanceWithWaypoints(c,
                 r.getRouteLatLng().getStartPlaceId(),
                 r.getRouteLatLng().getEndPlaceId(),
@@ -262,7 +262,7 @@ public class RouteFilter implements Serializable {
                 });
     }
 
-    private boolean checkDate(Route r){
+    private boolean checkDate(Routes r){
 //      Date
 //      start
         Calendar routeCalendarStart = new GregorianCalendar();
@@ -312,7 +312,7 @@ public class RouteFilter implements Serializable {
         return true;
     }
 
-    private boolean checkCost(Route r){
+    private boolean checkCost(Routes r){
 //      cost Check
         if (RouteFilter.this.minPricePerPassenger != defaultMinPrice || RouteFilter.this.maxPricePerPassenger != defaultMaxPrice){
             try {
@@ -328,7 +328,7 @@ public class RouteFilter implements Serializable {
         return true;
     }
 
-    private boolean checkTime(Route r){
+    private boolean checkTime(Routes r){
 //      time check
         if (minTime != defaultMinTime || maxTime != defaultMaxTime){
             Calendar routeCalendar =new GregorianCalendar();

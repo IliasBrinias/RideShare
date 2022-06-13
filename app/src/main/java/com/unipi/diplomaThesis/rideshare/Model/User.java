@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -265,12 +267,12 @@ public class User {
 
     /**
      * Removes listener for the Messages
-     * @param messageSession
+     * @param messageSessions
      */
-    public void stopLoadingMessages(MessageSession messageSession) {
+    public void stopLoadingMessages(MessageSessions messageSessions) {
         FirebaseDatabase.getInstance().getReference()
-                .child(MessageSession.class.getSimpleName())
-                .child(messageSession.getMessageSessionId())
+                .child(MessageSessions.class.getSimpleName())
+                .child(messageSessions.getMessageSessionId())
                 .child("messages").orderByChild("timestamp")
                 .limitToLast(100)
                 .removeEventListener(loadMessages);
@@ -278,34 +280,34 @@ public class User {
 
     /**
      * This method is used From the ChatActivity. Saves the new message on database
-     * @param messageSession
+     * @param messageSessions
      * @param m
      * @param onCompleteListener
      */
-    public void sendMessageTo(Activity activity,User participant,MessageSession messageSession, Message m, OnCompleteListener<Void> onCompleteListener){
+    public void sendMessageTo(Activity activity, User participant, MessageSessions messageSessions, Messages m, OnCompleteListener<Void> onCompleteListener){
         if (m.getMessage().endsWith("\n")){
             m.setMessage(m.getMessage().substring(0,m.getMessage().length()-1));
         }
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
-                .child(MessageSession.class.getSimpleName())
-                .child(messageSession.getMessageSessionId())
+                .child(MessageSessions.class.getSimpleName())
+                .child(messageSessions.getMessageSessionId())
                 .child("messages");
         m.setMessageId(ref.push().getKey());
         ref.child(m.getMessageId())
                 .setValue(m).addOnCompleteListener(onCompleteListener);
-        sendNotification(activity,participant,messageSession,m);
+        sendNotification(activity,participant, messageSessions,m);
     }
 
     /**
-     * Make the Message child ("seen") true
-     * @param messageSession
+     * Make the Messages child ("seen") true
+     * @param messageSessions
      * @param m
      */
-    private void messageSeen(MessageSession messageSession,Message m){
+    private void messageSeen(MessageSessions messageSessions, Messages m){
         FirebaseDatabase.getInstance().getReference()
-                .child(MessageSession.class.getSimpleName())
-                .child(messageSession.getMessageSessionId())
+                .child(MessageSessions.class.getSimpleName())
+                .child(messageSessions.getMessageSessionId())
                 .child("messages")
                 .child(m.getMessageId())
                 .child("seen").setValue(true);
@@ -317,20 +319,20 @@ public class User {
      *
      * @param a
      * @param sender
-     * @param messageSession
-     * @param message
+     * @param messageSessions
+     * @param messages
      */
-    private void sendNotification(Activity a,User sender,MessageSession messageSession,Message message){
+    private void sendNotification(Activity a, User sender, MessageSessions messageSessions, Messages messages){
         fcmNotificationsSender = new FcmNotificationsSender(sender.token_FCM,
-                Message.class.getSimpleName(),
-                messageSession.getMessageSessionId(),
+                Messages.class.getSimpleName(),
+                messageSessions.getMessageSessionId(),
                 sender.getFullName(),
-                message.getMessage(),
+                messages.getMessage(),
                 a);
         fcmNotificationsSender.SendNotifications();
     }
     /**
-     * Returns Users MessageSession
+     * Returns Users MessageSessions
      * @param onReturnedIds
      */
     public void getMessageSessionId(OnReturnedIds onReturnedIds){
@@ -357,15 +359,13 @@ public class User {
 
     private void makeMessageSessionSeen(String messageSessionId){
         FirebaseDatabase.getInstance().getReference()
-                .child(MessageSession.class.getSimpleName())
+                .child(MessageSessions.class.getSimpleName())
                 .child(messageSessionId)
                 .child("seen").setValue(true);
 
     }
-    ValueEventListener messageSessionListener;
-
     /**
-     * Load Riders Message Session
+     * Load Riders Messages Session
      * @param onMessageSessionLoad
      */
     public void loadUserMessageSession(OnMessageSessionLoad onMessageSessionLoad){
@@ -374,83 +374,93 @@ public class User {
                 onMessageSessionLoad.returnedSession(null);
                 return;
             }
-            for (String id:sessionIds) {
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
-                        .child(MessageSession.class.getSimpleName())
-                        .child(id);
-                ref.addValueEventListener(new ValueEventListener() {
+//            TODO: Check out order by child
+                FirebaseDatabase.getInstance().getReference()
+                    .child(MessageSessions.class.getSimpleName())
+                    .orderByChild("creationTimestamp")
+                    .limitToFirst(100)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        MessageSession messageSession = new MessageSession();
-                        messageSession.setMessageSessionId(id);
-                        if (!snapshot.hasChild("participants")) return;
-                        if (!messageSession.isSeen()) makeMessageSessionSeen(id);
-                        messageSession.setParticipants((ArrayList<String>) snapshot.child("participants").getValue());
-                        messageSession.setCreationTimestamp(snapshot.child("creationTimestamp").getValue(Long.class));
-                        if (snapshot.child("messages").getChildrenCount() == 0) {
-                            onMessageSessionLoad.returnedSession(messageSession);
-                            return;
-                        }
-                        ref.child("messages")
-                                .orderByChild("timestamp")
-                                .limitToLast(1)
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        Map<String, Message> messageMap = new HashMap<>();
-                                        for (DataSnapshot msg : snapshot.getChildren()) {
-                                            Message m = msg.getValue(Message.class);
-                                            messageMap.put(msg.getKey(), m);
-                                            messageSession.setMessages(messageMap);
-                                            onMessageSessionLoad.returnedSession(messageSession);
+                        for (DataSnapshot messageSessionSnap:snapshot.getChildren()){
+                            if (!sessionIds.contains(messageSessionSnap.getKey())) return;
+                            MessageSessions messageSessions = new MessageSessions();
+                            messageSessions.setMessageSessionId(messageSessionSnap.getKey());
+                            if (!messageSessionSnap.hasChild("participants")) return;
+                            if (!messageSessions.isSeen()) makeMessageSessionSeen(messageSessionSnap.getKey());
+                            messageSessions.setParticipants((ArrayList<String>) messageSessionSnap.child("participants").getValue());
+                            messageSessions.setCreationTimestamp(messageSessionSnap.child("creationTimestamp").getValue(Long.class));
+                            if (messageSessionSnap.child("messages").getChildrenCount() == 0) {
+                                onMessageSessionLoad.returnedSession(messageSessions);
+                                return;
+                            }
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child(MessageSessions.class.getSimpleName())
+                                    .child(messageSessions.getMessageSessionId())
+                                    .child("messages")
+                                    .orderByChild("timestamp")
+                                    .limitToLast(1)
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            Map<String, Messages> messageMap = new HashMap<>();
+                                            for (DataSnapshot msg : snapshot.getChildren()) {
+                                                Messages m = msg.getValue(Messages.class);
+                                                messageMap.put(msg.getKey(), m);
+                                                messageSessions.setMessages(messageMap);
+                                                onMessageSessionLoad.returnedSession(messageSessions);
+                                            }
                                         }
-                                    }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                    }
-                                });
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                        }
+                                    });
+                            }
+
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
 
                     }
-                });
-            }
+
+                    });
             onMessageSessionLoad.returnedSession(null);
         });
+
     }
 
     /**
      * load and return Riders Messages
-     * @param messageSession
+     * @param messageSessions
      * @param onMessageReturn
      */
-    public void loadMessages(MessageSession messageSession, OnMessageReturn onMessageReturn){
+    public void loadMessages(MessageSessions messageSessions, OnMessageReturn onMessageReturn){
         loadMessages = FirebaseDatabase.getInstance().getReference()
-                .child(MessageSession.class.getSimpleName())
-                .child(messageSession.getMessageSessionId())
-                .child("messages").orderByChild("timestamp")
+                .child(MessageSessions.class.getSimpleName())
+                .child(messageSessions.getMessageSessionId())
+                .child("messages")
+                .orderByChild("timestamp")
                 .limitToLast(100)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                         if (!snapshot.exists()) return;
-                        Message m = snapshot.getValue(Message.class);
+                        Messages m = snapshot.getValue(Messages.class);
                         if (m.getUserSenderId().equals(FirebaseAuth.getInstance().getUid())){
                             onMessageReturn.returnedMessage(m);
                             return;
                         }
                         if (!m.isSeen()){
                             m.setSeen(true);
-                            messageSeen(messageSession,m);
+                            messageSeen(messageSessions,m);
                         }
                         onMessageReturn.returnedMessage(m);
                     }
                     @Override
                     public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                        onMessageReturn.returnedMessage(snapshot.getValue(Message.class));
+                        onMessageReturn.returnedMessage(snapshot.getValue(Messages.class));
 
                     }
                     @Override
@@ -463,7 +473,7 @@ public class User {
     }
     public static void mutualRoutes(Driver driver, Passenger passenger, OnRouteResponse onRouteResponse){
         for (String routeId:driver.getLastRoutes()){
-            Route.loadRoute(routeId, route->{
+            Routes.loadRoute(routeId, route->{
                 for (String p:route.getPassengersId()){
                     if (p.equals(passenger.getUserId())){
                         onRouteResponse.returnedRoute(route);
@@ -489,7 +499,7 @@ public class User {
                         ArrayList<String> lastRoutes = (ArrayList<String>) snapshot.getValue();
                         if (lastRoutes == null) return;
                         for (String routeId:lastRoutes){
-                            Route.loadRoute(routeId, route -> {
+                            Routes.loadRoute(routeId, route -> {
                                 if (route == null) return;
                                 if (route.getRouteDateTime().getEndDateUnix()<=new Date().getTime()){
                                     User.loadUser(route.getDriverId(), u -> onPreviousRouteResponse.returnRoute(route,u));
@@ -512,7 +522,7 @@ public class User {
      */
     public static void loadReviews(String driverId,int limit,OnReviewResponse onReviewResponse){
         FirebaseDatabase.getInstance().getReference()
-                .child(Review.class.getSimpleName())
+                .child(Reviews.class.getSimpleName())
                 .child(driverId)
                 .orderByChild("timestamp")
                 .limitToLast(limit)
@@ -521,7 +531,7 @@ public class User {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.getChildrenCount() == 0) onReviewResponse.returnReview(null);
                         for (DataSnapshot reviewMap:snapshot.getChildren()){
-                            onReviewResponse.returnReview(reviewMap.getValue(Review.class));
+                            onReviewResponse.returnReview(reviewMap.getValue(Reviews.class));
                         }
                     }
                     @Override
@@ -530,13 +540,13 @@ public class User {
     }
 
     /**
-     * load Review Score for the driver
+     * load Reviews Score for the driver
      * @param targetUserId
      * @param onReviewTotalScoreResponse
      */
     public void loadReviewTotalScore(String targetUserId, OnReviewTotalScoreResponse onReviewTotalScoreResponse){
         FirebaseDatabase.getInstance().getReference()
-                .child(Review.class.getSimpleName())
+                .child(Reviews.class.getSimpleName())
                 .child(targetUserId)
                 .orderByChild("timestamp")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -602,9 +612,7 @@ public class User {
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
+                    public void onCancelled(@NonNull DatabaseError error) {}
                 });
 
     }
@@ -699,48 +707,53 @@ public class User {
 
     }
     public void deleteMutualActivities(Driver driver, Passenger passenger, OnCompleteListener<Void> onCompleteListener){
+        final ArrayList<Task<Void>> tasks = new ArrayList<>();
         DatabaseReference requestRef = FirebaseDatabase.getInstance().getReference().child(Request.class.getSimpleName());
         DatabaseReference riderRef = FirebaseDatabase.getInstance().getReference().child(User.class.getSimpleName()).child(passenger.getUserId());
         DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child(User.class.getSimpleName()).child(driver.getUserId());
 //        delete Messages
-        DatabaseReference messageSessionRef = FirebaseDatabase.getInstance().getReference().child(MessageSession.class.getSimpleName());
-        for (String id: driver.getMessageSessionId()){
+        DatabaseReference messageSessionRef = FirebaseDatabase.getInstance().getReference().child(MessageSessions.class.getSimpleName());
+        ArrayList<String> lastRoutesPassenger = passenger.getLastRoutes();
+        ArrayList<String> lastRoutesDriver = driver.getLastRoutes();
+        ArrayList<String> messageSessionIdPassenger = passenger.getMessageSessionId();
+        ArrayList<String> messageSessionIdDriver = driver.getMessageSessionId();
+
+        for (String id: messageSessionIdDriver){
             if (passenger.getMessageSessionId().contains(id)){
-                messageSessionRef.child(id).removeValue().addOnCompleteListener(onCompleteListener);
+                TaskCompletionSource<Void> sourceSession = new TaskCompletionSource<>();
+                messageSessionRef.child(id).removeValue().addOnCompleteListener(task -> sourceSession.setResult(task.getResult()));
+                tasks.add(sourceSession.getTask());
                 break;
             }
         }
-//          delete Riders routes and message Session
-        riderRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<String> lastRoutes = (ArrayList<String>) snapshot.child("lastRoutes").getValue();
-                ArrayList<String> messageSessionId = (ArrayList<String>) snapshot.child("messageSessionId").getValue();
-                for (String id:driver.getLastRoutes()){
-                    if (lastRoutes.contains(id)) {
-                        lastRoutes.remove(id);
-                    }
-                }
-                for (String id:driver.getMessageSessionId()){
-                    if (messageSessionId.remove(id)){
-                        messageSessionId.remove(id);
-                        driver.getMessageSessionId().remove(id);
-                    }
-                }
-                riderRef.child("lastRoutes").setValue(lastRoutes);
-                riderRef.child("messageSessionId").setValue(messageSessionId);
-                driverRef.child("messageSessionId").setValue(driver.getMessageSessionId());
+        for (String id:lastRoutesDriver){
+            if (lastRoutesPassenger.contains(id)) {
+                lastRoutesPassenger.remove(id);
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+        }
+        for (String id:messageSessionIdDriver){
+            if (messageSessionIdPassenger.contains(id)){
+                messageSessionIdPassenger.remove(id);
+                messageSessionIdDriver.remove(id);
+                break;
             }
-        });
+        }
+
+        final TaskCompletionSource<Void> sourceRouteRider = new TaskCompletionSource<>();
+        riderRef.child("lastRoutes").setValue(lastRoutesPassenger).addOnCompleteListener(task -> sourceRouteRider.setResult(task.getResult()));
+        tasks.add(sourceRouteRider.getTask());
+
+        final TaskCompletionSource<Void> sourceSessionRider = new TaskCompletionSource<>();
+        riderRef.child("messageSessionId").setValue(messageSessionIdPassenger).addOnCompleteListener(task -> sourceSessionRider.setResult(task.getResult()));
+        tasks.add(sourceSessionRider.getTask());
+
+
+        final TaskCompletionSource<Void> sourceSessionDriver = new TaskCompletionSource<>();
+        driverRef.child("messageSessionId").setValue(messageSessionIdDriver).addOnCompleteListener(task -> sourceSessionDriver.setResult(task.getResult()));
+        tasks.add(sourceSessionDriver.getTask());
 
         for (String id:driver.getLastRoutes()){
-            DatabaseReference routeRef = FirebaseDatabase.getInstance().getReference().child(Route.class.getSimpleName());
-
+            DatabaseReference routeRef = FirebaseDatabase.getInstance().getReference().child(Routes.class.getSimpleName());
 //          delete passenger from the routes
             routeRef.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -748,7 +761,10 @@ public class User {
                     ArrayList<String> passengersId = (ArrayList<String>) snapshot.child("passengersId").getValue();
                     if (passengersId.contains(passenger.getUserId())){
                         passengersId.remove(passenger.getUserId());
-                        routeRef.child(id).child("passengersId").setValue(passengersId);
+                        TaskCompletionSource<Void> sourcePass = new TaskCompletionSource<>();
+                        routeRef.child(id).child("passengersId").setValue(passengersId)
+                                .addOnCompleteListener(task -> sourcePass.setResult(task.getResult()));
+                        tasks.add(sourcePass.getTask());
                     }
                 }
                 @Override
@@ -760,7 +776,10 @@ public class User {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.hasChild(id)){
                         if (snapshot.child(id).hasChild(passenger.getUserId())){
-                            requestRef.child(id).child(passenger.getUserId()).removeValue();
+                            TaskCompletionSource<Void> sourceRequest = new TaskCompletionSource<>();
+                            requestRef.child(id).child(passenger.getUserId()).removeValue()
+                                    .addOnCompleteListener(task -> sourceRequest.setResult(task.getResult()));
+                            tasks.add(sourceRequest.getTask());
                         }
                     }
                 }
@@ -768,5 +787,7 @@ public class User {
                 public void onCancelled(@NonNull DatabaseError error) {}
             });
         }
+        Tasks.whenAll(tasks).addOnCompleteListener(onCompleteListener);
+
     }
 }

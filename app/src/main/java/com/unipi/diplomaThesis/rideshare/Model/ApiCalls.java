@@ -19,7 +19,7 @@ import org.json.JSONObject;
 import java.util.Locale;
 
 public class ApiCalls {
-    private static String PLACES_API_KEY = "AIzaSyCO-ylUowiKV6IECv1L6eVw9Bl8CBzhaFk";
+    private final static String PLACES_API_KEY = "AIzaSyCO-ylUowiKV6IECv1L6eVw9Bl8CBzhaFk";
 
     public static void getLocationPlaces(Context c, String address, OnPlacesApiResponse onPlacesApiResponse) {
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?" +
@@ -77,13 +77,14 @@ public class ApiCalls {
         ;
         queue.add(jsonArrayRequest);
     }
-    public static void getDistanceWithWaypoints(Context c, String originPlaceId, String destinationPlaceId, String startWaypointPlaceId, String destinationWaypointPlaceId, OnDistanceResponse onDistanceResponse){
+    public static void getDistanceWithWaypoints(Context c, String originPlaceId, String destinationPlaceId,
+                                                String startWaypointPlaceId, String destinationWaypointPlaceId,
+                                                OnDistanceResponse onDistanceResponse){
         String url = "https://maps.googleapis.com/maps/api/directions/json?" +
                 "key=" + PLACES_API_KEY +
                 "&origin=place_id:"+originPlaceId+
                 "&destination=place_id:"+destinationPlaceId+
                 "&waypoints=via:place_id:"+startWaypointPlaceId+"|place_id:"+destinationWaypointPlaceId;
-        System.out.println(url);
         RequestQueue queue = Volley.newRequestQueue(c);
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest
                 (Request.Method.GET,
@@ -93,7 +94,9 @@ public class ApiCalls {
                     public void onResponse(JSONObject response) {
                         try {
                             double distance = 0;
-                            JSONArray jsonArray = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs");
+                            JSONArray jsonArray = response.getJSONArray("routes")
+                                                          .getJSONObject(0)
+                                                          .getJSONArray("legs");
                             for (int i=0; i<jsonArray.length();i++){
                                 distance += jsonArray.getJSONObject(i)
                                         .getJSONObject("distance")

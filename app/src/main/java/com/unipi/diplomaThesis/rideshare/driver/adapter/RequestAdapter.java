@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.unipi.diplomaThesis.rideshare.Interface.RequestOnClickListener;
 import com.unipi.diplomaThesis.rideshare.Model.Request;
-import com.unipi.diplomaThesis.rideshare.Model.Route;
+import com.unipi.diplomaThesis.rideshare.Model.Routes;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 
@@ -44,7 +44,7 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.requestOnClickListener = requestOnClickListener;
 
-        Route.loadRoute(requestList.get(position).getRouteId(),route -> {
+        Routes.loadRoute(requestList.get(position).getRouteId(), route -> {
             holder.routeName.setText(route.getName());
             holder.routeName.setVisibility(View.VISIBLE);
         });

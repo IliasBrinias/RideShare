@@ -12,7 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.unipi.diplomaThesis.rideshare.Model.Message;
+import com.unipi.diplomaThesis.rideshare.Model.Messages;
 import com.unipi.diplomaThesis.rideshare.R;
 
 import java.text.SimpleDateFormat;
@@ -29,12 +29,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final int SENDER = 234;
     public static final int RECEIVER = 123;
     Context c;
-    List<Message> messageList = new ArrayList<>();
+    List<Messages> messagesList = new ArrayList<>();
     String userId;
     Bitmap participantProfileBitmap;
-    public ChatAdapter(Context c, List<Message> messageList, String userId, Bitmap participantProfileBitmap) {
+    public ChatAdapter(Context c, List<Messages> messagesList, String userId, Bitmap participantProfileBitmap) {
         this.c = c;
-        this.messageList = messageList;
+        this.messagesList = messagesList;
         this.userId = userId;
         this.participantProfileBitmap=participantProfileBitmap;
     }
@@ -61,7 +61,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if (messageList.get(position).getUserSenderId().equals(userId)){
+        if (messagesList.get(position).getUserSenderId().equals(userId)){
             return SENDER;
         }else {
             return RECEIVER;
@@ -82,7 +82,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return messageList.size();
+        return messagesList.size();
     }
 
     private void sender(ViewHolderSender holder, int position){
@@ -91,13 +91,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder.time.setText(timeLabel);
             holder.time.setVisibility(View.VISIBLE);
         }else {holder.time.setVisibility(View.GONE);}
-        holder.message.setText(messageList.get(position).getMessage());
+        holder.message.setText(messagesList.get(position).getMessage());
         holder.linearLayout.setPadding(10, setPadding(position),10,10);
-        if (messageList.size()-1!=position) {
+        if (messagesList.size()-1!=position) {
             holder.viewProgress.setVisibility(View.GONE);
             return;
         }
-        if (messageList.get(position).isSeen()){
+        if (messagesList.get(position).isSeen()){
             holder.viewProgress.setText(c.getString(R.string.seen));
         }else {
             holder.viewProgress.setText(c.getString(R.string.send));
@@ -110,14 +110,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder.time.setText(timeLabel);
             holder.time.setVisibility(View.VISIBLE);
         }else {holder.time.setVisibility(View.GONE);}
-        holder.message.setText(messageList.get(position).getMessage());
+        holder.message.setText(messagesList.get(position).getMessage());
         holder.linearLayout.setPadding(10, setPadding(position),10,10);
     }
     private int setPadding(int position){
         if (position==0) return 10;
         try {
-            if (messageList.get(position).getUserSenderId().equals(
-                    messageList.get(position-1).getUserSenderId()
+            if (messagesList.get(position).getUserSenderId().equals(
+                    messagesList.get(position-1).getUserSenderId()
             )){
                 return 0;
             }else {
@@ -129,18 +129,18 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
     private String getTimeLabel(int position){
         if (position==0){
-            return dateYear.format(messageList.get(position).getTimestamp());
+            return dateYear.format(messagesList.get(position).getTimestamp());
         }
         try {
-            switch (Message.checkIfTheLastMessageIsOld(
-                    messageList.get(position).getTimestamp(),
-                    messageList.get(position-1).getTimestamp())) {
-                case Message.NO_TIME_LABEL_NEEDED:
+            switch (Messages.checkIfTheLastMessageIsOld(
+                    messagesList.get(position).getTimestamp(),
+                    messagesList.get(position-1).getTimestamp())) {
+                case Messages.NO_TIME_LABEL_NEEDED:
                     return null;
-                case Message.TIME_FORMAT:
-                    return time.format(messageList.get(position).getTimestamp());
-                case Message.DATE_FORMAT:
-                    return date.format(messageList.get(position).getTimestamp());
+                case Messages.TIME_FORMAT:
+                    return time.format(messagesList.get(position).getTimestamp());
+                case Messages.DATE_FORMAT:
+                    return date.format(messagesList.get(position).getTimestamp());
             }
         }catch (IndexOutOfBoundsException indexOutOfBoundsException){
             return null;

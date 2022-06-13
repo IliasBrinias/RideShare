@@ -20,7 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.unipi.diplomaThesis.rideshare.Interface.OnImageLoad;
 import com.unipi.diplomaThesis.rideshare.Interface.OnPassengerRouteClickListener;
-import com.unipi.diplomaThesis.rideshare.Model.Route;
+import com.unipi.diplomaThesis.rideshare.Model.Routes;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.Model.UserRating;
 import com.unipi.diplomaThesis.rideshare.R;
@@ -32,7 +32,7 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PassengerRouteAdapter extends RecyclerView.Adapter<PassengerRouteAdapter.ViewHolder>{
-    private List<Route> routeList;
+    private List<Routes> routesList;
     private List<User> driverList;
     private Map<String,Object> driverReview;
     private long userDateTime;
@@ -40,13 +40,13 @@ public class PassengerRouteAdapter extends RecyclerView.Adapter<PassengerRouteAd
     private ViewGroup parent;
     private Context c;
 
-    public PassengerRouteAdapter(Context c, List<Route> routeList,
+    public PassengerRouteAdapter(Context c, List<Routes> routesList,
                                  List<User> driverList,
                                  long userDateTime,
                                  Map<String,Object> driverReview,
                                  OnPassengerRouteClickListener onPassengerRouteClickListener) {
         this.onPassengerRouteClickListener = onPassengerRouteClickListener;
-        this.routeList = routeList;
+        this.routesList = routesList;
         this.driverList = driverList;
         this.c=c;
         this.userDateTime = userDateTime;
@@ -66,19 +66,19 @@ public class PassengerRouteAdapter extends RecyclerView.Adapter<PassengerRouteAd
     @Override
     public void onBindViewHolder(@NonNull PassengerRouteAdapter.ViewHolder holder, int position) {
         holder.onPassengerRouteClickListener = this.onPassengerRouteClickListener;
-        Route currentRoute = routeList.get(position);
-        holder.cost.setText( currentRoute.getCostPerRider()+"$");
+        Routes currentRoutes = routesList.get(position);
+        holder.cost.setText( currentRoutes.getCostPerRider()+"$");
 //        Addresses Names
         Geocoder g = new Geocoder(parent.getContext());
         try {
-            Address a = g.getFromLocation(currentRoute.getRouteLatLng().getStartLat(), currentRoute.getRouteLatLng().getStartLng(), 1).get(0);
+            Address a = g.getFromLocation(currentRoutes.getRouteLatLng().getStartLat(), currentRoutes.getRouteLatLng().getStartLng(), 1).get(0);
             StringBuilder startingAddress = new StringBuilder();
             if (a.getThoroughfare()!=null) startingAddress.append(a.getThoroughfare()+" ");
             if (a.getFeatureName()!=null) startingAddress.append(a.getFeatureName()+" ");
             if (a.getLocality()!=null) startingAddress.append(a.getLocality()+" ");
             if (a.getCountryName()!=null) startingAddress.append(a.getCountryName());
 
-            a = g.getFromLocation(currentRoute.getRouteLatLng().getEndLat(),currentRoute.getRouteLatLng().getEndLng(),1).get(0);
+            a = g.getFromLocation(currentRoutes.getRouteLatLng().getEndLat(), currentRoutes.getRouteLatLng().getEndLng(),1).get(0);
             StringBuilder endAddress = new StringBuilder();
             if (a.getThoroughfare()!=null) endAddress.append(a.getThoroughfare()+" ");
             if (a.getFeatureName()!=null) endAddress.append(a.getFeatureName()+" ");
@@ -91,7 +91,7 @@ public class PassengerRouteAdapter extends RecyclerView.Adapter<PassengerRouteAd
         }
         User currentDriver = null;
         for (User driver:driverList){
-            if (currentRoute.getDriverId().equals(driver.getUserId())){
+            if (currentRoutes.getDriverId().equals(driver.getUserId())){
                 currentDriver = driver;
                 break;
             }
@@ -99,7 +99,7 @@ public class PassengerRouteAdapter extends RecyclerView.Adapter<PassengerRouteAd
         if (currentDriver == null) {
             FirebaseDatabase.getInstance().getReference()
                     .child(User.class.getSimpleName())
-                    .child(currentRoute.getDriverId())
+                    .child(currentRoutes.getDriverId())
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -120,15 +120,15 @@ public class PassengerRouteAdapter extends RecyclerView.Adapter<PassengerRouteAd
         }
         holder.tableRowTimeDiff.setVisibility(View.VISIBLE);
 //          Hour Difference
-        holder.timeDifference.setText(currentRoute.getTextForTimeDif(c, userDateTime));
+        holder.timeDifference.setText(currentRoutes.getTextForTimeDif(c, userDateTime));
         if (driverReview.size()==0){
             holder.reviewCount.setVisibility(View.GONE);
             holder.finalReviews.setVisibility(View.GONE);
         }else {
             holder.reviewCount.setVisibility(View.VISIBLE);
             holder.finalReviews.setVisibility(View.VISIBLE);
-            holder.reviewCount.setText(" ("+((Map<String,Object>) driverReview.get(currentRoute.getRouteId())).get("count")+")");
-            holder.finalReviews.setText(String.valueOf(((Map<String,Object>) driverReview.get(currentRoute.getRouteId())).get("total")));
+            holder.reviewCount.setText(" ("+((Map<String,Object>) driverReview.get(currentRoutes.getRouteId())).get("count")+")");
+            holder.finalReviews.setText(String.valueOf(((Map<String,Object>) driverReview.get(currentRoutes.getRouteId())).get("total")));
 
         }
     }
@@ -162,7 +162,7 @@ public class PassengerRouteAdapter extends RecyclerView.Adapter<PassengerRouteAd
     }
 
     public int getItemCount() {
-        return routeList.size();
+        return routesList.size();
     }
     public int getItemViewType(int position) {
         return position;

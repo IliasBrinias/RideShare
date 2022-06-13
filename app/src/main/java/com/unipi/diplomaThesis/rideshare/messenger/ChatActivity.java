@@ -19,8 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
-import com.unipi.diplomaThesis.rideshare.Model.Message;
-import com.unipi.diplomaThesis.rideshare.Model.MessageSession;
+import com.unipi.diplomaThesis.rideshare.Model.Messages;
+import com.unipi.diplomaThesis.rideshare.Model.MessageSessions;
 import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
@@ -39,8 +39,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton buttonSend,buttonInfo,buttonBack;
     ImageView imageViewUser;
     ChatAdapter chatAdapter;
-    List<Message> messageList = new ArrayList<>();
-    MessageSession messageSession;
+    List<Messages> messagesList = new ArrayList<>();
+    MessageSessions messageSessions;
     User senderUser;
     Bitmap userImageBitmap=null;
     @Override
@@ -48,8 +48,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         senderUser = User.loadUserInstance(this);
-        if (!getIntent().hasExtra(MessageSession.class.getSimpleName())) finish();
-        messageSession = (MessageSession) getIntent().getSerializableExtra(MessageSession.class.getSimpleName());
+        if (!getIntent().hasExtra(MessageSessions.class.getSimpleName())) finish();
+        messageSessions = (MessageSessions) getIntent().getSerializableExtra(MessageSessions.class.getSimpleName());
         if (senderUser == null) finish();
         userName = findViewById(R.id.textViewUserName);
         buttonInfo = findViewById(R.id.buttonInfo);
@@ -64,7 +64,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
-        chatAdapter = new ChatAdapter(this,messageList, senderUser.getUserId(),userImageBitmap);
+        chatAdapter = new ChatAdapter(this, messagesList, senderUser.getUserId(),userImageBitmap);
         recyclerView.setAdapter(chatAdapter);
         messageSearch();
         loadParticipantData();
@@ -80,7 +80,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             finish();
         }else if (view.getId() == buttonInfo.getId()){
             Intent i = new Intent(this, ChatInfoActivity.class);
-            ArrayList<String> participants = messageSession.getParticipants();
+            ArrayList<String> participants = messageSessions.getParticipants();
             String participantId="";
             for (String p:participants){
                 if (!p.equals(FirebaseAuth.getInstance().getUid())){
@@ -89,29 +89,29 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
             i.putExtra(User.class.getSimpleName(),participantId);
-            i.putExtra(MessageSession.class.getSimpleName(),messageSession.getMessageSessionId());
+            i.putExtra(MessageSessions.class.getSimpleName(), messageSessions.getMessageSessionId());
             startActivityForResult(i,REQ_CHAT_ACTIVITY);
         }else if (view.getId() == buttonSend.getId()){
-            Message m = new Message(null,senderUser.getUserId(),userMessage.getText().toString(),new Date().getTime(),false);
-            senderUser.sendMessageTo(this,participant,messageSession,m,null);
+            Messages m = new Messages(null,senderUser.getUserId(),userMessage.getText().toString(),new Date().getTime(),false);
+            senderUser.sendMessageTo(this,participant, messageSessions,m,null);
             userMessage.setText("");
             closeKeyboard(this,userMessage.getWindowToken());
             recyclerView.smoothScrollToPosition(chatAdapter.getItemCount());
         }
     }
     @SuppressLint("NotifyDataSetChanged")
-    private void refreshData(Message m){
+    private void refreshData(Messages m){
         boolean messageExists = false;
         try {
-            for (int i=messageList.size()-1; i>=0; i--){
-                if (messageList.get(i).getMessageId().equals(m.getMessageId())){
-                    messageList.set(i,m);
+            for (int i = messagesList.size()-1; i>=0; i--){
+                if (messagesList.get(i).getMessageId().equals(m.getMessageId())){
+                    messagesList.set(i,m);
                     messageExists = true;
                     break;
                 }
             }
         }catch (IndexOutOfBoundsException ignore){}
-        if (!messageExists) messageList.add(m);
+        if (!messageExists) messagesList.add(m);
         chatAdapter.notifyDataSetChanged();
         recyclerView.postDelayed(new Runnable() {
             @Override
@@ -121,8 +121,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }, 500);
     }
     private void messageSearch() {
-        messageList.clear();
-        senderUser.loadMessages(messageSession,this::refreshData);
+        messagesList.clear();
+        senderUser.loadMessages(messageSessions,this::refreshData);
     }
     public void closeKeyboard(Context c, IBinder windowToken) {
         InputMethodManager mgr = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -130,7 +130,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
     User participant;
     public void loadParticipantData(){
-        ArrayList<String> participants = messageSession.getParticipants();
+        ArrayList<String> participants = messageSessions.getParticipants();
         String participantId="";
         boolean exists = false;
         for (String p:participants){
@@ -170,14 +170,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onPause() {
-        senderUser.stopLoadingMessages(messageSession);
+        senderUser.stopLoadingMessages(messageSessions);
         super.onPause();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_CHAT_ACTIVITY && resultCode == Message.LEAVE_CHAT){
+        if (requestCode == REQ_CHAT_ACTIVITY && resultCode == Messages.LEAVE_CHAT){
             finish();
         }
     }

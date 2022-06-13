@@ -28,7 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.unipi.diplomaThesis.rideshare.CarFragment;
 import com.unipi.diplomaThesis.rideshare.Model.Driver;
-import com.unipi.diplomaThesis.rideshare.Model.Message;
+import com.unipi.diplomaThesis.rideshare.Model.Messages;
 import com.unipi.diplomaThesis.rideshare.Model.MyApplication;
 import com.unipi.diplomaThesis.rideshare.Model.Request;
 import com.unipi.diplomaThesis.rideshare.Model.User;
@@ -212,7 +212,7 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
                 BadgeUtils.attachBadgeDrawable(badgeDrawableMessages, topAppBar, R.id.messages);
                 return;
             }
-            Message m = messageSession.getMessages().entrySet().iterator().next().getValue();
+            Messages m = messageSession.getMessages().entrySet().iterator().next().getValue();
 
             if (m.getUserSenderId().equals(userDriver.getUserId())){
                 if (newMessages.contains(messageSession.getMessageSessionId())){

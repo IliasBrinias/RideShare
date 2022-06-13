@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.unipi.diplomaThesis.rideshare.Model.Review;
+import com.unipi.diplomaThesis.rideshare.Model.Reviews;
 import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 
@@ -17,10 +17,10 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder>{
-    List<Review> reviewList;
+    List<Reviews> reviewsList;
 
-    public ReviewAdapter(List<Review> reviewList) {
-        this.reviewList = reviewList;
+    public ReviewAdapter(List<Reviews> reviewsList) {
+        this.reviewsList = reviewsList;
     }
 
     @NonNull
@@ -34,10 +34,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
     @Override
     public void onBindViewHolder(@NonNull ReviewAdapter.ViewHolder holder, int position) {
-        holder.reviewDate.setText(simpleDateFormat.format(reviewList.get(position).getTimestamp()));
-        holder.reviewDescription.setText(reviewList.get(position).getDescription());
-        holder.userReview.setText(String.valueOf(reviewList.get(position).getReview()));
-        User.loadUser(reviewList.get(position).getUserId(),u->{
+        holder.reviewDate.setText(simpleDateFormat.format(reviewsList.get(position).getTimestamp()));
+        holder.reviewDescription.setText(reviewsList.get(position).getDescription());
+        holder.userReview.setText(String.valueOf(reviewsList.get(position).getReview()));
+        User.loadUser(reviewsList.get(position).getUserId(), u->{
             holder.username.setText(User.reformatLengthString(u.getFullName(),30));
             makeDataVisible(holder);
         });
@@ -51,7 +51,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     }
     @Override
     public int getItemCount() {
-        return reviewList.size();
+        return reviewsList.size();
     }
 
     @Override

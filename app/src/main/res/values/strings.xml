@@ -11,13 +11,13 @@
     <string name="login">Login</string>
     <string name="create_account">CREATE ACCOUNT</string>
     <string name="title_activity_maps" translatable="false">MapsActivity</string>
-    <string name="passenger">Rider</string>
+    <string name="passenger">Passenger</string>
     <string name="driver">Driver</string>
     <string name="wrongPassword">Wrong Password</string>
-    <string name="rider_not_found">Rider not found</string>
+    <string name="rider_not_found">Passenger not found</string>
     <string name="driver_not_found">Driver not found</string>
     <string name="continue_as_driver">Continue as Driver</string>
-    <string name="continue_as_rider">Continue as Rider</string>
+    <string name="continue_as_rider">Continue as Passenger</string>
     <string name="register">Register</string>
     <string name="password_match_error">Password are not matched</string>
     <string name="password_format_error_digit"> * Your password must contains at least one digit</string>
@@ -54,7 +54,7 @@
     <string name="choose_date_and_time">Choose Date and Time</string>
     <string name="declare_additional_information">Declare Additional Information</string>
     <string name="end_date">End Date</string>
-    <string name="set_your_first_route_date">Set the date of your first route</string>
+    <string name="set_your_first_route_date">Set the date of your first routes</string>
     <string name="start_date">Start Date</string>
     <string name="choose_the_days">Choose the Days</string>
     <string name="save_route">Save Route</string>
@@ -62,7 +62,7 @@
     <string name="finish_route">Finish Route</string>
     <string name="cost_per_passenger">Cost per Passenger</string>
     <string name="starts_at">Starts at </string>
-    <string name="route_saved_success">The route saved Successfully</string>
+    <string name="route_saved_success">The routes saved Successfully</string>
     <string name="every">"Every "</string>
     <string name="delete_route">Delete Route</string>
     <string name="are_you_sure_delete_route">Are you sure you want to delete?</string>
@@ -144,14 +144,14 @@
     <string name="error_message">Something  happened.. Please try again later</string>
     <string name="classification">Classification</string>
     <string name="ride_capacity">Ride Capacity</string>
-    <string name="request_send_full_capacity">This route is foul of Riders.\nSearch for new ones</string>
+    <string name="request_send_full_capacity">This routes is foul of Passengers.\nSearch for new ones</string>
     <string name="new_route">New Route</string>
     <string name="origin">Origin</string>
-    <string name="does_the_route_repeat">Does the route repeat?</string>
+    <string name="does_the_route_repeat">Does the routes repeat?</string>
     <string name="messages">Messages</string>
     <string name="send">Send</string>
     <string name="seen">Seen</string>
-    <string name="first_message_chat">Send first message …</string>
+    <string name="first_message_chat">Send first messages …</string>
     <string name="details">Details</string>
     <string name="Routes">Routes</string>
     <string name="mute_messages">Mute Messages</string>
@@ -194,10 +194,10 @@
     <string name="password_changed_success">Password Changed Successfully</string>
     <string name="complete_review">Thanks for your Review</string>
     <string name="edit_car">Edit Car</string>
-    <string name="the_route_will_be_automatically_rescheduled_for_every_day_at_the_time_you_specified">The route will be automatically rescheduled for every day at the time you specified.</string>
+    <string name="the_route_will_be_automatically_rescheduled_for_every_day_at_the_time_you_specified">The routes will be automatically rescheduled for every day at the time you specified.</string>
     <string name="delete_passenger">Delete Passenger</string>
     <string name="do_you_want_to_delete_this_passenger_from_your_route">Do you want to delete this Passenger from your Route?</string>
-    <string name="do_you_want_to_delete_this_route">Do you want to delete this route?</string>
+    <string name="do_you_want_to_delete_this_route">Do you want to delete this routes?</string>
     <string name="wrong_date">Unacceptable Date</string>
     <string name="too_old_car">Your car is too old</string>
     <string name="passenger_deleted_success">Passenger Deleted Successfully</string>
@@ -211,7 +211,7 @@
     <string name="based_on_driver_reviews">Based on Driver Reviews</string>
     <string name="requests">Requests</string>
     <string name="is_on_your_way">Is on your way</string>
-    <string name="interested_in_route">Interested in route:</string>
+    <string name="interested_in_route">Interested in routes:</string>
     <string name="all_your_data_will_be_erased_if_you_want_to_keep_your_messages_and_your_routes_create_a_new_account_and_become_driver">All your data will be erased. If you want to keep your Messages and your routes create a new account and become driver.</string>
     <string-array translatable="false" name="repeat_options">
         <item>@string/daily</item>
