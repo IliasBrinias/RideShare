@@ -250,15 +250,15 @@
 
                         <TextView
                             android:id="@+id/textViewFilter"
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
                             android:background="@drawable/ic_circle"
                             android:backgroundTint="?colorPrimary"
                             android:fontFamily="@font/tcm"
                             android:gravity="center"
                             android:stateListAnimator="@null"
                             android:text="1"
-                            android:textColor="?colorPrimaryVariant"
+                            android:textColor="?colorOnPrimary"
                             android:textSize="20sp"
                             android:visibility="gone" />
                     </FrameLayout>

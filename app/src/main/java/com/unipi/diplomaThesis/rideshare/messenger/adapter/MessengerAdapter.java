@@ -2,6 +2,7 @@ package com.unipi.diplomaThesis.rideshare.messenger.adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +20,14 @@ import com.unipi.diplomaThesis.rideshare.Model.User;
 import com.unipi.diplomaThesis.rideshare.R;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.ViewHolder> {
     List<MessageSessions> messageSessionsList;
     OnClickMessageSession onClickMessageSession;
+    private static final Map<String, Bitmap> images = new HashMap<>();
     private final SimpleDateFormat time = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     Context c;
 
@@ -90,6 +93,7 @@ public class MessengerAdapter extends RecyclerView.Adapter<MessengerAdapter.View
             holder.imageUser.setImageBitmap(null);
             if (image != null) {
                 holder.imageUser.setImageBitmap(image);
+                images.put(u.getUserId(),image);
             }else {
                 holder.imageUser.setBackgroundResource(R.drawable.ic_default_profile);
             }

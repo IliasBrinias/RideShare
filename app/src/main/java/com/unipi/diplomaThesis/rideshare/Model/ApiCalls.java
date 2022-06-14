@@ -19,7 +19,7 @@ import org.json.JSONObject;
 import java.util.Locale;
 
 public class ApiCalls {
-    private final static String PLACES_API_KEY = "AIzaSyCO-ylUowiKV6IECv1L6eVw9Bl8CBzhaFk";
+    private final static String PLACES_API_KEY = "AIzaSyDFnzaYAuuQauR3oB7T_g12X6t-kkbTFyI";
 
     public static void getLocationPlaces(Context c, String address, OnPlacesApiResponse onPlacesApiResponse) {
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?" +

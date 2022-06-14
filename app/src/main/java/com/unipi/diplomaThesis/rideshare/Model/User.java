@@ -273,8 +273,7 @@ public class User {
         FirebaseDatabase.getInstance().getReference()
                 .child(MessageSessions.class.getSimpleName())
                 .child(messageSessions.getMessageSessionId())
-                .child("messages").orderByChild("timestamp")
-                .limitToLast(100)
+                .child("messages")
                 .removeEventListener(loadMessages);
     }
 
@@ -374,58 +373,55 @@ public class User {
                 onMessageSessionLoad.returnedSession(null);
                 return;
             }
-//            TODO: Check out order by child
+            for (String id:sessionIds){
                 FirebaseDatabase.getInstance().getReference()
-                    .child(MessageSessions.class.getSimpleName())
-                    .orderByChild("creationTimestamp")
-                    .limitToFirst(100)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot messageSessionSnap:snapshot.getChildren()){
-                            if (!sessionIds.contains(messageSessionSnap.getKey())) return;
-                            MessageSessions messageSessions = new MessageSessions();
-                            messageSessions.setMessageSessionId(messageSessionSnap.getKey());
-                            if (!messageSessionSnap.hasChild("participants")) return;
-                            if (!messageSessions.isSeen()) makeMessageSessionSeen(messageSessionSnap.getKey());
-                            messageSessions.setParticipants((ArrayList<String>) messageSessionSnap.child("participants").getValue());
-                            messageSessions.setCreationTimestamp(messageSessionSnap.child("creationTimestamp").getValue(Long.class));
-                            if (messageSessionSnap.child("messages").getChildrenCount() == 0) {
-                                onMessageSessionLoad.returnedSession(messageSessions);
-                                return;
-                            }
-                            FirebaseDatabase.getInstance().getReference()
-                                    .child(MessageSessions.class.getSimpleName())
-                                    .child(messageSessions.getMessageSessionId())
-                                    .child("messages")
-                                    .orderByChild("timestamp")
-                                    .limitToLast(1)
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            Map<String, Messages> messageMap = new HashMap<>();
-                                            for (DataSnapshot msg : snapshot.getChildren()) {
-                                                Messages m = msg.getValue(Messages.class);
-                                                messageMap.put(msg.getKey(), m);
-                                                messageSessions.setMessages(messageMap);
-                                                onMessageSessionLoad.returnedSession(messageSessions);
+                        .child(MessageSessions.class.getSimpleName())
+                        .child(id)
+                        .addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (!sessionIds.contains(snapshot.getKey())) return;
+                                if (!snapshot.hasChild("participants")) return;
+                                MessageSessions messageSessions = new MessageSessions();
+                                messageSessions.setMessageSessionId(snapshot.getKey());
+                                messageSessions.setSeen(snapshot.child("seen").getValue(Boolean.class));
+                                if (!messageSessions.isSeen()) makeMessageSessionSeen(snapshot.getKey());
+                                messageSessions.setParticipants((ArrayList<String>) snapshot.child("participants").getValue());
+                                messageSessions.setCreationTimestamp(snapshot.child("creationTimestamp").getValue(Long.class));
+                                if (snapshot.child("messages").getChildrenCount() == 0) {
+                                    onMessageSessionLoad.returnedSession(messageSessions);
+                                    return;
+                                }
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child(MessageSessions.class.getSimpleName())
+                                        .child(messageSessions.getMessageSessionId())
+                                        .child("messages")
+                                        .limitToLast(1)
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                Map<String, Messages> messageMap = new HashMap<>();
+                                                for (DataSnapshot msg : snapshot.getChildren()) {
+                                                    Messages m = msg.getValue(Messages.class);
+                                                    messageMap.put(msg.getKey(), m);
+                                                    messageSessions.setMessages(messageMap);
+                                                    onMessageSessionLoad.returnedSession(messageSessions);
+                                                }
                                             }
-                                        }
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-                                        }
-                                    });
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                            }
+                                        });
                             }
 
-                    }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                            }
 
-                    }
-
-                    });
+                        });
+            }
             onMessageSessionLoad.returnedSession(null);
         });
 
@@ -441,8 +437,7 @@ public class User {
                 .child(MessageSessions.class.getSimpleName())
                 .child(messageSessions.getMessageSessionId())
                 .child("messages")
-                .orderByChild("timestamp")
-                .limitToLast(100)
+                .limitToFirst(100)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {

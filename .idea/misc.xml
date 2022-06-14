@@ -93,6 +93,7 @@
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/activity_chat_info.xml" value="0.2072072072072072" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/activity_driver_save_route.xml" value="0.264" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/activity_messenger.xml" value="0.264" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/activity_passenger_route.xml" value="0.3447368421052632" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/activity_requests.xml" value="0.264" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/activity_rider_route.xml" value="0.4" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/activity_route.xml" value="0.2898550724637681" />
@@ -128,6 +129,7 @@
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/leave_chat_alert_dialog.xml" value="0.34385964912280703" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/list_item.xml" value="0.3447368421052632" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/messenger_list_layout.xml" value="0.264" />
+        <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/passenger_route_layout.xml" value="0.3447368421052632" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/personal_data_save_alert_dialog.xml" value="0.24003623188405798" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/rating_alert_dialog.xml" value="0.4" />
         <entry key="..\:/Users/brinias/Desktop/RideShare-master/app/src/main/res/layout/request_driver_alert_dialog.xml" value="0.25921052631578945" />

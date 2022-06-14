@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,7 +22,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.unipi.diplomaThesis.rideshare.Interface.OnDataReturn;
-import com.unipi.diplomaThesis.rideshare.Interface.OnProcedureComplete;
 import com.unipi.diplomaThesis.rideshare.Interface.OnRouteSearchResponse;
 import com.unipi.diplomaThesis.rideshare.Interface.OnUserLoadComplete;
 import com.unipi.diplomaThesis.rideshare.R;
@@ -253,11 +254,9 @@ public class Passenger extends User{
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()){
-                            deleteAccountDataDatabase((t,complete) ->{
+                            deleteAccountDataDatabase((t) ->{
                                 if (!t.isSuccessful()) t.getException().printStackTrace();
-                                if (complete){
-                                    user.delete().addOnCompleteListener(onCompleteListener);
-                                }
+                                user.delete().addOnCompleteListener(onCompleteListener);
                             });
                         }else {
                             onCompleteListener.onComplete(task);
@@ -265,29 +264,72 @@ public class Passenger extends User{
                     }
                 });
     }
-    private void deleteAccountDataDatabase(OnProcedureComplete onProcedureComplete){
-        deleteRiderData((returnTask, complete) -> {
-            if (complete){
+    private void deleteAccountDataDatabase(OnCompleteListener<Void> onCompleteListener){
+        deleteRiderData(task -> {
                 //        delete photos
                 StorageReference photo= FirebaseStorage.getInstance().getReference();
                 photo.child(User.class.getSimpleName()).child(Passenger.this.getUserId())
                         .delete()
-                        .addOnSuccessListener(task -> FirebaseDatabase.getInstance().getReference()
+                        .addOnCompleteListener(t1 -> FirebaseDatabase.getInstance().getReference()
                                 .child(User.class.getSimpleName())
                                 .child(Passenger.this.getUserId())
                                 .removeValue()
-                                .addOnCompleteListener(t-> onProcedureComplete.isComplete(t, true)))
-                        .addOnFailureListener(task->
-                                FirebaseDatabase.getInstance().getReference()
-                                        .child(User.class.getSimpleName())
-                                        .child(Passenger.this.getUserId())
-                                        .removeValue()
-                                        .addOnCompleteListener(t-> onProcedureComplete.isComplete(t, true)));
-
-            }
+                                .addOnCompleteListener(onCompleteListener));
         });
     }
-    public void deleteRiderData(OnProcedureComplete onProcedureComplete){
+    private void deleteMessageSession(ArrayList<String> messageSessionId, OnCompleteListener<Void> onCompleteListener){
+//      User MessageSessionIds
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName());
+        DatabaseReference messageSessionRef = FirebaseDatabase.getInstance().getReference()
+                .child(MessageSessions.class.getSimpleName());
+        messageSessionRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                  MessageSessions
+                final ArrayList<Task<Void>> tasks = new ArrayList<>();
+                Map<String,String> sessions = new HashMap<>();
+                for (String sessionId:messageSessionId) {
+                    ArrayList<String> participants = (ArrayList<String>) snapshot.child(sessionId).child("participants").getValue();
+                    participants.remove(FirebaseAuth.getInstance().getUid());
+                    String participantId = participants.get(0);
+                    sessions.put(sessionId,participantId);
+                    final TaskCompletionSource<Void> sourceMessageSession = new TaskCompletionSource<>();
+                    messageSessionRef.child(sessionId).removeValue()
+                            .addOnCompleteListener(task -> sourceMessageSession.setResult(task.getResult()));
+                    tasks.add(sourceMessageSession.getTask());
+                }
+
+                Tasks.whenAll(tasks).addOnCompleteListener(task -> {
+                        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                final ArrayList<Task<Void>> tasks = new ArrayList<>();
+//                              deleteMessageSessionId from the other users
+                                for (Map.Entry<String,String> sessionEntry:sessions.entrySet()){
+                                    ArrayList<String> messageSessionId = (ArrayList<String>) snapshot.child(sessionEntry.getValue()).child("messageSessionId").getValue();
+                                    if (!messageSessionId.contains(sessionEntry.getKey())) continue;
+                                    messageSessionId.remove(sessionEntry.getKey());
+                                    final TaskCompletionSource<Void> sourceParticipant = new TaskCompletionSource<>();
+                                    userRef.child(sessionEntry.getValue()).child("messageSessionId").setValue(messageSessionId)
+                                            .addOnCompleteListener(task -> sourceParticipant.setResult(task.getResult()));
+                                    tasks.add(sourceParticipant.getTask());
+                                }
+                                Tasks.whenAll(tasks).addOnCompleteListener(onCompleteListener);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                            }
+                        });
+                });
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+
+    }
+    public void deleteRiderData(OnCompleteListener<Void> onCompleteListener){
         DatabaseReference userRef =
         FirebaseDatabase.getInstance().getReference()
                 .child(User.class.getSimpleName())
@@ -295,115 +337,79 @@ public class Passenger extends User{
                 userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot rider) {
-                        startProcedures();
-                        addProcedures();
+                        final ArrayList<Task<Void>> tasks = new ArrayList<>();
+
 //                        delete Messages
                         if (rider.hasChild("messageSessionId")){
                             ArrayList<String> messageSessionId = (ArrayList<String>) rider.child("messageSessionId").getValue();
-
-//                            User MessageSessionIds
-                            for (String sessionId:messageSessionId){
-                                DatabaseReference messageSessionRef =
-                                FirebaseDatabase.getInstance().getReference()
-                                        .child(MessageSessions.class.getSimpleName())
-                                        .child(sessionId);
-                                messageSessionRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                                        MessageSessions Participants
-                                        ArrayList<String> participants = (ArrayList<String>) snapshot.child("participants").getValue();
-                                        participants.remove(FirebaseAuth.getInstance().getUid());
-                                        for (String participantId: participants){
-                                            DatabaseReference participantRef =
-                                                    FirebaseDatabase.getInstance().getReference()
-                                                            .child(User.class.getSimpleName())
-                                                            .child(participantId);
-                                            participantRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                                                    deleteMessageSessionId from the other participants
-                                                    ArrayList<String> messageSessionId = (ArrayList<String>) snapshot.child("messageSessionId").getValue();
-                                                    if (!messageSessionId.contains(sessionId)) return;
-                                                    messageSessionId.remove(sessionId);
-                                                    addProcedures();
-                                                    participantRef.child("messageSessionId").setValue(messageSessionId).addOnCompleteListener(task -> {
-//                                                    finally remove the Messages Session Completely
-                                                        addProcedures();
-                                                        messageSessionRef.removeValue().addOnCompleteListener(t -> {
-                                                            onProcedureComplete.isComplete(t, isCompleted());
-                                                        });
-
-                                                    });
-                                                }
-
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {}
-                                            });
-                                        }
-                                    }
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {}
-                                });
-                            }
+                            final TaskCompletionSource<Void> sourceSess = new TaskCompletionSource<>();
+                            deleteMessageSession(messageSessionId, task -> {
+                                sourceSess.setResult(task.getResult());
+                            });
+                            tasks.add(sourceSess.getTask());
                         }
-                        onProcedureComplete.isComplete(null,isCompleted());
 //                      delete Routes passengers
                         DatabaseReference routeRef = FirebaseDatabase.getInstance().getReference()
                                 .child(Routes.class.getSimpleName());
+//                          Remove Request
 
-                        addProcedures();
                         if (rider.hasChild("lastRoutes")) {
                             ArrayList<String> lastRoutes = (ArrayList<String>) rider.child("lastRoutes").getValue();
-                            for (String id : lastRoutes) {
-                                routeRef.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+
+
+                                routeRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot routeSnapshot) {
-                                        if (routeSnapshot.hasChild("passengersId")){
-                                            ArrayList<String> passengersId = (ArrayList<String>) routeSnapshot.child("passengersId").getValue();
-                                            if (passengersId.contains(FirebaseAuth.getInstance().getUid())){
-                                                passengersId.remove(FirebaseAuth.getInstance().getUid());
-                                                addProcedures();
-                                                routeRef.child(id).child("passengersId").setValue(passengersId)
-                                                        .addOnCompleteListener(task -> {
-                                                            onProcedureComplete.isComplete(task, isCompleted());
-                                                        });
+                                        for (String id : lastRoutes) {
+                                            if (routeSnapshot.child(id).hasChild("passengersId")) {
+                                                ArrayList<String> passengersId = (ArrayList<String>) routeSnapshot.child(id).child("passengersId").getValue();
+                                                if (passengersId.contains(FirebaseAuth.getInstance().getUid())) {
+                                                    passengersId.remove(FirebaseAuth.getInstance().getUid());
+                                                    final TaskCompletionSource<Void> sourcePass = new TaskCompletionSource<>();
+                                                    routeRef.child(id).child("passengersId").setValue(passengersId)
+                                                            .addOnCompleteListener(task -> sourcePass.setResult(task.getResult()));
+                                                }
                                             }
+
                                         }
+
                                     }
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError error) {}
                                 });
-
-//                          Remove Request
                             DatabaseReference requestRef = FirebaseDatabase.getInstance().getReference()
                                     .child(Request.class.getSimpleName());
-
-                                    requestRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            for (DataSnapshot routeRequestMap:snapshot.getChildren()){
-                                                if (routeRequestMap.hasChild(FirebaseAuth.getInstance().getUid())){
-                                                    addProcedures();
-                                                    requestRef.child(routeRequestMap.getKey())
-                                                            .child(FirebaseAuth.getInstance().getUid())
-                                                            .removeValue()
-                                                            .addOnCompleteListener(task -> {
-                                                                onProcedureComplete.isComplete(task, isCompleted());
-                                                            });
-                                                }
-
-                                            }
+//                                            delete Request
+                            requestRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    for (DataSnapshot requestRouteMap:snapshot.getChildren()){
+                                        if (requestRouteMap.hasChild(FirebaseAuth.getInstance().getUid())){
+                                            final TaskCompletionSource<Void> sourceReq = new TaskCompletionSource<>();
+                                            requestRef.child(requestRouteMap.getKey()).child(FirebaseAuth.getInstance().getUid()).removeValue()
+                                                    .addOnCompleteListener(task -> sourceReq.setResult(task.getResult()));
+                                            tasks.add(sourceReq.getTask());
                                         }
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {}
-                                    });
-                            }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+
+//                                delete last Routes
+                            userRef.child("lastRoutes").removeValue()
+                                .addOnCompleteListener(task -> {
+                                    //                                delete Message Session
+                                    final TaskCompletionSource<Void> sourceMessageSessionUser = new TaskCompletionSource<>();
+                                    userRef.child("messageSessionId").removeValue().addOnCompleteListener(t -> sourceMessageSessionUser.setResult(t.getResult()));
+                                    tasks.add(sourceMessageSessionUser.getTask());
+                                });
                         }
-                        onProcedureComplete.isComplete(null,isCompleted());
 
 //                        Delete Reviews
-                        addProcedures();
-
                         FirebaseDatabase.getInstance().getReference()
                                 .child(Reviews.class.getSimpleName())
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -411,25 +417,24 @@ public class Passenger extends User{
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         for (DataSnapshot reviewedDriver:snapshot.getChildren()){
                                             if (reviewedDriver.hasChild(FirebaseAuth.getInstance().getUid())){
-                                                addProcedures();
+                                                final TaskCompletionSource<Void> sourceReview = new TaskCompletionSource<>();
                                                 FirebaseDatabase.getInstance().getReference()
                                                         .child(Reviews.class.getSimpleName())
                                                         .child(reviewedDriver.getKey())
                                                         .child(FirebaseAuth.getInstance().getUid())
-                                                        .removeValue().addOnCompleteListener(task -> {
-                                                            onProcedureComplete.isComplete(task, isCompleted());
-                                                        });
+                                                        .removeValue().addOnCompleteListener(task -> sourceReview.setResult(task.getResult()));
+                                                tasks.add(sourceReview.getTask());
                                             }
                                         }
                                     }
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError error) {}
                                 });
+                        Tasks.whenAll(tasks).addOnCompleteListener(onCompleteListener);
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
-        onProcedureComplete.isComplete(null,isCompleted());
 
     }
 
@@ -441,7 +446,7 @@ public class Passenger extends User{
      * @param onCompleteListener
      */
     public void becomeDriver(Car c, byte[] carImage, OnCompleteListener<Void> onCompleteListener){
-        deleteRiderData((task,complete) -> {
+        deleteRiderData(task -> {
             DatabaseReference userRef =
                     FirebaseDatabase.getInstance().getReference()
                             .child(User.class.getSimpleName())
@@ -465,16 +470,5 @@ public class Passenger extends User{
             });
 
         });
-    }
-    private static int proceduresCount;
-    private void startProcedures(){
-        proceduresCount = 0;
-    }
-    private void addProcedures(){
-        proceduresCount++;
-    }
-    private boolean isCompleted(){
-        proceduresCount--;
-        return proceduresCount == 0;
     }
 }

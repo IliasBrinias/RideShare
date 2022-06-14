@@ -8,6 +8,7 @@ import android.location.Geocoder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -116,6 +117,9 @@ public class PassengerRouteAdapter extends RecyclerView.Adapter<PassengerRouteAd
         }
         if (userDateTime==0) {
             holder.tableRowTimeDiff.setVisibility(View.GONE);
+            holder.reviewCount.setVisibility(View.GONE);
+            holder.finalReviews.setVisibility(View.GONE);
+            holder.star.setVisibility(View.GONE);
             return;
         }
         holder.tableRowTimeDiff.setVisibility(View.VISIBLE);
@@ -177,6 +181,7 @@ public class PassengerRouteAdapter extends RecyclerView.Adapter<PassengerRouteAd
                 reviewCount,
                 cost,
                 timeDifference;
+        ImageView star;
         TableRow tableRowTimeDiff;
         private OnPassengerRouteClickListener onPassengerRouteClickListener;
 
@@ -190,6 +195,7 @@ public class PassengerRouteAdapter extends RecyclerView.Adapter<PassengerRouteAd
             reviewCount = itemView.findViewById(R.id.textViewCountRatings);
             cost = itemView.findViewById(R.id.textViewRouteCost);
             timeDifference = itemView.findViewById(R.id.textViewTimeDifference);
+            star = itemView.findViewById(R.id.imageViewStar);
             tableRowTimeDiff = itemView.findViewById(R.id.tableRowTimeDiff);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

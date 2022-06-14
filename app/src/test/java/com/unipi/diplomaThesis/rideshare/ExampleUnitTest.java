@@ -6,9 +6,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
@@ -19,12 +16,19 @@ public class ExampleUnitTest extends Activity{
     JSONObject jsonObject = new JSONObject();
     @Test
     public void addition_isCorrect(){
-        List<String> arrayList = new ArrayList<>();
-        arrayList.add("1");
-        arrayList.add("2");
-        arrayList.add("3");
-        arrayList.add("4");
-        arrayList.add("5");
-        System.out.println(arrayList.size()+" "+arrayList.indexOf("5"));
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < 200; i++) {
+                System.out.println("A " + i);
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < 200; i++) {
+                System.out.println("B " + i);
+            }
+        });
+        t1.start();
+        t2.start();
     }
+
+
 }

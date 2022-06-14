@@ -333,9 +333,16 @@ public class RouteFilter implements Serializable {
         if (minTime != defaultMinTime || maxTime != defaultMaxTime){
             Calendar routeCalendar =new GregorianCalendar();
             routeCalendar.setTimeInMillis(r.getRouteDateTime().getStartDateUnix());
+            routeCalendar.set(Calendar.YEAR,0);
+            routeCalendar.set(Calendar.MONTH,0);
+            routeCalendar.set(Calendar.DAY_OF_MONTH,0);
             Calendar routeFilterCalendar =new GregorianCalendar();
             routeFilterCalendar.setTimeInMillis(RouteFilter.this.timeUnix);
-            Duration duration = Duration.between(routeCalendar.toInstant(), routeFilterCalendar.toInstant());
+            routeFilterCalendar.set(Calendar.YEAR,0);
+            routeFilterCalendar.set(Calendar.MONTH,0);
+            routeFilterCalendar.set(Calendar.DAY_OF_MONTH,0);
+
+            Duration duration = Duration.between(routeFilterCalendar.toInstant(),routeCalendar.toInstant());
             float hourDifference = duration.toHours();
             if (RouteFilter.this.minTime > hourDifference || RouteFilter.this.maxTime < hourDifference) {
                 return false;

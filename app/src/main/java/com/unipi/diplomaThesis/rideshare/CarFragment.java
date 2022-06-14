@@ -255,8 +255,9 @@ public class CarFragment extends Fragment implements TextWatcher {
         }else if (charSequence.hashCode() == carYear.getText().hashCode()){
             if (charSequence.toString().matches("[1-2][0-9]{3}")){
                 carYear.setError(null);
-                if (Calendar.getInstance().get(Calendar.YEAR) - Integer.parseInt(charSequence.toString())>MAX_CAR_YEAR){
-//                    TODO: ADD this strings to new xml
+                if (Integer.parseInt(charSequence.toString())>Calendar.getInstance().get(Calendar.YEAR)){
+                    carYear.setError(getString(R.string.wrong_date));
+                }else if (Calendar.getInstance().get(Calendar.YEAR) - Integer.parseInt(charSequence.toString())>MAX_CAR_YEAR){
                     carYear.setError(getString(R.string.too_old_car));
                 }
             }else {

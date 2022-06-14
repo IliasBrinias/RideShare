@@ -71,7 +71,6 @@ public class MessengerActivity extends AppCompatActivity {
     private void refreshData(MessageSessions messageSessions){
         stopProgressBarAnimation();
         if (messageSessions == null) return;
-        System.out.println(messageSessions.getMessageSessionId());
 //        check if the messageSessions exists
         for (int i = 0; i< messageSessionsList.size(); i++){
             if (messageSessionsList.get(i).getMessageSessionId().equals(messageSessions.getMessageSessionId())){
@@ -80,6 +79,15 @@ public class MessengerActivity extends AppCompatActivity {
             }
         }
         messageSessionsList.add(messageSessions);
+        messageSessionsList.sort((messageSessions0, messageSessions1) -> {
+            try {
+                Long time0 = messageSessions0.getMessages().get(0).getTimestamp();
+                Long time1 = messageSessions1.getMessages().get(0).getTimestamp();
+                return Long.compare(time1,time0);
+            }catch (Exception e){
+                return 0;
+            }
+        });
         messengerAdapter.notifyDataSetChanged();
     }
     @SuppressLint("NotifyDataSetChanged")

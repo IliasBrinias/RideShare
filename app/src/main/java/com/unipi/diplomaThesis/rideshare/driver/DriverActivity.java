@@ -213,7 +213,6 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
                 return;
             }
             Messages m = messageSession.getMessages().entrySet().iterator().next().getValue();
-
             if (m.getUserSenderId().equals(userDriver.getUserId())){
                 if (newMessages.contains(messageSession.getMessageSessionId())){
                     newMessages.remove(messageSession.getMessageSessionId());

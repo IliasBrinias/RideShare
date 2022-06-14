@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.unipi.diplomaThesis.rideshare.Model</OriginalElement>
+  <nodes>
+    <node x="-765.0" y="1036.0">com.unipi.diplomaThesis.rideshare.Model.Driver</node>
+    <node x="-317.70000000000005" y="1058.0">com.unipi.diplomaThesis.rideshare.Model.Passenger</node>
+    <node x="1012.3279569892475" y="726.5376344086021">com.unipi.diplomaThesis.rideshare.Model.CustomMapView</node>
+    <node x="797.3279569892475" y="726.5376344086021">com.unipi.diplomaThesis.rideshare.Model.ApiCalls</node>
+    <node x="-457.6517857142858" y="329.6817204301076">com.unipi.diplomaThesis.rideshare.Model.FcmNotificationsSender</node>
+    <node x="-338.20000000000005" y="1174.0">com.unipi.diplomaThesis.rideshare.Model.RouteLatLng</node>
+    <node x="-976.0714285714287" y="937.0">com.unipi.diplomaThesis.rideshare.Model.MyApplication</node>
+    <node x="-697.7343701996929" y="408.0">com.unipi.diplomaThesis.rideshare.Model.MessageSessions</node>
+    <node x="-1117.4225806451614" y="675.5">com.unipi.diplomaThesis.rideshare.Model.MessagingService</node>
+    <node x="-36.0" y="644.0">com.unipi.diplomaThesis.rideshare.Model.RouteFilter</node>
+    <node x="-244.56920122887874" y="415.17204301075265">com.unipi.diplomaThesis.rideshare.Model.UserRating</node>
+    <node x="-905.8169546851" y="342.0">com.unipi.diplomaThesis.rideshare.Model.Messages</node>
+    <node x="-806.915514592934" y="631.6817204301076">com.unipi.diplomaThesis.rideshare.Model.Request</node>
+    <node x="-548.7857142857143" y="644.0">com.unipi.diplomaThesis.rideshare.Model.User</node>
+    <node x="-934.5714285714287" y="833.0">com.unipi.diplomaThesis.rideshare.Model.ActivityLifecycle</node>
+    <node x="768.8279569892475" y="327.17204301075265">com.unipi.diplomaThesis.rideshare.Model.MapDrawer</node>
+    <node x="-224.78571428571433" y="849.0">com.unipi.diplomaThesis.rideshare.Model.Reviews</node>
+    <node x="-591.2" y="1196.0">com.unipi.diplomaThesis.rideshare.Model.RouteDateTime</node>
+    <node x="591.3279569892475" y="726.5376344086021">com.unipi.diplomaThesis.rideshare.Model.CustomCardView</node>
+    <node x="-723.9107142857143" y="839.3763440860215">com.unipi.diplomaThesis.rideshare.Model.Car</node>
+    <node x="-466.45000000000005" y="1432.0">com.unipi.diplomaThesis.rideshare.Model.Routes</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.Passenger" target="com.unipi.diplomaThesis.rideshare.Model.Reviews" relationship="CREATE">
+      <point x="38.25" y="-38.0" />
+      <point x="-202.95000000000005" y="1015.0" />
+      <point x="-111.53571428571433" y="1015.0" />
+      <point x="-111.53571428571433" y="1005.0" />
+      <point x="-152.78571428571433" y="1005.0" />
+      <point x="0.0" y="71.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.Driver" target="com.unipi.diplomaThesis.rideshare.Model.Car" relationship="CREATE">
+      <point x="0.0" y="-60.0" />
+      <point x="-645.0" y="1015.0" />
+      <point x="-659.825" y="1015.0" />
+      <point x="-659.825" y="1005.0" />
+      <point x="-624.9107142857143" y="1005.0" />
+      <point x="33.0" y="60.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.Driver" target="com.unipi.diplomaThesis.rideshare.Model.Car" relationship="TO_ONE">
+      <point x="-80.0" y="-60.0" />
+      <point x="-725.0" y="1015.0" />
+      <point x="-690.9107142857143" y="1015.0" />
+      <point x="-33.0" y="60.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.User" target="com.unipi.diplomaThesis.rideshare.Model.MessageSessions" relationship="CREATE">
+      <point x="-76.0" y="-170.0" />
+      <point x="-472.78571428571433" y="603.0" />
+      <point x="-582.7343701996929" y="603.0" />
+      <point x="0.0" y="71.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.Driver" target="com.unipi.diplomaThesis.rideshare.Model.FcmNotificationsSender" relationship="CREATE">
+      <point x="0.0" y="-60.0" />
+      <point x="-645.0" y="1015.0" />
+      <point x="-659.825" y="1015.0" />
+      <point x="-659.825" y="1005.0" />
+      <point x="-565.0" y="1005.0" />
+      <point x="-565.0" y="623.0" />
+      <point x="-467.8857142857143" y="623.0" />
+      <point x="-467.8857142857143" y="593.0" />
+      <point x="-406.9017857142858" y="593.0" />
+      <point x="-50.75" y="115.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.User" target="com.unipi.diplomaThesis.rideshare.Model.FcmNotificationsSender" relationship="TO_ONE">
+      <point x="76.0" y="-170.0" />
+      <point x="-320.78571428571433" y="613.0" />
+      <point x="-11.635714285714357" y="613.0" />
+      <point x="-11.635714285714357" y="603.0" />
+      <point x="-305.4017857142858" y="603.0" />
+      <point x="50.75" y="115.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.MyApplication" target="com.unipi.diplomaThesis.rideshare.Model.ActivityLifecycle" relationship="CREATE">
+      <point x="55.25" y="-27.0" />
+      <point x="-810.3214285714287" y="912.0" />
+      <point x="-808.5714285714287" y="912.0" />
+      <point x="42.0" y="27.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.User" target="com.unipi.diplomaThesis.rideshare.Model.UserRating" relationship="TO_MANY">
+      <point x="76.0" y="-170.0" />
+      <point x="-320.78571428571433" y="613.0" />
+      <point x="-166.56920122887874" y="613.0" />
+      <point x="0.0" y="71.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.Passenger" target="com.unipi.diplomaThesis.rideshare.Model.FcmNotificationsSender" relationship="CREATE">
+      <point x="38.25" y="-38.0" />
+      <point x="-202.95000000000005" y="1015.0" />
+      <point x="-111.53571428571433" y="1015.0" />
+      <point x="-111.53571428571433" y="1005.0" />
+      <point x="-70.28571428571433" y="1005.0" />
+      <point x="-70.28571428571433" y="623.0" />
+      <point x="-467.8857142857143" y="623.0" />
+      <point x="-467.8857142857143" y="593.0" />
+      <point x="-406.9017857142858" y="593.0" />
+      <point x="-50.75" y="115.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.MessageSessions" target="com.unipi.diplomaThesis.rideshare.Model.Messages" relationship="TO_MANY">
+      <point x="0.0" y="-71.0" />
+      <point x="-582.7343701996929" y="323.60215053763443" />
+      <point x="-806.8169546851" y="323.60215053763443" />
+      <point x="0.0" y="137.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.MyApplication" target="com.unipi.diplomaThesis.rideshare.Model.ActivityLifecycle" relationship="TO_ONE">
+      <point x="-55.25" y="-27.0" />
+      <point x="-920.8214285714287" y="887.0" />
+      <point x="-42.0" y="27.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.Passenger" target="com.unipi.diplomaThesis.rideshare.Model.User" relationship="GENERALIZATION">
+      <point x="-38.25" y="-38.0" />
+      <point x="-279.45000000000005" y="1015.0" />
+      <point x="-396.78571428571433" y="1015.0" />
+      <point x="0.0" y="170.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.Driver" target="com.unipi.diplomaThesis.rideshare.Model.User" relationship="GENERALIZATION">
+      <point x="80.0" y="-60.0" />
+      <point x="-565.0" y="1015.0" />
+      <point x="-396.78571428571433" y="1015.0" />
+      <point x="0.0" y="170.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.Routes" target="com.unipi.diplomaThesis.rideshare.Model.RouteLatLng" relationship="TO_ONE">
+      <point x="0.0" y="-104.0" />
+      <point x="-357.95000000000005" y="1407.0" />
+      <point x="-241.20000000000005" y="1407.0" />
+      <point x="0.0" y="104.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.Driver" target="com.unipi.diplomaThesis.rideshare.Model.MessageSessions" relationship="CREATE">
+      <point x="0.0" y="-60.0" />
+      <point x="-645.0" y="1015.0" />
+      <point x="-659.825" y="1015.0" />
+      <point x="-659.825" y="1005.0" />
+      <point x="-584.0564516129033" y="1005.0" />
+      <point x="-584.0564516129033" y="613.0" />
+      <point x="-582.7343701996929" y="613.0" />
+      <point x="0.0" y="71.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.Routes" target="com.unipi.diplomaThesis.rideshare.Model.RouteDateTime" relationship="TO_ONE">
+      <point x="0.0" y="-104.0" />
+      <point x="-357.95000000000005" y="1407.0" />
+      <point x="-474.70000000000005" y="1407.0" />
+      <point x="0.0" y="82.0" />
+    </edge>
+    <edge source="com.unipi.diplomaThesis.rideshare.Model.User" target="com.unipi.diplomaThesis.rideshare.Model.FcmNotificationsSender" relationship="CREATE">
+      <point x="-76.0" y="-170.0" />
+      <point x="-472.78571428571433" y="613.0" />
+      <point x="-467.8857142857143" y="613.0" />
+      <point x="-467.8857142857143" y="593.0" />
+      <point x="-406.9017857142858" y="593.0" />
+      <point x="-50.75" y="115.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.6494413407821229" showDependencies="true" x="-156.37075268817307" y="999.8438709677421" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

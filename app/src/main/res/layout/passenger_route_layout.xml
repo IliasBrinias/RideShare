@@ -78,7 +78,7 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/imageView6"
+                android:id="@+id/imageViewStar"
                 android:layout_width="15dp"
                 android:layout_height="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -97,11 +97,11 @@
                 android:textColor="?colorPrimaryVariant"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView6"
+                app:layout_constraintBottom_toBottomOf="@+id/imageViewStar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/imageView6"
-                app:layout_constraintTop_toTopOf="@+id/imageView6" />
+                app:layout_constraintStart_toEndOf="@+id/imageViewStar"
+                app:layout_constraintTop_toTopOf="@+id/imageViewStar" />
 
             <TextView
                 android:id="@+id/textViewCountRatings"

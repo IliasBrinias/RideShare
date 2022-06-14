@@ -1,38 +1,34 @@
 {
   "project_info": {
-    "project_number": "719991187082",
-    "firebase_url": "https://diplomathesis-346008-default-rtdb.firebaseio.com",
-    "project_id": "diplomathesis-346008",
-    "storage_bucket": "diplomathesis-346008.appspot.com"
+    "project_number": "1064043767058",
+    "firebase_url": "https://diplomathesis-d2ae9-default-rtdb.firebaseio.com",
+    "project_id": "diplomathesis-d2ae9",
+    "storage_bucket": "diplomathesis-d2ae9.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:719991187082:android:9fac485d06750b657bef73",
+        "mobilesdk_app_id": "1:1064043767058:android:3473f6a4f714a21a35bfcb",
         "android_client_info": {
           "package_name": "com.unipi.diplomaThesis.rideshare"
         }
       },
       "oauth_client": [
         {
-          "client_id": "719991187082-sm6t3h3agkjrnov33cptiitke2shq668.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.unipi.diplomaThesis.rideshare",
-            "certificate_hash": "fdc07153a6ed65612e6e6008ac970f82b5268a85"
-          }
+          "client_id": "1064043767058-182uiasu4326geq2nijgf68dbpimg1co.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCO-ylUowiKV6IECv1L6eVw9Bl8CBzhaFk"
+          "current_key": "AIzaSyDtuM9a4_8nOefr8XnI9upbFZ3si3ANuVk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "719991187082-6o6stl5ugq4u52jkja0vulajud89sjun.apps.googleusercontent.com",
+              "client_id": "1064043767058-182uiasu4326geq2nijgf68dbpimg1co.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

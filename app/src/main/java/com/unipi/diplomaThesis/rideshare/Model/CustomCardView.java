@@ -24,7 +24,7 @@ public class CustomCardView {
      * @param image
      * @return
      */
-    public CardView getCardView(int count,Bitmap image){
+    public CardView getCardView(int count, Bitmap image){
         CardView cardView = new CardView(c);
         cardView.setCardBackgroundColor(Color.TRANSPARENT);
         cardView.setCardElevation(0);
@@ -41,7 +41,7 @@ public class CustomCardView {
         if (image!=null){
             imageView.setImageBitmap(image);
         }else{
-            imageView.setBackgroundResource(R.mipmap.ic_profile_default_foreground);
+            imageView.setBackgroundResource(R.mipmap.ic_profile_default_round);
         }
         cardView.addView(imageView);
 

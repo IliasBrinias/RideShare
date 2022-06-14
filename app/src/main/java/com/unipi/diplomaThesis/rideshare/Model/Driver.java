@@ -152,6 +152,7 @@ public class Driver extends User{
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     Routes routes = snapshot.getValue(Routes.class);
+
                                     if (routes == null) return;
                                     onRouteResponse.returnedRoute(routes);
                                 }

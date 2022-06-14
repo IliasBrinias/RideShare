@@ -96,6 +96,7 @@ public class LoginFragment extends Fragment implements TextWatcher {
                         });
                     }else{
                         ((StartActivity) getActivity()).stopProgressBarAnimation();
+                        System.out.println(task.getException().getMessage());
                         switch (((FirebaseAuthException) task.getException()).getErrorCode()){
                             case "ERROR_WRONG_PASSWORD":
                                 password.setError(getString(R.string.wrongPassword));
