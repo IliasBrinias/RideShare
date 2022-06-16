@@ -152,7 +152,6 @@ public class Driver extends User{
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     Routes routes = snapshot.getValue(Routes.class);
-
                                     if (routes == null) return;
                                     onRouteResponse.returnedRoute(routes);
                                 }
@@ -347,7 +346,10 @@ public class Driver extends User{
      */
     public void loadRequests(OnRequestLoad onRequestLoad){
         loadDriverRoutes(route->{
-            if (route == null) onRequestLoad.returnedRequest(null);
+            if (route == null) {
+                onRequestLoad.returnedRequest(null);
+                return;
+            }
             FirebaseDatabase.getInstance().getReference()
                     .child(Request.class.getSimpleName())
                     .addValueEventListener(new ValueEventListener() {

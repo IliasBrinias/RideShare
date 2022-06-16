@@ -258,7 +258,7 @@ public class RouteFilter implements Serializable {
                         onFilterResult.result(false,0);
                         return;
                     }
-                    onFilterResult.result(true,distance - r.getRouteLatLng().getDistance());
+                    onFilterResult.result(true, Math.abs(distance - r.getRouteLatLng().getDistance()));
                 });
     }
 

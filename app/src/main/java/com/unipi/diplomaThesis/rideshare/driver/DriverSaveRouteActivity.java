@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,7 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
     public int COUNT_STEPS=3;
     ProgressBar progressBar, progressBarSave;
     ImageButton buttonBack;
+    TextView title;
     DriverSaveRouteDirectionsFragment driverSaveRouteDirectionsFragment;
     DriverSaveRouteTimeTableFragment driverSaveRouteTimeTableFragment;
     DriverSaveRouteAdditionalInfoFragment driverSaveRouteAdditionalInfoFragment;
@@ -49,6 +51,7 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
             finish();
         }
         progressBar = findViewById(R.id.progressBar);
+        title = findViewById(R.id.textViewWelcomeDriverTitle);
         driverSaveRouteDirectionsFragment = new DriverSaveRouteDirectionsFragment();
         driverSaveRouteTimeTableFragment = new DriverSaveRouteTimeTableFragment();
         driverSaveRouteAdditionalInfoFragment = new DriverSaveRouteAdditionalInfoFragment();
@@ -57,6 +60,7 @@ public class DriverSaveRouteActivity extends AppCompatActivity{
         buttonBack.setOnClickListener(v->finish());
         if (getIntent().hasExtra(Routes.class.getSimpleName())){
             routes =(Routes) getIntent().getSerializableExtra(Routes.class.getSimpleName());
+            title.setText(getString(R.string.edit_route));
             loadRoute(routes);
         }
 

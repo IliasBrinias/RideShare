@@ -198,4 +198,5 @@
     <string name="is_on_your_way">Είναι στο δρόμο σου</string>
     <string name="interested_in_route">Ενδιαφέρεται για την διαδρομή:</string>
     <string name="all_your_data_will_be_erased_if_you_want_to_keep_your_messages_and_your_routes_create_a_new_account_and_become_driver">Ολα τα στοιχεία θα διαγραφούν. Εαν θέλετε να διατηρήσετε τα μηνύματα και τις διαδρομές σας, δημιουργήστε ένα καινούεργιο λογαριασμο.</string>
+    <string name="edit_route">Επεξεργασία Διαδρομής</string>
 </resources>

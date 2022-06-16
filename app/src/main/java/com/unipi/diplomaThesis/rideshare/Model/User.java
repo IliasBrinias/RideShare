@@ -467,15 +467,40 @@ public class User {
                 });
     }
     public static void mutualRoutes(Driver driver, Passenger passenger, OnRouteResponse onRouteResponse){
-        for (String routeId:driver.getLastRoutes()){
-            Routes.loadRoute(routeId, route->{
-                for (String p:route.getPassengersId()){
-                    if (p.equals(passenger.getUserId())){
-                        onRouteResponse.returnedRoute(route);
+        DatabaseReference user = FirebaseDatabase.getInstance().getReference()
+                .child(User.class.getSimpleName());
+        user.child(driver.getUserId()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<String> lastRoutesDriver = (ArrayList<String>) snapshot.child("lastRoutes").getValue();
+                if (lastRoutesDriver == null) onRouteResponse.returnedRoute(null);
+                user.child(passenger.getUserId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        ArrayList<String> lastRoutesPassengers = (ArrayList<String>) snapshot.child("lastRoutes").getValue();
+                        if (lastRoutesPassengers == null) onRouteResponse.returnedRoute(null);
+                        for (String routeId:lastRoutesDriver){
+                            if (lastRoutesPassengers.contains(routeId)){
+                                Routes.loadRoute(routeId, onRouteResponse::returnedRoute);
+
+                            }
+                        }
+
                     }
-                }
-            });
-        }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     /**
@@ -754,6 +779,7 @@ public class User {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     ArrayList<String> passengersId = (ArrayList<String>) snapshot.child("passengersId").getValue();
+                    if (passengersId == null) return;
                     if (passengersId.contains(passenger.getUserId())){
                         passengersId.remove(passenger.getUserId());
                         TaskCompletionSource<Void> sourcePass = new TaskCompletionSource<>();

@@ -157,9 +157,13 @@ public class PassengerActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
     }
+    @SuppressLint("UnsafeOptInUsageError")
     @Override
     protected void onResume() {
         super.onResume();
+        newMessages.clear();
+        BadgeUtils.detachBadgeDrawable(badgeDrawableMessages,topAppBar,R.id.messages);
+        badgeDrawableMessages = BadgeDrawable.create(this);
         startChecking();
     }
 
@@ -169,7 +173,6 @@ public class PassengerActivity extends AppCompatActivity {
     }
     @SuppressLint("UnsafeOptInUsageError")
     private void startChecking() {
-
         u.loadUserMessageSession(messageSession -> {
             if (messageSession == null) return;
             if (messageSession.getMessages().isEmpty()){

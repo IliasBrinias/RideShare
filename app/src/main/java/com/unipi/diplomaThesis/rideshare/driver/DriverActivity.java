@@ -155,11 +155,17 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
     public void onPause() {
         super.onPause();
     }
+    @SuppressLint("UnsafeOptInUsageError")
     @Override
     protected void onResume() {
         super.onResume();
         newRequests.clear();
         newMessages.clear();
+        BadgeUtils.detachBadgeDrawable(badgeDrawableMessages,topAppBar,R.id.messages);
+        BadgeUtils.detachBadgeDrawable(badgeDrawableRequests,topAppBar,R.id.requests);
+        badgeDrawableRequests = BadgeDrawable.create(this);
+        badgeDrawableMessages = BadgeDrawable.create(this);
+
         startChecking();
     }
 
@@ -170,6 +176,7 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
 
     @SuppressLint("UnsafeOptInUsageError")
     private void startChecking(){
+
         userDriver.loadDriversRouteId(routeIds -> {
             FirebaseDatabase.getInstance().getReference()
                 .child(Request.class.getSimpleName())
@@ -180,7 +187,6 @@ public class DriverActivity extends AppCompatActivity implements Toolbar.OnMenuI
                             if (!snapshot.hasChild(id)) continue;
                             for (DataSnapshot requests : snapshot.child(id).getChildren()) {
                                 String userId = requests.getKey();
-                                System.out.println(requests);
                                 if (requests.child("seen").getValue(Boolean.class) == true){
                                     if (newRequests.contains(userId)) newRequests.remove(userId);
                                 }else {

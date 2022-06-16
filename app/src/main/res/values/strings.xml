@@ -213,6 +213,7 @@
     <string name="is_on_your_way">Is on your way</string>
     <string name="interested_in_route">Interested in routes:</string>
     <string name="all_your_data_will_be_erased_if_you_want_to_keep_your_messages_and_your_routes_create_a_new_account_and_become_driver">All your data will be erased. If you want to keep your Messages and your routes create a new account and become driver.</string>
+    <string name="edit_route">Edit Route</string>
     <string-array translatable="false" name="repeat_options">
         <item>@string/daily</item>
         <item>@string/weekly</item>

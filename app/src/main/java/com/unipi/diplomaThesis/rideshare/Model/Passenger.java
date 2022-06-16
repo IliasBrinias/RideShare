@@ -182,7 +182,7 @@ public class Passenger extends User{
                         driver.getToken_FCM(),
                         Request.class.getSimpleName(),
                         null,
-                        driver.getFullName(),
+                        this.getFullName(),
                         Passenger.this.getFullName()+" "+activity.getString(R.string.is_instrested_for)+" "+ routes.getName(),
                         activity
                     );

@@ -72,6 +72,7 @@ public class RequestsActivity extends AppCompatActivity {
     }
     @SuppressLint("NotifyDataSetChanged")
     private void refreshData(Request request){
+        if(request == null) return;
         for (Request r:requestList){
             if (r.getRouteId().equals(request.getRouteId()) && r.getRiderId().equals(request.getRiderId())){
                 requestList.remove(r);

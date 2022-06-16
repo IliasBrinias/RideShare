@@ -57,7 +57,7 @@ public class ChatInfoActivity extends AppCompatActivity {
     Switch muteMessage;
     RatingBar ratingBar;
     RecyclerView recyclerView;
-    TableRow tableRowCar, tableRowRating;
+    TableRow tableRowCar, tableRowRating, tableRowRoute;
     DriverRouteListAdapter riderRouteAdapter;
     Passenger passenger =new Passenger();
     Driver driver = new Driver();
@@ -73,7 +73,8 @@ public class ChatInfoActivity extends AppCompatActivity {
         if (!getIntent().hasExtra(User.class.getSimpleName())) finish();
         messageSessionId = getIntent().getStringExtra(MessageSessions.class.getSimpleName());
         participantId = getIntent().getStringExtra(User.class.getSimpleName());
-
+        tableRowRoute = findViewById(R.id.tableRowRoute);
+        tableRowRoute.setVisibility(View.GONE);
         userImage = findViewById(R.id.imageViewUser);
         imageCar = findViewById(R.id.imageViewCarImage);
         imageExit = findViewById(R.id.exitChatInfo);
@@ -177,6 +178,8 @@ public class ChatInfoActivity extends AppCompatActivity {
     List<Routes> routesList = new ArrayList<>();
     @SuppressLint("NotifyDataSetChanged")
     private void refreshData(Routes r){
+        if (r == null) return;
+        tableRowRoute.setVisibility(View.VISIBLE);
         routesList.add(r);
 //        check if the driver exists
         riderRouteAdapter.notifyDataSetChanged();
