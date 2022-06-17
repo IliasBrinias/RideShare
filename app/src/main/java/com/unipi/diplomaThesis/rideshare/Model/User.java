@@ -473,12 +473,18 @@ public class User {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<String> lastRoutesDriver = (ArrayList<String>) snapshot.child("lastRoutes").getValue();
-                if (lastRoutesDriver == null) onRouteResponse.returnedRoute(null);
+                if (lastRoutesDriver == null) {
+                    onRouteResponse.returnedRoute(null);
+                    return;
+                }
                 user.child(passenger.getUserId()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         ArrayList<String> lastRoutesPassengers = (ArrayList<String>) snapshot.child("lastRoutes").getValue();
-                        if (lastRoutesPassengers == null) onRouteResponse.returnedRoute(null);
+                        if (lastRoutesPassengers == null) {
+                            onRouteResponse.returnedRoute(null);
+                            return;
+                        }
                         for (String routeId:lastRoutesDriver){
                             if (lastRoutesPassengers.contains(routeId)){
                                 Routes.loadRoute(routeId, onRouteResponse::returnedRoute);

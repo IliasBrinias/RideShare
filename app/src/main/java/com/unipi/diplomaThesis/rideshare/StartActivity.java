@@ -70,6 +70,14 @@ public class StartActivity extends AppCompatActivity {
             });
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentLoginRegister,new LoginFragment()).commit();
+    }
+
     public void register(View view){
         transaction(new RegisterFragment());
     }

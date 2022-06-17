@@ -193,6 +193,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     }
     private void drawMap(LatLng startingPoint,LatLng destinationPoint, View boundsOfTheMap){
         MapDrawer m = new MapDrawer(this,map);
+        m.setEdgesOffsetFromTheMap(0.2);
         m.directions(apiKey,startingPoint,destinationPoint,boundsOfTheMap);
         m.moveCameraToTop(startingPoint,destinationPoint,boundsOfTheMap.getWidth(),boundsOfTheMap.getHeight(),bottomSheet);
     }

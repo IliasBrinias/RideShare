@@ -687,27 +687,40 @@ public class Driver extends User{
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError error) {}
                                         });
-//                              delete User
-                                final TaskCompletionSource<Void> sourceUser = new TaskCompletionSource<>();
-                                userRef.removeValue().addOnCompleteListener(task -> sourceUser.setResult(task.getResult()));
-                                tasks.add(sourceUser.getTask());
-//                              deletePhotos
-                                final TaskCompletionSource<Void> sourceProfile = new TaskCompletionSource<>();
-                                StorageReference photo = FirebaseStorage.getInstance().getReference();
-                                photo.child(User.class.getSimpleName()).child(Driver.this.getUserId()).delete()
-                                        .addOnCompleteListener(task -> sourceProfile.setResult(task.getResult()));
-                                tasks.add(sourceProfile.getTask());
-
-                                final TaskCompletionSource<Void> sourceCar = new TaskCompletionSource<>();
-                                photo.child(Car.class.getSimpleName()).child(Driver.this.getUserId()).delete()
-                                        .addOnCompleteListener(task -> sourceCar.setResult(task.getResult()));
-                                tasks.add(sourceCar.getTask());
-                                Tasks.whenAll(tasks).addOnCompleteListener(task -> onProcedureComplete.isComplete(task, true));
-
                             });
                         }
                     });
                 }
+                //                              delete User
+                final TaskCompletionSource<Void> sourceUser = new TaskCompletionSource<>();
+                userRef.removeValue().addOnCompleteListener(task -> sourceUser.setResult(task.getResult()));
+                tasks.add(sourceUser.getTask());
+//                              deletePhotos
+                final TaskCompletionSource<Void> sourceProfile = new TaskCompletionSource<>();
+                StorageReference photo = FirebaseStorage.getInstance().getReference();
+                photo.child(User.class.getSimpleName()).child(Driver.this.getUserId()).delete()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()){
+                                sourceProfile.setResult(task.getResult());
+                            }else {
+                                sourceProfile.setException(task.getException());
+                            }
+                        });
+                tasks.add(sourceProfile.getTask());
+
+                final TaskCompletionSource<Void> sourceCar = new TaskCompletionSource<>();
+                photo.child(Car.class.getSimpleName()).child(Driver.this.getUserId()).delete()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()){
+                                sourceCar.setResult(task.getResult());
+                            }else {
+                                sourceCar.setException(task.getException());
+                            }
+                        });
+                tasks.add(sourceCar.getTask());
+                Tasks.whenAll(tasks).addOnCompleteListener(task -> onProcedureComplete.isComplete(task, true));
+
+
 
             }
             @Override
