@@ -1,8 +1,6 @@
 # RideShare
 
-This application has been created in order to help drivers share the cost of traveling
-and for passengers to reduce the time and the cost of travel.
-
+This application is created for the drivers and the passengers who want to reduce car cost. Passengers can set the starting and finishing point of their route and with the Google Directions Api we show them the best route.
 ### Technologies
 * Firebase Authorization
 * RealTime Database
@@ -10,9 +8,7 @@ and for passengers to reduce the time and the cost of travel.
 * Cloud Messaging
 * Google Direction Api
 * Google Places
-
 ### Some Screenshots
-
 * Search for a route <br/>
 <p align="center" width="100%">
   <img src="https://user-images.githubusercontent.com/46651446/192353374-f788c7dd-bb2b-4939-9182-e5f45a27016c.png" height = "350">  
@@ -20,7 +16,6 @@ and for passengers to reduce the time and the cost of travel.
   <img src="https://user-images.githubusercontent.com/46651446/192355620-3973c2d6-ee9f-4307-9579-ea1ce67eff26.png" height = "350">
   <img src="https://user-images.githubusercontent.com/46651446/192353300-fb28abea-fc92-4046-8126-a717c2c7b96e.png" height = "350">
 </p>
-
 * Send message <br/>
 <p align="center" width="100%">
   <img src="https://user-images.githubusercontent.com/46651446/192357553-e88e85ce-ebc7-4c93-9504-0a77c844c7a0.png" height = "350">  
@@ -28,7 +23,6 @@ and for passengers to reduce the time and the cost of travel.
   <img src="https://user-images.githubusercontent.com/46651446/192357680-0783910c-db5e-45f4-836e-e06c6b693a95.png" height = "350">
   <img src="https://user-images.githubusercontent.com/46651446/192357729-80944514-2066-42ff-a190-c441466b7e1f.png" height = "350">
 </p>
-
 * Create Route <br/>
 <p align="center" width="100%">
   <img src="https://user-images.githubusercontent.com/46651446/192357975-781afa22-f6fd-48ae-bc36-f2ce715e0625.png" height = "350">  
