@@ -30,3 +30,11 @@ This application is created for the drivers and the passengers who want to reduc
   <img src="https://user-images.githubusercontent.com/46651446/192358202-0249e9cb-e35b-4659-8276-80f92739be13.png" height = "350">
   <img src="https://user-images.githubusercontent.com/46651446/192358353-c18029fe-5446-41bf-9602-e43abf774933.png" height = "350">  
 </p>
+* Other Screenshots <br/>
+<p align="center" width="100%">
+  <img src="https://user-images.githubusercontent.com/46651446/192363717-e34203d6-f164-4476-ae65-70f10a6677ac.png" height = "350">  
+  <img src="https://user-images.githubusercontent.com/46651446/192363746-7dcba513-8f29-4e3e-929e-d2338e81effe.png" height = "350">
+  <img src="https://user-images.githubusercontent.com/46651446/192363786-087e316d-7600-4b1a-9e04-5fa184fdadf2.png" height = "350">
+  <img src="https://user-images.githubusercontent.com/46651446/192364124-8fc6bb6a-8dcb-4268-adc5-1f3d270025b2.png" height = "350">  
+</p>
+
